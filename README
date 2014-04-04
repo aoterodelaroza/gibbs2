@@ -1,0 +1,12 @@
+Gibbs2 is a fortran90 program for the calculation of pressure and
+temperature dependent thermodynamic properties of solids from ab
+initio results. 
+
+The instructions for installation and usage of gibbs2 are contained in
+the documentation, doc/asturfit.txt and doc/asturfit.pdf .
+
+For any question regarding this program contact:
+
+* Alberto Otero-de-la-Roza  <alberto@carbono.quimica.uniovi.es>
+* Victor Lua~na             <victor@carbono.quimica.uniovi.es>
+

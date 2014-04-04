@@ -1,0 +1,168 @@
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+            ********** SLATEC Common Mathematical Library **********
+ 
+                                  Version 4.1
+ 
+                                   July 1993
+ 
+ 
+ 
+ There are fifteen (15) files in the SLATEC distribution.
+ 
+ 
+ install -		installation note (170 records)
+ 
+ This file contains a copy of this document.
+ 
+ 
+ toc -			table of contents (5,098 records)
+ 
+ This file contains a copy of the table of contents for slatec_src.tar.Z,
+ the main SLATEC source.
+ 
+ 
+ slatec_src.tar.Z -	SLATEC source (298,907 records)
+ 
+ This file contains the main SLATEC Fortran source of 1,441 routines.  The
+ subprograms are in alphabetical order with an *DECK (name) record as the first
+ record of each subprogram.  This *DECK record is compatible with the CDC and
+ Cray update processors and the Opcode, Inc. HISTORIAN utility;  it could be
+ used as a search string for editing the file on other machines.  The first deck
+ is named AAAAAA and contains the SLATEC disclaimer.
+ 
+ There are five (5) machine specific subprograms (D1MACH, I1MACH, R1MACH, FDUMP
+ and XERHLT) in the source file.  These are described further in the next two
+ paragraphs.
+ 
+ Machine constants, such as word length and maximum positive exponent, are
+ supplied to routines in SLATEC source via the functions D1MACH, I1MACH and
+ R1MACH.  Make sure that each machine type at your site returns the correct
+ values for these functions.  In most cases, this only requires replacing a "C"
+ with a blank in the first column of several lines of each function.  The copies
+ of D1MACH, I1MACH and R1MACH included in the source have all the machine
+ specific constants commented out with a "C" in column one.
+ 
+ The standard error handler has two machine dependent subroutines in it: FDUMP
+ and XERHLT.  The routine XERHLT is called via XERMSG when a fatal error is
+ encountered and must terminate the job.  The copy of XERHLT included in this
+ file contains a "STOP" and thus does stop execution.  However, in most
+ circumstances, this normal exit is unacceptable when an error has been detected
+ and this subroutine should be replaced at each site.  The routine FDUMP is
+ called via XERMSG when traceback information is desired.  This routine should
+ provide the traceback information to appropriate output files.  The copy of
+ FDUMP included in the source does not produce traceback information.  If this
+ function is desired, it must be implemented at each site.
+ 
+ It is assumed that all ANSI-77 standard intrinsic functions are vendor-supplied
+ and, therefore, are not included in the main SLATEC source.  In the event that
+ some of these subprograms are not resident on the system (e.g. DINT on CDC),
+ many are included in the subsidiary programs, spfun.  In some cases, the
+ higher special functions (e.g. error functions, Bessel functions) anticipate
+ that certain errors will be handled in the intrinsic functions.  This may not
+ be done appropriately in vendor-supplied intrinsic functions and may cause
+ difficulties.
+ 
+ 
+ slatec_chk.tar.Z -	library quick checks (60,612 records)
+ 
+ This file contains the SLATEC quick checks.  There are now fifty four (54)
+ quick check drivers.
+ 
+ If some of the quick checks fail on certain machines, it does not necessarily
+ indicate a problem in the source, but possibly in the quick checks themselves,
+ or the machine architecture or the operating system or the compiler or vendor
+ or user supplied software.
+ 
+ Please note the following comments concerning this file and its contents.
+ 
+   1. The fifty four (54) main programs (quick check drivers) are
+      separated from the quick check subprograms.  An *DECK (name)
+      record was placed before each main program.  The deck names are
+      TEST01, TEST02, ..., TEST54.
+ 
+   2. An *DECK (name) was placed before each test subprogram.  The
+      test subprograms are arranged in alphabetical order.
+ 
+ On the VAX under VMS, the quick checks should be run with KPRINT = 0 or 1 (zero
+ or one).
+ 
+ 
+ guide -		SLATEC guide (2,768 records)
+ 
+ This file contains a copy of the latest version of the document "Guide to the
+ SLATEC Common Mathematical Library."
+ 
+ 
+ list -			SLATEC directory (1,443 records)
+ 
+ This file contains an alphabetical list of all subprograms with the number of
+ records and the number of comments in each subprogram.
+ 
+ 
+ tree1 -		SLATEC tree (1,610 records)
+ 
+ This file contains the routines directly referenced by each subprogram in the
+ library.  The routine name is in the first column and the routines referenced
+ are in columns two through six.  If more than five routines are referenced,
+ they are placed on succeeding lines with the first column blank filled.  The
+ expression (NONE) will be in the second column if no routines are referenced.
+ 
+ 
+ tree -			SLATEC multi-level trees (3,438 records)
+ 
+ This file contains the list of all routines in the SLATEC Collection and the
+ routines called by them and their descendants.  The format of this file is
+ the same as tree1, except for the number of blank characters between the
+ columns.
+ 
+ 
+ docinstall -		installation note for the Los Alamos documentation 
+			program (18 records)
+ 
+ This file contains instructions for installing the Los Alamos on-line
+ documentation program.  More detailed information on files slprep, sladoc,
+ subsid, and gams is given in this file.
+ 
+ 
+ slprep -		preliminary program for the Los Alamos on-line 
+			documentation program (1,377 records)
+ 
+ The preliminary program, known as SLPREP, generates the four files which
+ comprise the database for the on-line documentation program.  Use the main
+ SLATEC source, slatec_src.tar.Z, and the GAMS classification, gams, as input 
+ to this program.
+ 
+ 
+ sladoc -		on-line documentation program (1,989 records)
+ 
+ The on-line documentation program, known as SLADOC.
+ 
+ 
+ subsid -		subsidiary programs for files slprep and sladoc
+			(258 records)
+ 
+ The subprograms contained in this file are used by the programs in files
+ slprep and sladoc.
+ 
+ 
+ gams -			GAMS classification file (750 records)
+ 
+ 
+ spfun -		elementary special function subprograms (3,411 records)
+ 
+ This file contains Fortran code for the elementary special functions in the
+ ANSI-77 standard. An *DECK (name) precedes each subprogram.
+ 
+ 
+ spfunchk -		quick checks for the elementary special function 
+			subprograms (628 records)
+ 
+ This file contains quick checks for the elementary special functions in
+ spfun.
+ 

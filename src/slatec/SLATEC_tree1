@@ -1,0 +1,1610 @@
+  AAAAAA      (NONE)      
+  ACOSH       R1MACH      XERMSG      
+  AI          AIE         CSEVL       INITS       R1MACH      R9AIMP      
+              XERMSG      
+  AIE         CSEVL       INITS       R1MACH      R9AIMP      
+  ALBETA      ALNGAM      ALNREL      GAMMA       R9LGMC      XERMSG      
+  ALGAMS      ALNGAM      
+  ALI         EI          XERMSG      
+  ALNGAM      GAMMA       R1MACH      R9LGMC      XERMSG      
+  ALNREL      CSEVL       INITS       R1MACH      XERMSG      
+  ASINH       CSEVL       INITS       R1MACH      
+  ASYIK       R1MACH      
+  ASYJY       I1MACH      R1MACH      
+  ATANH       CSEVL       INITS       R1MACH      XERMSG      
+  AVINT       XERMSG      
+  BAKVEC      (NONE)      
+  BALANC      (NONE)      
+  BALBAK      (NONE)      
+  BANDR       (NONE)      
+  BANDV       (NONE)      
+  BCRH        (NONE)      
+  BDIFF       (NONE)      
+  BESI        ALNGAM      ASYIK       I1MACH      R1MACH      XERMSG      
+  BESI0       BESI0E      CSEVL       INITS       R1MACH      XERMSG      
+  BESI0E      CSEVL       INITS       R1MACH      
+  BESI1       BESI1E      CSEVL       INITS       R1MACH      XERMSG      
+  BESI1E      CSEVL       INITS       R1MACH      XERMSG      
+  BESJ        ALNGAM      ASYJY       I1MACH      JAIRY       R1MACH      
+              XERMSG      
+  BESJ0       CSEVL       INITS       R1MACH      XERMSG      
+  BESJ1       CSEVL       INITS       R1MACH      XERMSG      
+  BESK        ASYIK       BESK0       BESK0E      BESK1       BESK1E      
+              BESKNU      I1MACH      R1MACH      XERMSG      
+  BESK0       BESI0       BESK0E      CSEVL       INITS       R1MACH      
+              XERMSG      
+  BESK0E      BESI0       CSEVL       INITS       R1MACH      XERMSG      
+  BESK1       BESI1       BESK1E      CSEVL       INITS       R1MACH      
+              XERMSG      
+  BESK1E      BESI1       CSEVL       INITS       R1MACH      XERMSG      
+  BESKES      R1MACH      R9KNUS      XERMSG      
+  BESKNU      GAMMA       I1MACH      R1MACH      XERMSG      
+  BESKS       BESKES      R1MACH      XERMSG      
+  BESY        ASYJY       BESY0       BESY1       BESYNU      I1MACH      
+              R1MACH      XERMSG      YAIRY       
+  BESY0       BESJ0       CSEVL       INITS       R1MACH      XERMSG      
+  BESY1       BESJ1       CSEVL       INITS       R1MACH      XERMSG      
+  BESYNU      GAMMA       R1MACH      XERMSG      
+  BETA        ALBETA      GAMLIM      GAMMA       R1MACH      XERMSG      
+  BETAI       ALBETA      R1MACH      XERMSG      
+  BFQAD       BSGQ8       INTRV       R1MACH      XERMSG      
+  BI          BIE         CSEVL       INITS       R1MACH      R9AIMP      
+              XERMSG      
+  BIE         CSEVL       INITS       R1MACH      R9AIMP      
+  BINOM       ALNREL      R1MACH      R9LGMC      XERMSG      
+  BINT4       BNFAC       BNSLV       BSPVD       R1MACH      XERMSG      
+  BINTK       BNFAC       BNSLV       BSPVN       XERMSG      
+  BISECT      R1MACH      
+  BKIAS       BDIFF       GAMRN       HKSEQ       R1MACH      
+  BKISR       PSIXN       R1MACH      
+  BKSOL       SDOT        
+  BLKTR1      INDXA       INDXB       INDXC       
+  BLKTRI      BLKTR1      COMPB       CPROD       CPRODP      PROD        
+              PRODP       
+  BNDACC      H12         XERMSG      
+  BNDSOL      XERMSG      
+  BNFAC       (NONE)      
+  BNSLV       (NONE)      
+  BQR         PYTHAG      
+  BSGQ8       BVALU       I1MACH      R1MACH      XERMSG      
+  BSKIN       BKIAS       BKISR       EXINT       GAMRN       I1MACH      
+              R1MACH      
+  BSPDOC      (NONE)      
+  BSPDR       XERMSG      
+  BSPEV       BSPVN       INTRV       XERMSG      
+  BSPLVD      BSPLVN      
+  BSPLVN      (NONE)      
+  BSPPP       BSPDR       BSPEV       XERMSG      
+  BSPVD       BSPVN       XERMSG      
+  BSPVN       XERMSG      
+  BSQAD       BVALU       INTRV       XERMSG      
+  BSRH        (NONE)      
+  BVALU       INTRV       XERMSG      
+  BVDER       (NONE)      
+  BVPOR       BKSOL       LSSUDS      RKFAB       SCOEF       SDOT        
+              STOR1       STWAY       SVECS       
+  BVSUP       EXBVP       MACON       XERMSG      
+  C0LGMC      C9LN2R      R1MACH      
+  C1MERG      CCOPY       
+  C9LGMC      R1MACH      XERMSG      
+  C9LN2R      R9ATN1      R9LN2R      
+  CACAI       CASYI       CBKNU       CMLRI       CS1S2       CSERI       
+              R1MACH      
+  CACON       CBINU       CBKNU       CS1S2       R1MACH      
+  CACOS       CASIN       
+  CACOSH      CACOS       
+  CAIRY       CACAI       CBKNU       I1MACH      R1MACH      
+  CARG        (NONE)      
+  CASIN       R1MACH      
+  CASINH      CASIN       
+  CASYI       R1MACH      
+  CATAN       R1MACH      XERMSG      
+  CATAN2      CATAN       XERMSG      
+  CATANH      CATAN       
+  CAXPY       (NONE)      
+  CBABK2      (NONE)      
+  CBAL        (NONE)      
+  CBESH       CACON       CBKNU       CBUNK       CUOIK       I1MACH      
+              R1MACH      
+  CBESI       CBINU       I1MACH      R1MACH      
+  CBESJ       CBINU       I1MACH      R1MACH      
+  CBESK       CACON       CBKNU       CBUNK       CUOIK       I1MACH      
+              R1MACH      
+  CBESY       CBESH       I1MACH      R1MACH      
+  CBETA       CGAMMA      CLBETA      GAMLIM      XERMSG      
+  CBINU       CASYI       CBUNI       CMLRI       CSERI       CUOIK       
+              CWRSK       
+  CBIRY       CBINU       I1MACH      R1MACH      
+  CBKNU       CKSCL       CSHCH       CUCHK       GAMLN       I1MACH      
+              R1MACH      
+  CBLKT1      INXCA       INXCB       INXCC       
+  CBLKTR      CBLKT1      CCMPB       CPROC       CPROCP      PROC        
+              PROCP       
+  CBRT        R1MACH      R9PAK       R9UPAK      
+  CBUNI       CUNI1       CUNI2       R1MACH      
+  CBUNK       CUNK1       CUNK2       
+  CCBRT       CARG        CBRT        
+  CCHDC       CAXPY       CSWAP       
+  CCHDD       CDOTC       SCNRM2      
+  CCHEX       CROTG       
+  CCHUD       CROTG       
+  CCMPB       CPADD       INXCB       R1MACH      TEVLC       
+  CCOPY       (NONE)      
+  CCOSH       (NONE)      
+  CCOT        R1MACH      XERCLR      XERMSG      
+  CDCDOT      (NONE)      
+  CDCOR       CGBSL       CGESL       SCNRM2      
+  CDCST       (NONE)      
+  CDIV        (NONE)      
+  CDNTL       CDCST       CDSCL       CGBFA       CGBSL       CGEFA       
+              CGESL       SCNRM2      
+  CDNTP       (NONE)      
+  CDOTC       (NONE)      
+  CDOTU       (NONE)      
+  CDPSC       (NONE)      
+  CDPST       CGBFA       CGEFA       SCNRM2      
+  CDRIV1      CDRIV3      XERMSG      
+  CDRIV2      CDRIV3      XERMSG      
+  CDRIV3      CDNTP       CDSTP       CDZRO       CGBFA       CGBSL       
+              CGEFA       CGESL       R1MACH      SCNRM2      XERMSG      
+  CDSCL       (NONE)      
+  CDSTP       CDCOR       CDCST       CDNTL       CDPSC       CDPST       
+              CDSCL       SCNRM2      
+  CDZRO       CDNTP       
+  CEXPRL      R1MACH      
+  CFFTB       CFFTB1      
+  CFFTB1      PASSB       PASSB2      PASSB3      PASSB4      PASSB5      
+  CFFTF       CFFTF1      
+  CFFTF1      PASSF       PASSF2      PASSF3      PASSF4      PASSF5      
+  CFFTI       CFFTI1      
+  CFFTI1      (NONE)      
+  CFOD        (NONE)      
+  CG          CBABK2      CBAL        COMQR       COMQR2      CORTH       
+  CGAMMA      CLNGAM      
+  CGAMR       CLNGAM      XERCLR      XGETF       XSETF       
+  CGBCO       CAXPY       CDOTC       CGBFA       CSSCAL      SCASUM      
+  CGBDI       (NONE)      
+  CGBFA       CAXPY       CSCAL       ICAMAX      
+  CGBMV       LSAME       XERBLA      
+  CGBSL       CAXPY       CDOTC       
+  CGECO       CAXPY       CDOTC       CGEFA       CSSCAL      SCASUM      
+  CGEDI       CAXPY       CSCAL       CSWAP       
+  CGEEV       CBABK2      CBAL        COMQR       COMQR2      CORTH       
+              SCOPY       XERMSG      
+  CGEFA       CAXPY       CSCAL       ICAMAX      
+  CGEFS       CGECO       CGESL       R1MACH      XERMSG      
+  CGEIR       CCOPY       CDCDOT      CGEFA       CGESL       R1MACH      
+              SCASUM      XERMSG      
+  CGEMM       LSAME       XERBLA      
+  CGEMV       LSAME       XERBLA      
+  CGERC       XERBLA      
+  CGERU       XERBLA      
+  CGESL       CAXPY       CDOTC       
+  CGTSL       (NONE)      
+  CH          HTRIBK      HTRIDI      TQL2        TQLRAT      
+  CHBMV       LSAME       XERBLA      
+  CHEMM       LSAME       XERBLA      
+  CHEMV       LSAME       XERBLA      
+  CHER        LSAME       XERBLA      
+  CHER2       LSAME       XERBLA      
+  CHER2K      LSAME       XERBLA      
+  CHERK       LSAME       XERBLA      
+  CHFCM       R1MACH      
+  CHFDV       XERMSG      
+  CHFEV       XERMSG      
+  CHFIE       (NONE)      
+  CHICO       CAXPY       CDOTC       CHIFA       CSSCAL      SCASUM      
+  CHIDI       CAXPY       CCOPY       CDOTC       CSWAP       
+  CHIEV       HTRIBK      HTRIDI      IMTQL2      SCOPY       SCOPYM      
+              TQLRAT      XERMSG      
+  CHIFA       CAXPY       CSWAP       ICAMAX      
+  CHISL       CAXPY       CDOTC       
+  CHKDER      R1MACH      
+  CHKPR4      (NONE)      
+  CHKPRM      (NONE)      
+  CHKSN4      (NONE)      
+  CHKSNG      (NONE)      
+  CHPCO       CAXPY       CDOTC       CHPFA       CSSCAL      SCASUM      
+  CHPDI       CAXPY       CCOPY       CDOTC       CSWAP       
+  CHPFA       CAXPY       CSWAP       ICAMAX      
+  CHPMV       LSAME       XERBLA      
+  CHPR        LSAME       XERBLA      
+  CHPR2       LSAME       XERBLA      
+  CHPSL       CAXPY       CDOTC       
+  CHU         EXPREL      GAMMA       GAMR        POCH        POCH1       
+              R1MACH      R9CHU       XERMSG      
+  CINVIT      CDIV        PYTHAG      
+  CKSCL       CUCHK       
+  CLBETA      CLNGAM      XERMSG      
+  CLNGAM      C9LGMC      CARG        CLNREL      R1MACH      XERMSG      
+  CLNREL      ALNREL      CARG        R1MACH      XERMSG      
+  CLOG10      (NONE)      
+  CMGNBN      CMPOSD      CMPOSN      CMPOSP      
+  CMLRI       GAMLN       R1MACH      
+  CMPCSG      PIMACH      
+  CMPOSD      C1MERG      CMPCSG      CMPTRX      
+  CMPOSN      C1MERG      CMPCSG      CMPTR3      CMPTRX      
+  CMPOSP      CMPOSD      CMPOSN      
+  CMPTR3      (NONE)      
+  CMPTRX      (NONE)      
+  CNBCO       CAXPY       CDOTC       CNBFA       CSSCAL      SCASUM      
+  CNBDI       (NONE)      
+  CNBFA       CAXPY       CSCAL       CSWAP       ICAMAX      
+  CNBFS       CNBCO       CNBSL       R1MACH      XERMSG      
+  CNBIR       CCOPY       CDCDOT      CNBFA       CNBSL       R1MACH      
+              SCASUM      XERMSG      
+  CNBSL       CAXPY       CDOTC       
+  COMBAK      (NONE)      
+  COMHES      CDIV        
+  COMLR       CDIV        CSROOT      
+  COMLR2      CDIV        CSROOT      
+  COMPB       INDXB       PPADD       R1MACH      TEVLS       
+  COMQR       CDIV        CSROOT      PYTHAG      
+  COMQR2      CDIV        CSROOT      PYTHAG      
+  CORTB       (NONE)      
+  CORTH       PYTHAG      
+  COSDG       (NONE)      
+  COSGEN      PIMACH      
+  COSQB       COSQB1      
+  COSQB1      RFFTB       
+  COSQF       COSQF1      
+  COSQF1      RFFTF       
+  COSQI       RFFTI       
+  COST        RFFTF       
+  COSTI       RFFTI       
+  COT         CSEVL       INITS       R1MACH      XERMSG      
+  CPADD       BCRH        PGSF        PPGSF       PPPSF       
+  CPBCO       CAXPY       CDOTC       CPBFA       CSSCAL      SCASUM      
+  CPBDI       (NONE)      
+  CPBFA       CDOTC       
+  CPBSL       CAXPY       CDOTC       
+  CPEVL       I1MACH      
+  CPEVLR      (NONE)      
+  CPOCO       CAXPY       CDOTC       CPOFA       CSSCAL      SCASUM      
+  CPODI       CAXPY       CSCAL       
+  CPOFA       CDOTC       
+  CPOFS       CPOCO       CPOSL       R1MACH      XERMSG      
+  CPOIR       CCOPY       CPOFA       CPOSL       DCDOT       R1MACH      
+              SCASUM      XERMSG      
+  CPOSL       CAXPY       CDOTC       
+  CPPCO       CAXPY       CDOTC       CPPFA       CSSCAL      SCASUM      
+  CPPDI       CAXPY       CSCAL       
+  CPPFA       CDOTC       
+  CPPSL       CAXPY       CDOTC       
+  CPQR79      COMQR       XERMSG      
+  CPROC       (NONE)      
+  CPROCP      (NONE)      
+  CPROD       (NONE)      
+  CPRODP      (NONE)      
+  CPSI        CCOT        R1MACH      XERMSG      
+  CPTSL       (NONE)      
+  CPZERO      CPEVL       
+  CQRDC       CAXPY       CDOTC       CSCAL       CSWAP       SCNRM2      
+  CQRSL       CAXPY       CCOPY       CDOTC       
+  CRATI       (NONE)      
+  CROTG       (NONE)      
+  CS1S2       (NONE)      
+  CSCAL       (NONE)      
+  CSCALE      SDOT        
+  CSERI       CUCHK       GAMLN       R1MACH      
+  CSEVL       R1MACH      XERMSG      
+  CSHCH       (NONE)      
+  CSICO       CAXPY       CDOTU       CSIFA       CSSCAL      SCASUM      
+  CSIDI       CAXPY       CCOPY       CDOTU       CSWAP       
+  CSIFA       CAXPY       CSWAP       ICAMAX      
+  CSINH       (NONE)      
+  CSISL       CAXPY       CDOTU       
+  CSPCO       CAXPY       CDOTU       CSPFA       CSSCAL      SCASUM      
+  CSPDI       CAXPY       CCOPY       CDOTU       CSWAP       
+  CSPFA       CAXPY       CSWAP       ICAMAX      
+  CSPSL       CAXPY       CDOTU       
+  CSROOT      PYTHAG      
+  CSROT       (NONE)      
+  CSSCAL      (NONE)      
+  CSVDC       CAXPY       CDOTC       CSCAL       CSROT       CSWAP       
+              SCNRM2      SROTG       
+  CSWAP       (NONE)      
+  CSYMM       LSAME       XERBLA      
+  CSYR2K      LSAME       XERBLA      
+  CSYRK       LSAME       XERBLA      
+  CTAN        R1MACH      XERCLR      XERMSG      
+  CTANH       CTAN        
+  CTBMV       LSAME       XERBLA      
+  CTBSV       LSAME       XERBLA      
+  CTPMV       LSAME       XERBLA      
+  CTPSV       LSAME       XERBLA      
+  CTRCO       CAXPY       CSSCAL      SCASUM      
+  CTRDI       CAXPY       CSCAL       
+  CTRMM       LSAME       XERBLA      
+  CTRMV       LSAME       XERBLA      
+  CTRSL       CAXPY       CDOTC       
+  CTRSM       LSAME       XERBLA      
+  CTRSV       LSAME       XERBLA      
+  CUCHK       (NONE)      
+  CUNHJ       R1MACH      
+  CUNI1       CUCHK       CUNIK       CUOIK       R1MACH      
+  CUNI2       CAIRY       CUCHK       CUNHJ       CUOIK       R1MACH      
+  CUNIK       R1MACH      
+  CUNK1       CS1S2       CUCHK       CUNIK       R1MACH      
+  CUNK2       CAIRY       CS1S2       CUCHK       CUNHJ       R1MACH      
+  CUOIK       CUCHK       CUNHJ       CUNIK       R1MACH      
+  CV          BSPLVN      SDOT        
+  CWRSK       CBKNU       CRATI       R1MACH      
+  D1MACH      XERMSG      
+  D1MERG      DCOPY       
+  D1MPYQ      (NONE)      
+  D1UPDT      D1MACH      
+  D9AIMP      D1MACH      DCSEVL      INITDS      XERMSG      
+  D9ATN1      D1MACH      DCSEVL      INITDS      XERMSG      
+  D9B0MP      D1MACH      DCSEVL      INITDS      XERMSG      
+  D9B1MP      D1MACH      DCSEVL      INITDS      XERMSG      
+  D9CHU       D1MACH      XERMSG      
+  D9GMIC      D1MACH      DLNGAM      XERMSG      
+  D9GMIT      D1MACH      DLNGAM      XERMSG      
+  D9KNUS      D1MACH      DCSEVL      DGAMMA      INITDS      XERMSG      
+  D9LGIC      D1MACH      XERMSG      
+  D9LGIT      D1MACH      XERMSG      
+  D9LGMC      D1MACH      DCSEVL      INITDS      XERMSG      
+  D9LN2R      D1MACH      DCSEVL      INITDS      XERMSG      
+  D9PAK       D1MACH      D9UPAK      I1MACH      XERMSG      
+  D9UPAK      (NONE)      
+  DACOSH      D1MACH      XERMSG      
+  DAI         D1MACH      D9AIMP      DAIE        DCSEVL      INITDS      
+              XERMSG      
+  DAIE        D1MACH      D9AIMP      DCSEVL      INITDS      
+  DASINH      D1MACH      DCSEVL      INITDS      
+  DASUM       (NONE)      
+  DASYIK      D1MACH      
+  DASYJY      D1MACH      I1MACH      
+  DATANH      D1MACH      DCSEVL      INITDS      XERMSG      
+  DAVINT      XERMSG      
+  DAWS        CSEVL       INITS       R1MACH      XERMSG      
+  DAXPY       (NONE)      
+  DBCG        D1MACH      DAXPY       DCOPY       DDOT        ISDBCG      
+  DBDIFF      (NONE)      
+  DBESI       D1MACH      DASYIK      DLNGAM      I1MACH      XERMSG      
+  DBESI0      D1MACH      DBSI0E      DCSEVL      INITDS      XERMSG      
+  DBESI1      D1MACH      DBSI1E      DCSEVL      INITDS      XERMSG      
+  DBESJ       D1MACH      DASYJY      DJAIRY      DLNGAM      I1MACH      
+              XERMSG      
+  DBESJ0      D1MACH      D9B0MP      DCSEVL      INITDS      
+  DBESJ1      D1MACH      D9B1MP      DCSEVL      INITDS      XERMSG      
+  DBESK       D1MACH      DASYIK      DBESK0      DBESK1      DBSK0E      
+              DBSK1E      DBSKNU      I1MACH      XERMSG      
+  DBESK0      D1MACH      DBESI0      DBSK0E      DCSEVL      INITDS      
+              XERMSG      
+  DBESK1      D1MACH      DBESI1      DBSK1E      DCSEVL      INITDS      
+              XERMSG      
+  DBESKS      D1MACH      DBSKES      XERMSG      
+  DBESY       D1MACH      DASYJY      DBESY0      DBESY1      DBSYNU      
+              DYAIRY      I1MACH      XERMSG      
+  DBESY0      D1MACH      D9B0MP      DBESJ0      DCSEVL      INITDS      
+              XERMSG      
+  DBESY1      D1MACH      D9B1MP      DBESJ1      DCSEVL      INITDS      
+              XERMSG      
+  DBETA       D1MACH      DGAMLM      DGAMMA      DLBETA      XERMSG      
+  DBETAI      D1MACH      DLBETA      XERMSG      
+  DBFQAD      D1MACH      DBSGQ8      DINTRV      XERMSG      
+  DBHIN       (NONE)      
+  DBI         D1MACH      D9AIMP      DBIE        DCSEVL      INITDS      
+              XERMSG      
+  DBIE        D1MACH      D9AIMP      DCSEVL      INITDS      
+  DBINOM      D1MACH      D9LGMC      DLNREL      XERMSG      
+  DBINT4      D1MACH      DBNFAC      DBNSLV      DBSPVD      XERMSG      
+  DBINTK      DBNFAC      DBNSLV      DBSPVN      XERMSG      
+  DBKIAS      D1MACH      DBDIFF      DGAMRN      DHKSEQ      
+  DBKISR      D1MACH      DPSIXN      
+  DBKSOL      DDOT        
+  DBNDAC      DH12        XERMSG      
+  DBNDSL      XERMSG      
+  DBNFAC      (NONE)      
+  DBNSLV      (NONE)      
+  DBOCLS      D1MACH      DASUM       DBOLS       DCOPY       DDOT        
+              DNRM2       DSCAL       XERMSG      
+  DBOLS       DBOLSM      DCOPY       DNRM2       DROT        DROTG       
+              IDAMAX      XERMSG      
+  DBOLSM      D1MACH      DAXPY       DCOPY       DDOT        DMOUT       
+              DNRM2       DROT        DROTG       DSWAP       DVOUT       
+              IVOUT       XERMSG      
+  DBSGQ8      D1MACH      DBVALU      I1MACH      XERMSG      
+  DBSI0E      D1MACH      DCSEVL      INITDS      
+  DBSI1E      D1MACH      DCSEVL      INITDS      XERMSG      
+  DBSK0E      D1MACH      DBESI0      DCSEVL      INITDS      XERMSG      
+  DBSK1E      D1MACH      DBESI1      DCSEVL      INITDS      XERMSG      
+  DBSKES      D1MACH      D9KNUS      XERMSG      
+  DBSKIN      D1MACH      DBKIAS      DBKISR      DEXINT      DGAMRN      
+              I1MACH      
+  DBSKNU      D1MACH      DGAMMA      I1MACH      XERMSG      
+  DBSPDR      XERMSG      
+  DBSPEV      DBSPVN      DINTRV      XERMSG      
+  DBSPPP      DBSPDR      DBSPEV      XERMSG      
+  DBSPVD      DBSPVN      XERMSG      
+  DBSPVN      XERMSG      
+  DBSQAD      DBVALU      DINTRV      XERMSG      
+  DBSYNU      D1MACH      DGAMMA      XERMSG      
+  DBVALU      DINTRV      XERMSG      
+  DBVDER      (NONE)      
+  DBVPOR      DBKSOL      DCOEF       DDOT        DLSSUD      DRKFAB      
+              DSTOR1      DSTWAY      DVECS       
+  DBVSUP      DEXBVP      DMACON      XERMSG      
+  DCBRT       D1MACH      D9PAK       D9UPAK      
+  DCDOT       (NONE)      
+  DCFOD       (NONE)      
+  DCG         D1MACH      DAXPY       DCOPY       DDOT        ISDCG       
+  DCGN        D1MACH      DAXPY       DCOPY       DDOT        ISDCGN      
+  DCGS        D1MACH      DAXPY       DDOT        ISDCGS      
+  DCHDC       DAXPY       DSWAP       
+  DCHDD       DDOT        DNRM2       
+  DCHEX       DROTG       
+  DCHFCM      D1MACH      
+  DCHFDV      XERMSG      
+  DCHFEV      XERMSG      
+  DCHFIE      (NONE)      
+  DCHKW       D1MACH      XERMSG      
+  DCHU        D1MACH      D9CHU       DEXPRL      DGAMMA      DGAMR       
+              DPOCH       DPOCH1      XERMSG      
+  DCHUD       DROTG       
+  DCKDER      D1MACH      
+  DCOEF       DDOT        DSUDS       XGETF       XSETF       
+  DCOPY       (NONE)      
+  DCOPYM      (NONE)      
+  DCOSDG      (NONE)      
+  DCOT        D1MACH      DCSEVL      INITDS      XERMSG      
+  DCOV        DENORM      DFDJC3      DQRFAC      DWUPDT      XERMSG      
+  DCPPLT      (NONE)      
+  DCSCAL      DDOT        
+  DCSEVL      D1MACH      XERMSG      
+  DCV         DDOT        DFSPVN      
+  DDAINI      DDAJAC      DDANRM      DDASLV      
+  DDAJAC      DGBFA       DGEFA       
+  DDANRM      (NONE)      
+  DDASLV      DGBSL       DGESL       
+  DDASSL      D1MACH      DDAINI      DDANRM      DDASTP      DDATRP      
+              DDAWTS      XERMSG      
+  DDASTP      DDAJAC      DDANRM      DDASLV      DDATRP      
+  DDATRP      (NONE)      
+  DDAWS       D1MACH      DCSEVL      INITDS      XERMSG      
+  DDAWTS      (NONE)      
+  DDCOR       DGBSL       DGESL       DNRM2       
+  DDCST       (NONE)      
+  DDEABM      DDES        XERMSG      
+  DDEBDF      DLSOD       XERMSG      
+  DDERKF      DRKFS       XERMSG      
+  DDES        D1MACH      DINTP       DSTEPS      XERMSG      
+  DDNTL       DDCST       DDSCL       DGBFA       DGBSL       DGEFA       
+              DGESL       DNRM2       
+  DDNTP       (NONE)      
+  DDOGLG      D1MACH      DENORM      
+  DDOT        (NONE)      
+  DDPSC       (NONE)      
+  DDPST       DGBFA       DGEFA       DNRM2       
+  DDRIV1      DDRIV3      XERMSG      
+  DDRIV2      DDRIV3      XERMSG      
+  DDRIV3      D1MACH      DDNTP       DDSTP       DDZRO       DGBFA       
+              DGBSL       DGEFA       DGESL       DNRM2       XERMSG      
+  DDSCL       (NONE)      
+  DDSTP       DDCOR       DDCST       DDNTL       DDPSC       DDPST       
+              DDSCL       DNRM2       
+  DDZRO       DDNTP       
+  DE1         D1MACH      DCSEVL      INITDS      XERMSG      
+  DEABM       DES         XERMSG      
+  DEBDF       LSOD        XERMSG      
+  DEFC        DEFCMN      
+  DEFCMN      DBNDAC      DBNDSL      DCOPY       DFSPVN      DSCAL       
+              DSORT       XERMSG      
+  DEFE4       DX4         DY4         
+  DEFEHL      (NONE)      
+  DEFER       DX          DY          
+  DEI         DE1         
+  DENORM      (NONE)      
+  DERF        D1MACH      DCSEVL      DERFC       INITDS      
+  DERFC       D1MACH      DCSEVL      INITDS      XERMSG      
+  DERKF       DERKFS      XERMSG      
+  DERKFS      DEFEHL      HSTART      HVNRM       R1MACH      XERMSG      
+  DES         R1MACH      SINTRP      STEPS       XERMSG      
+  DEXBVP      DBVPOR      XERMSG      
+  DEXINT      D1MACH      DPSIXN      I1MACH      
+  DEXPRL      D1MACH      
+  DFAC        D9LGMC      DGAMLM      XERMSG      
+  DFC         DFCMN       
+  DFCMN       DAXPY       DBNDAC      DBNDSL      DCOPY       DFSPVD      
+              DFSPVN      DLSEI       DSCAL       DSORT       XERMSG      
+  DFDJC1      D1MACH      
+  DFDJC3      D1MACH      
+  DFEHL       (NONE)      
+  DFSPVD      DFSPVN      
+  DFSPVN      (NONE)      
+  DFULMT      XERMSG      
+  DFZERO      D1MACH      
+  DGAMI       DGAMIT      DLNGAM      XERMSG      
+  DGAMIC      D1MACH      D9GMIC      D9GMIT      D9LGIC      D9LGIT      
+              DLGAMS      DLNGAM      XERCLR      XERMSG      
+  DGAMIT      D1MACH      D9GMIT      D9LGIC      D9LGIT      DGAMR       
+              DLGAMS      DLNGAM      XERCLR      XERMSG      
+  DGAMLM      D1MACH      XERMSG      
+  DGAMLN      D1MACH      I1MACH      
+  DGAMMA      D1MACH      D9LGMC      DCSEVL      DGAMLM      INITDS      
+              XERMSG      
+  DGAMR       DGAMMA      DLGAMS      XERCLR      XGETF       XSETF       
+  DGAMRN      D1MACH      I1MACH      
+  DGAUS8      D1MACH      I1MACH      XERMSG      
+  DGBCO       DASUM       DAXPY       DDOT        DGBFA       DSCAL       
+  DGBDI       (NONE)      
+  DGBFA       DAXPY       DSCAL       IDAMAX      
+  DGBMV       LSAME       XERBLA      
+  DGBSL       DAXPY       DDOT        
+  DGECO       DASUM       DAXPY       DDOT        DGEFA       DSCAL       
+  DGEDI       DAXPY       DSCAL       DSWAP       
+  DGEFA       DAXPY       DSCAL       IDAMAX      
+  DGEFS       D1MACH      DGECO       DGESL       XERMSG      
+  DGEMM       LSAME       XERBLA      
+  DGEMV       LSAME       XERBLA      
+  DGER        XERBLA      
+  DGESL       DAXPY       DDOT        
+  DGLSS       DLLSIA      DULSIA      
+  DGMRES      D1MACH      DCOPY       DNRM2       DPIGMR      
+  DGTSL       (NONE)      
+  DH12        DAXPY       DDOT        DSWAP       
+  DHELS       DAXPY       
+  DHEQR       (NONE)      
+  DHFTI       D1MACH      DH12        XERMSG      
+  DHKSEQ      D1MACH      I1MACH      
+  DHSTRT      DHVNRM      
+  DHVNRM      (NONE)      
+  DINTP       (NONE)      
+  DINTRV      (NONE)      
+  DINTYD      (NONE)      
+  DIR         D1MACH      ISDIR       
+  DJAIRY      (NONE)      
+  DLBETA      D9LGMC      DGAMMA      DLNGAM      DLNREL      XERMSG      
+  DLGAMS      DLNGAM      
+  DLI         DEI         XERMSG      
+  DLLSIA      D1MACH      DU11LS      DU12LS      XERMSG      
+  DLLTI2      (NONE)      
+  DLNGAM      D1MACH      D9LGMC      DGAMMA      XERMSG      
+  DLNREL      D1MACH      DCSEVL      INITDS      XERMSG      
+  DLPDOC      (NONE)      
+  DLPDP       DCOPY       DDOT        DNRM2       DSCAL       DWNNLS      
+  DLSEI       D1MACH      DASUM       DAXPY       DCOPY       DDOT        
+              DH12        DLSI        DNRM2       DSCAL       DSWAP       
+              XERMSG      
+  DLSI        D1MACH      DASUM       DAXPY       DCOPY       DDOT        
+              DH12        DHFTI       DLPDP       DSCAL       DSWAP       
+  DLSOD       D1MACH      DHSTRT      DINTYD      DSTOD       DVNRMS      
+              XERMSG      
+  DLSSUD      D1MACH      DDOT        DOHTRL      DORTHR      J4SAVE      
+              XERMAX      XERMSG      XGETF       XSETF       
+  DMACON      D1MACH      
+  DMGSBV      DDOT        DPRVEC      
+  DMOUT       I1MACH      
+  DMPAR       D1MACH      DENORM      DQRSLV      
+  DNBCO       DASUM       DAXPY       DDOT        DNBFA       DSCAL       
+  DNBDI       (NONE)      
+  DNBFA       DAXPY       DSCAL       DSWAP       IDAMAX      
+  DNBFS       D1MACH      DNBCO       DNBSL       XERMSG      
+  DNBSL       DAXPY       DDOT        
+  DNLS1       D1MACH      DCKDER      DENORM      DFDJC3      DMPAR       
+              DQRFAC      DWUPDT      XERMSG      
+  DNLS1E      DNLS1       XERMSG      
+  DNRM2       (NONE)      
+  DNSQ        D1MACH      D1MPYQ      D1UPDT      DDOGLG      DENORM      
+              DFDJC1      DQFORM      DQRFAC      XERMSG      
+  DNSQE       DNSQ        XERMSG      
+  DOGLEG      ENORM       R1MACH      
+  DOHTRL      DDOT        
+  DOMN        D1MACH      DAXPY       DCOPY       DDOT        ISDOMN      
+  DORTH       DAXPY       DDOT        DNRM2       
+  DORTHR      D1MACH      DCSCAL      DDOT        XERMSG      
+  DP1VLU      XERMSG      
+  DPBCO       DASUM       DAXPY       DDOT        DPBFA       DSCAL       
+  DPBDI       (NONE)      
+  DPBFA       DDOT        
+  DPBSL       DAXPY       DDOT        
+  DPCHBS      DPCHKT      XERMSG      
+  DPCHCE      DPCHDF      DPCHST      XERMSG      
+  DPCHCI      DPCHST      
+  DPCHCM      DCHFCM      XERMSG      
+  DPCHCS      DPCHST      DPCHSW      
+  DPCHDF      XERMSG      
+  DPCHFD      DCHFDV      XERMSG      
+  DPCHFE      DCHFEV      XERMSG      
+  DPCHIA      DCHFIE      DPCHID      XERMSG      
+  DPCHIC      DPCHCE      DPCHCI      DPCHCS      XERMSG      
+  DPCHID      XERMSG      
+  DPCHIM      DPCHST      XERMSG      
+  DPCHKT      (NONE)      
+  DPCHNG      DPRWPG      IDLOC       XERMSG      
+  DPCHSP      DPCHDF      XERMSG      
+  DPCHST      (NONE)      
+  DPCHSW      D1MACH      XERMSG      
+  DPCOEF      DP1VLU      
+  DPFQAD      D1MACH      DINTRV      DPPGQ8      XERMSG      
+  DPIGMR      DAXPY       DCOPY       DHELS       DHEQR       DNRM2       
+              DORTH       DRLCAL      DSCAL       ISDGMR      
+  DPINCW      DCOPY       DDOT        DPRWPG      IDLOC       LA05BD      
+  DPINIT      DASUM       DCOPY       DPNNZR      
+  DPINTM      XERMSG      
+  DPJAC       DGBFA       DGEFA       DVNRMS      
+  DPLINT      XERMSG      
+  DPLPCE      DASUM       DCOPY       DPRWPG      IDLOC       LA05BD      
+  DPLPDM      DASUM       DPNNZR      LA05AD      XERMSG      
+  DPLPFE      DASUM       DCOPY       DPRWPG      IDLOC       LA05BD      
+  DPLPFL      (NONE)      
+  DPLPMN      DASUM       DCOPY       DDOT        DPINCW      DPINIT      
+              DPINTM      DPLPCE      DPLPDM      DPLPFE      DPLPFL      
+              DPLPMU      DPLPUP      DPNNZR      DPOPT       DPRWPG      
+              DVOUT       IVOUT       LA05BD      SCLOSM      XERMSG      
+  DPLPMU      DASUM       DCOPY       DDOT        DPLPDM      DPNNZR      
+              DPRWPG      IDLOC       LA05BD      LA05CD      XERMSG      
+  DPLPUP      DPCHNG      DPNNZR      XERMSG      
+  DPNNZR      IDLOC       XERMSG      
+  DPOCH       D9LGMC      DFAC        DGAMMA      DGAMR       DLGAMS      
+              DLNREL      XERMSG      
+  DPOCH1      D1MACH      DCOT        DEXPRL      DPOCH       DPSI        
+              XERMSG      
+  DPOCO       DASUM       DAXPY       DDOT        DPOFA       DSCAL       
+  DPODI       DAXPY       DSCAL       
+  DPOFA       DDOT        
+  DPOFS       D1MACH      DPOCO       DPOSL       XERMSG      
+  DPOLCF      (NONE)      
+  DPOLFT      DP1VLU      XERMSG      
+  DPOLVL      (NONE)      
+  DPOPT       D1MACH      XERMSG      
+  DPOSL       DAXPY       DDOT        
+  DPPCO       DASUM       DAXPY       DDOT        DPPFA       DSCAL       
+  DPPDI       DAXPY       DSCAL       
+  DPPERM      XERMSG      
+  DPPFA       DDOT        
+  DPPGQ8      D1MACH      DPPVAL      I1MACH      XERMSG      
+  DPPQAD      DINTRV      XERMSG      
+  DPPSL       DAXPY       DDOT        
+  DPPVAL      DINTRV      XERMSG      
+  DPRVEC      DDOT        
+  DPRWPG      DPRWVR      XERMSG      
+  DPRWVR      DREADP      DWRITP      SOPENM      
+  DPSI        D1MACH      DCOT        DCSEVL      INITDS      XERMSG      
+  DPSIFN      D1MACH      I1MACH      
+  DPSIXN      D1MACH      
+  DPSORT      XERMSG      
+  DPTSL       (NONE)      
+  DQAG        DQAGE       XERMSG      
+  DQAGE       D1MACH      DQK15       DQK21       DQK31       DQK41       
+              DQK51       DQK61       DQPSRT      
+  DQAGI       DQAGIE      XERMSG      
+  DQAGIE      D1MACH      DQELG       DQK15I      DQPSRT      
+  DQAGP       DQAGPE      XERMSG      
+  DQAGPE      D1MACH      DQELG       DQK21       DQPSRT      
+  DQAGS       DQAGSE      XERMSG      
+  DQAGSE      D1MACH      DQELG       DQK21       DQPSRT      
+  DQAWC       DQAWCE      XERMSG      
+  DQAWCE      D1MACH      DQC25C      DQPSRT      
+  DQAWF       DQAWFE      XERMSG      
+  DQAWFE      D1MACH      DQAGIE      DQAWOE      DQELG       
+  DQAWO       DQAWOE      XERMSG      
+  DQAWOE      D1MACH      DQC25F      DQELG       DQPSRT      
+  DQAWS       DQAWSE      XERMSG      
+  DQAWSE      D1MACH      DQC25S      DQMOMO      DQPSRT      
+  DQC25C      DQCHEB      DQK15W      DQWGTC      
+  DQC25F      D1MACH      DGTSL       DQCHEB      DQK15W      DQWGTF      
+  DQC25S      DQCHEB      DQK15W      DQWGTS      
+  DQCHEB      (NONE)      
+  DQDOTA      MPADD       MPBLAS      MPCDM       MPCMD       MPMUL       
+  DQDOTI      MPADD       MPBLAS      MPCDM       MPCMD       MPMUL       
+  DQELG       D1MACH      
+  DQFORM      (NONE)      
+  DQK15       D1MACH      
+  DQK15I      D1MACH      
+  DQK15W      D1MACH      
+  DQK21       D1MACH      
+  DQK31       D1MACH      
+  DQK41       D1MACH      
+  DQK51       D1MACH      
+  DQK61       D1MACH      
+  DQMOMO      (NONE)      
+  DQNC79      D1MACH      I1MACH      XERMSG      
+  DQNG        D1MACH      XERMSG      
+  DQPSRT      (NONE)      
+  DQRDC       DAXPY       DDOT        DNRM2       DSCAL       DSWAP       
+  DQRFAC      D1MACH      DENORM      
+  DQRSL       DAXPY       DCOPY       DDOT        
+  DQRSLV      (NONE)      
+  DQWGTC      (NONE)      
+  DQWGTF      (NONE)      
+  DQWGTS      (NONE)      
+  DRC         D1MACH      XERMSG      
+  DRC3JJ      D1MACH      XERMSG      
+  DRC3JM      D1MACH      XERMSG      
+  DRC6J       D1MACH      XERMSG      
+  DRD         D1MACH      XERMSG      
+  DREADP      XERMSG      
+  DREORT      DDOT        DMGSBV      DSTOR1      DSTWAY      
+  DRF         D1MACH      XERMSG      
+  DRJ         D1MACH      DRC         XERMSG      
+  DRKFAB      DBVDER      DDEABM      DDERKF      DREORT      DSTOR1      
+  DRKFS       D1MACH      DFEHL       DHSTRT      DHVNRM      XERMSG      
+  DRLCAL      DCOPY       DSCAL       
+  DROT        (NONE)      
+  DROTG       (NONE)      
+  DROTM       (NONE)      
+  DROTMG      (NONE)      
+  DRSCO       (NONE)      
+  DS2LT       (NONE)      
+  DS2Y        QS2I1D      
+  DSBMV       LSAME       XERBLA      
+  DSCAL       (NONE)      
+  DSD2S       (NONE)      
+  DSDBCG      DBCG        DCHKW       DS2Y        DSDI        DSDS        
+              DSMTV       DSMV        
+  DSDCG       DCG         DCHKW       DS2Y        DSDI        DSDS        
+              DSMV        
+  DSDCGN      DCGN        DCHKW       DS2Y        DSD2S       DSDI        
+              DSMTV       DSMV        
+  DSDCGS      DCGS        DCHKW       DS2Y        DSDI        DSDS        
+              DSMV        
+  DSDGMR      DCHKW       DGMRES      DS2Y        DSDI        DSDS        
+              DSMV        
+  DSDI        (NONE)      
+  DSDOMN      DCHKW       DOMN        DS2Y        DSDI        DSDS        
+              DSMV        
+  DSDOT       (NONE)      
+  DSDS        (NONE)      
+  DSDSCL      (NONE)      
+  DSGS        DCHKW       DIR         DS2LT       DS2Y        DSLI        
+              DSMV        
+  DSICCG      DCG         DCHKW       DS2Y        DSICS       DSLLTI      
+              DSMV        XERMSG      
+  DSICO       DASUM       DAXPY       DDOT        DSCAL       DSIFA       
+  DSICS       XERMSG      
+  DSIDI       DAXPY       DCOPY       DDOT        DSWAP       
+  DSIFA       DAXPY       DSWAP       IDAMAX      
+  DSILUR      DCHKW       DIR         DS2Y        DSILUS      DSLUI       
+              DSMV        
+  DSILUS      (NONE)      
+  DSINDG      (NONE)      
+  DSISL       DAXPY       DDOT        
+  DSJAC       DCHKW       DIR         DS2Y        DSDI        DSDS        
+              DSMV        
+  DSLI        DSLI2       
+  DSLI2       (NONE)      
+  DSLLTI      DLLTI2      
+  DSLUBC      DBCG        DCHKW       DS2Y        DSILUS      DSLUI       
+              DSLUTI      DSMTV       DSMV        
+  DSLUCN      DCGN        DCHKW       DS2Y        DSILUS      DSMMTI      
+              DSMTV       DSMV        
+  DSLUCS      DCGS        DCHKW       DS2Y        DSILUS      DSLUI       
+              DSMV        
+  DSLUGM      DCHKW       DGMRES      DS2Y        DSILUS      DSLUI       
+              DSMV        
+  DSLUI       DSLUI2      
+  DSLUI2      (NONE)      
+  DSLUI4      (NONE)      
+  DSLUOM      DCHKW       DOMN        DS2Y        DSILUS      DSLUI       
+              DSMV        
+  DSLUTI      DSLUI4      
+  DSLVS       DGBSL       DGESL       
+  DSMMI2      (NONE)      
+  DSMMTI      DSMMI2      
+  DSMTV       (NONE)      
+  DSMV        (NONE)      
+  DSORT       XERMSG      
+  DSOS        DSOSEQ      XERMSG      
+  DSOSEQ      D1MACH      DSOSSL      I1MACH      
+  DSOSSL      (NONE)      
+  DSPCO       DASUM       DAXPY       DDOT        DSCAL       DSPFA       
+  DSPDI       DAXPY       DCOPY       DDOT        DSWAP       
+  DSPENC      D1MACH      DCSEVL      INITDS      
+  DSPFA       DAXPY       DSWAP       IDAMAX      
+  DSPLP       DPLPMN      XERMSG      
+  DSPMV       LSAME       XERBLA      
+  DSPR        LSAME       XERBLA      
+  DSPR2       LSAME       XERBLA      
+  DSPSL       DAXPY       DDOT        
+  DSTEPS      D1MACH      DHSTRT      
+  DSTOD       DCFOD       DPJAC       DSLVS       DVNRMS      
+  DSTOR1      (NONE)      
+  DSTWAY      DSTOR1      
+  DSUDS       DLSSUD      
+  DSVCO       (NONE)      
+  DSVDC       DAXPY       DDOT        DNRM2       DROT        DROTG       
+              DSCAL       DSWAP       
+  DSWAP       (NONE)      
+  DSYMM       LSAME       XERBLA      
+  DSYMV       LSAME       XERBLA      
+  DSYR        LSAME       XERBLA      
+  DSYR2       LSAME       XERBLA      
+  DSYR2K      LSAME       XERBLA      
+  DSYRK       LSAME       XERBLA      
+  DTBMV       LSAME       XERBLA      
+  DTBSV       LSAME       XERBLA      
+  DTIN        (NONE)      
+  DTOUT       (NONE)      
+  DTPMV       LSAME       XERBLA      
+  DTPSV       LSAME       XERBLA      
+  DTRCO       DASUM       DAXPY       DSCAL       
+  DTRDI       DAXPY       DSCAL       
+  DTRMM       LSAME       XERBLA      
+  DTRMV       LSAME       XERBLA      
+  DTRSL       DAXPY       DDOT        
+  DTRSM       LSAME       XERBLA      
+  DTRSV       LSAME       XERBLA      
+  DU11LS      DAXPY       DDOT        DNRM2       DSCAL       DSWAP       
+              IDAMAX      ISWAP       XERMSG      
+  DU11US      DAXPY       DDOT        DNRM2       DSCAL       DSWAP       
+              IDAMAX      ISWAP       XERMSG      
+  DU12LS      DAXPY       DDOT        DNRM2       DSWAP       
+  DU12US      DAXPY       DDOT        DNRM2       DSWAP       
+  DULSIA      D1MACH      DU11US      DU12US      XERMSG      
+  DUSRMT      (NONE)      
+  DVECS       DMGSBV      
+  DVNRMS      (NONE)      
+  DVOUT       I1MACH      
+  DWNLIT      DCOPY       DH12        DROTM       DROTMG      DSCAL       
+              DSWAP       DWNLT1      DWNLT2      DWNLT3      IDAMAX      
+  DWNLSM      D1MACH      DASUM       DAXPY       DCOPY       DH12        
+              DNRM2       DROTM       DROTMG      DSCAL       DSWAP       
+              DWNLIT      IDAMAX      XERMSG      
+  DWNLT1      IDAMAX      
+  DWNLT2      (NONE)      
+  DWNLT3      DSWAP       
+  DWNNLS      DWNLSM      XERMSG      
+  DWRITP      XERMSG      
+  DWUPDT      (NONE)      
+  DX          (NONE)      
+  DX4         (NONE)      
+  DXADD       DXADJ       
+  DXADJ       XERMSG      
+  DXC210      XERMSG      
+  DXCON       DXADJ       DXC210      DXRED       
+  DXLCAL      DAXPY       DCOPY       DHELS       
+  DXLEGF      DXPMU       DXPMUP      DXPNRM      DXPQNU      DXQMU       
+              DXQNU       DXRED       DXSET       XERMSG      
+  DXNRMP      DXADD       DXADJ       DXRED       DXSET       XERMSG      
+  DXPMU       DXADD       DXADJ       DXPQNU      
+  DXPMUP      DXADJ       
+  DXPNRM      DXADJ       
+  DXPQNU      DXADD       DXADJ       DXPSI       
+  DXPSI       (NONE)      
+  DXQMU       DXADD       DXADJ       DXPQNU      
+  DXQNU       DXADD       DXADJ       DXPQNU      
+  DXRED       (NONE)      
+  DXSET       I1MACH      XERMSG      
+  DY          (NONE)      
+  DY4         (NONE)      
+  DYAIRY      (NONE)      
+  E1          CSEVL       INITS       R1MACH      XERMSG      
+  EFC         EFCMN       
+  EFCMN       BNDACC      BNDSOL      BSPLVN      SCOPY       SSCAL       
+              SSORT       XERMSG      
+  EI          E1          
+  EISDOC      (NONE)      
+  ELMBAK      (NONE)      
+  ELMHES      (NONE)      
+  ELTRAN      (NONE)      
+  ENORM       (NONE)      
+  ERF         CSEVL       ERFC        INITS       R1MACH      
+  ERFC        CSEVL       INITS       R1MACH      XERMSG      
+  EXBVP       BVPOR       XERMSG      
+  EXINT       I1MACH      PSIXN       R1MACH      
+  EXPREL      R1MACH      
+  EZFFT1      (NONE)      
+  EZFFTB      RFFTB       
+  EZFFTF      RFFTF       
+  EZFFTI      EZFFT1      
+  FAC         GAMLIM      R9LGMC      XERMSG      
+  FC          FCMN        
+  FCMN        BNDACC      BNDSOL      BSPLVD      BSPLVN      LSEI        
+              SAXPY       SCOPY       SSCAL       SSORT       XERMSG      
+  FDJAC1      R1MACH      
+  FDJAC3      R1MACH      
+  FDUMP       (NONE)      
+  FFTDOC      (NONE)      
+  FIGI        (NONE)      
+  FIGI2       (NONE)      
+  FULMAT      XERMSG      
+  FUNDOC      (NONE)      
+  FZERO       R1MACH      
+  GAMI        ALNGAM      GAMIT       XERMSG      
+  GAMIC       ALGAMS      ALNGAM      R1MACH      R9GMIC      R9GMIT      
+              R9LGIC      R9LGIT      XERCLR      XERMSG      
+  GAMIT       ALGAMS      ALNGAM      GAMR        R1MACH      R9GMIT      
+              R9LGIC      R9LGIT      XERCLR      XERMSG      
+  GAMLIM      R1MACH      XERMSG      
+  GAMLN       I1MACH      R1MACH      
+  GAMMA       CSEVL       GAMLIM      INITS       R1MACH      R9LGMC      
+              XERMSG      
+  GAMR        ALGAMS      GAMMA       XERCLR      XGETF       XSETF       
+  GAMRN       I1MACH      R1MACH      
+  GAUS8       I1MACH      R1MACH      XERMSG      
+  GENBUN      POISD2      POISN2      POISP2      
+  H12         SAXPY       SDOT        SSWAP       
+  HFTI        H12         R1MACH      XERMSG      
+  HKSEQ       I1MACH      R1MACH      
+  HPPERM      XERMSG      
+  HPSORT      XERMSG      
+  HQR         (NONE)      
+  HQR2        CDIV        
+  HSTART      HVNRM       
+  HSTCRT      GENBUN      POISTG      
+  HSTCS1      BLKTRI      
+  HSTCSP      HSTCS1      PIMACH      
+  HSTCYL      GENBUN      POISTG      
+  HSTPLR      GENBUN      POISTG      
+  HSTSSP      GENBUN      PIMACH      POISTG      
+  HTRIB3      (NONE)      
+  HTRIBK      (NONE)      
+  HTRID3      PYTHAG      
+  HTRIDI      PYTHAG      
+  HVNRM       (NONE)      
+  HW3CRT      POIS3D      
+  HWSCRT      GENBUN      
+  HWSCS1      BLKTRI      
+  HWSCSP      HWSCS1      PIMACH      
+  HWSCYL      GENBUN      
+  HWSPLR      GENBUN      
+  HWSSS1      GENBUN      
+  HWSSSP      HWSSS1      PIMACH      
+  I1MACH      (NONE)      
+  I1MERG      ICOPY       
+  ICAMAX      (NONE)      
+  ICOPY       (NONE)      
+  IDAMAX      (NONE)      
+  IDLOC       DPRWPG      XERMSG      
+  IMTQL1      PYTHAG      
+  IMTQL2      PYTHAG      
+  IMTQLV      PYTHAG      
+  INDXA       (NONE)      
+  INDXB       (NONE)      
+  INDXC       (NONE)      
+  INITDS      XERMSG      
+  INITS       XERMSG      
+  INTRV       (NONE)      
+  INTYD       (NONE)      
+  INVIT       CDIV        PYTHAG      
+  INXCA       (NONE)      
+  INXCB       (NONE)      
+  INXCC       (NONE)      
+  IPLOC       PRWPGE      XERMSG      
+  IPPERM      XERMSG      
+  IPSORT      XERMSG      
+  ISAMAX      (NONE)      
+  ISDBCG      D1MACH      DNRM2       
+  ISDCG       D1MACH      DNRM2       
+  ISDCGN      D1MACH      DNRM2       
+  ISDCGS      D1MACH      DNRM2       
+  ISDGMR      D1MACH      DCOPY       DNRM2       DRLCAL      DSCAL       
+              DXLCAL      
+  ISDIR       D1MACH      DNRM2       
+  ISDOMN      D1MACH      DNRM2       
+  ISORT       XERMSG      
+  ISSBCG      R1MACH      SNRM2       
+  ISSCG       R1MACH      SNRM2       
+  ISSCGN      R1MACH      SNRM2       
+  ISSCGS      R1MACH      SNRM2       
+  ISSGMR      R1MACH      SCOPY       SNRM2       SRLCAL      SSCAL       
+              SXLCAL      
+  ISSIR       R1MACH      SNRM2       
+  ISSOMN      R1MACH      SNRM2       
+  ISWAP       (NONE)      
+  IVOUT       I1MACH      
+  J4SAVE      (NONE)      
+  JAIRY       (NONE)      
+  LA05AD      D1MACH      LA05ED      MC20AD      XERMSG      XSETUN      
+  LA05AS      LA05ES      MC20AS      R1MACH      XERMSG      XSETUN      
+  LA05BD      XERMSG      XSETUN      
+  LA05BS      XERMSG      XSETUN      
+  LA05CD      LA05ED      XERMSG      XSETUN      
+  LA05CS      LA05ES      XERMSG      XSETUN      
+  LA05ED      (NONE)      
+  LA05ES      (NONE)      
+  LLSIA       R1MACH      U11LS       U12LS       XERMSG      
+  LMPAR       ENORM       QRSOLV      R1MACH      
+  LPDP        SCOPY       SDOT        SNRM2       SSCAL       WNNLS       
+  LSAME       (NONE)      
+  LSEI        H12         LSI         R1MACH      SASUM       SAXPY       
+              SCOPY       SDOT        SNRM2       SSCAL       SSWAP       
+              XERMSG      
+  LSI         H12         HFTI        LPDP        R1MACH      SASUM       
+              SAXPY       SCOPY       SDOT        SSCAL       SSWAP       
+  LSOD        HSTART      INTYD       R1MACH      STOD        VNWRMS      
+              XERMSG      
+  LSSODS      J4SAVE      OHTROR      ORTHOL      R1MACH      SDOT        
+              SDSDOT      XERMAX      XERMSG      XGETF       XSETF       
+  LSSUDS      J4SAVE      OHTROL      ORTHOR      R1MACH      SDOT        
+              XERMAX      XERMSG      XGETF       XSETF       
+  MACON       R1MACH      
+  MC20AD      (NONE)      
+  MC20AS      (NONE)      
+  MGSBV       PRVEC       SDOT        
+  MINFIT      PYTHAG      
+  MINSO4      (NONE)      
+  MINSOL      (NONE)      
+  MPADD       MPADD2      
+  MPADD2      MPADD3      MPCHK       MPERR       MPNZR       MPSTR       
+  MPADD3      (NONE)      
+  MPBLAS      I1MACH      XERMSG      
+  MPCDM       MPCHK       MPDIVI      MPMULI      MPNZR       
+  MPCHK       I1MACH      MPERR       
+  MPCMD       MPCHK       MPERR       
+  MPDIVI      MPCHK       MPERR       MPNZR       MPSTR       MPUNFL      
+  MPERR       (NONE)      
+  MPMAXR      MPCHK       
+  MPMLP       (NONE)      
+  MPMUL       MPCHK       MPERR       MPMLP       MPNZR       
+  MPMUL2      MPCHK       MPERR       MPNZR       MPOVFL      MPSTR       
+  MPMULI      MPMUL2      
+  MPNZR       MPERR       MPOVFL      MPUNFL      
+  MPOVFL      MPCHK       MPERR       MPMAXR      
+  MPSTR       (NONE)      
+  MPUNFL      MPCHK       
+  NUMXER      J4SAVE      
+  OHTROL      SDOT        
+  OHTROR      SDOT        
+  ORTBAK      (NONE)      
+  ORTHES      (NONE)      
+  ORTHO4      (NONE)      
+  ORTHOG      (NONE)      
+  ORTHOL      CSCALE      R1MACH      SDOT        XERMSG      
+  ORTHOR      CSCALE      R1MACH      SDOT        XERMSG      
+  ORTRAN      (NONE)      
+  PASSB       (NONE)      
+  PASSB2      (NONE)      
+  PASSB3      (NONE)      
+  PASSB4      (NONE)      
+  PASSB5      (NONE)      
+  PASSF       (NONE)      
+  PASSF2      (NONE)      
+  PASSF3      (NONE)      
+  PASSF4      (NONE)      
+  PASSF5      (NONE)      
+  PCHBS       PCHKT       XERMSG      
+  PCHCE       PCHDF       PCHST       XERMSG      
+  PCHCI       PCHST       
+  PCHCM       CHFCM       XERMSG      
+  PCHCS       PCHST       PCHSW       
+  PCHDF       XERMSG      
+  PCHDOC      (NONE)      
+  PCHFD       CHFDV       XERMSG      
+  PCHFE       CHFEV       XERMSG      
+  PCHIA       CHFIE       PCHID       XERMSG      
+  PCHIC       PCHCE       PCHCI       PCHCS       XERMSG      
+  PCHID       XERMSG      
+  PCHIM       PCHST       XERMSG      
+  PCHKT       (NONE)      
+  PCHNGS      IPLOC       PRWPGE      XERMSG      
+  PCHSP       PCHDF       XERMSG      
+  PCHST       (NONE)      
+  PCHSW       R1MACH      XERMSG      
+  PCOEF       PVALUE      
+  PFQAD       INTRV       PPGQ8       R1MACH      XERMSG      
+  PGSF        (NONE)      
+  PIMACH      (NONE)      
+  PINITM      XERMSG      
+  PJAC        SGBFA       SGEFA       VNWRMS      
+  PNNZRS      IPLOC       XERMSG      
+  POCH        ALGAMS      ALNREL      FAC         GAMMA       GAMR        
+              R9LGMC      XERMSG      
+  POCH1       COT         EXPREL      POCH        PSI         R1MACH      
+              XERMSG      
+  POIS3D      POS3D1      
+  POISD2      COSGEN      S1MERG      TRIX        
+  POISN2      COSGEN      S1MERG      TRI3        TRIX        
+  POISP2      POISD2      POISN2      
+  POISTG      POSTG2      
+  POLCOF      (NONE)      
+  POLFIT      PVALUE      XERMSG      
+  POLINT      XERMSG      
+  POLYVL      (NONE)      
+  POS3D1      COSQB       COSQF       COSQI       COST        COSTI       
+              PIMACH      RFFTB       RFFTF       RFFTI       SINQB       
+              SINQF       SINQI       SINT        SINTI       TRIDQ       
+  POSTG2      COSGEN      S1MERG      TRI3        TRIX        
+  PPADD       BSRH        PPSGF       PPSPF       PSGF        
+  PPGQ8       I1MACH      PPVAL       R1MACH      XERMSG      
+  PPGSF       (NONE)      
+  PPPSF       (NONE)      
+  PPQAD       INTRV       XERMSG      
+  PPSGF       (NONE)      
+  PPSPF       (NONE)      
+  PPVAL       INTRV       XERMSG      
+  PROC        (NONE)      
+  PROCP       (NONE)      
+  PROD        (NONE)      
+  PRODP       (NONE)      
+  PRVEC       SDOT        
+  PRWPGE      PRWVIR      XERMSG      
+  PRWVIR      SOPENM      SREADP      SWRITP      
+  PSGF        (NONE)      
+  PSI         COT         CSEVL       INITS       R1MACH      XERMSG      
+  PSIFN       I1MACH      R1MACH      
+  PSIXN       R1MACH      
+  PVALUE      XERMSG      
+  PYTHAG      (NONE)      
+  QAG         QAGE        XERMSG      
+  QAGE        QK15        QK21        QK31        QK41        QK51        
+              QK61        QPSRT       R1MACH      
+  QAGI        QAGIE       XERMSG      
+  QAGIE       QELG        QK15I       QPSRT       R1MACH      
+  QAGP        QAGPE       XERMSG      
+  QAGPE       QELG        QK21        QPSRT       R1MACH      
+  QAGS        QAGSE       XERMSG      
+  QAGSE       QELG        QK21        QPSRT       R1MACH      
+  QAWC        QAWCE       XERMSG      
+  QAWCE       QC25C       QPSRT       R1MACH      
+  QAWF        QAWFE       XERMSG      
+  QAWFE       QAGIE       QAWOE       QELG        R1MACH      
+  QAWO        QAWOE       XERMSG      
+  QAWOE       QC25F       QELG        QPSRT       R1MACH      
+  QAWS        QAWSE       XERMSG      
+  QAWSE       QC25S       QMOMO       QPSRT       R1MACH      
+  QC25C       QCHEB       QK15W       QWGTC       
+  QC25F       QCHEB       QK15W       QWGTF       R1MACH      SGTSL       
+  QC25S       QCHEB       QK15W       QWGTS       
+  QCHEB       (NONE)      
+  QELG        R1MACH      
+  QFORM       (NONE)      
+  QK15        R1MACH      
+  QK15I       R1MACH      
+  QK15W       R1MACH      
+  QK21        R1MACH      
+  QK31        R1MACH      
+  QK41        R1MACH      
+  QK51        R1MACH      
+  QK61        R1MACH      
+  QMOMO       (NONE)      
+  QNC79       I1MACH      R1MACH      XERMSG      
+  QNG         R1MACH      XERMSG      
+  QPDOC       (NONE)      
+  QPSRT       (NONE)      
+  QRFAC       ENORM       R1MACH      
+  QRSOLV      (NONE)      
+  QS2I1D      XERMSG      
+  QS2I1R      XERMSG      
+  QWGTC       (NONE)      
+  QWGTF       (NONE)      
+  QWGTS       (NONE)      
+  QZHES       (NONE)      
+  QZIT        (NONE)      
+  QZVAL       (NONE)      
+  QZVEC       (NONE)      
+  R1MACH      XERMSG      
+  R1MPYQ      (NONE)      
+  R1UPDT      R1MACH      
+  R9AIMP      CSEVL       INITS       R1MACH      XERMSG      
+  R9ATN1      CSEVL       INITS       R1MACH      XERMSG      
+  R9CHU       R1MACH      XERMSG      
+  R9GMIC      ALNGAM      R1MACH      XERMSG      
+  R9GMIT      ALNGAM      R1MACH      XERMSG      
+  R9KNUS      CSEVL       GAMMA       INITS       R1MACH      XERMSG      
+  R9LGIC      R1MACH      XERMSG      
+  R9LGIT      R1MACH      XERMSG      
+  R9LGMC      CSEVL       INITS       R1MACH      XERMSG      
+  R9LN2R      CSEVL       INITS       R1MACH      XERMSG      
+  R9PAK       I1MACH      R1MACH      R9UPAK      XERMSG      
+  R9UPAK      (NONE)      
+  RADB2       (NONE)      
+  RADB3       (NONE)      
+  RADB4       (NONE)      
+  RADB5       (NONE)      
+  RADBG       (NONE)      
+  RADF2       (NONE)      
+  RADF3       (NONE)      
+  RADF4       (NONE)      
+  RADF5       (NONE)      
+  RADFG       (NONE)      
+  RAND        (NONE)      
+  RATQR       R1MACH      
+  RC          R1MACH      XERMSG      
+  RC3JJ       R1MACH      XERMSG      
+  RC3JM       R1MACH      XERMSG      
+  RC6J        R1MACH      XERMSG      
+  RD          R1MACH      XERMSG      
+  REBAK       (NONE)      
+  REBAKB      (NONE)      
+  REDUC       (NONE)      
+  REDUC2      (NONE)      
+  REORT       MGSBV       SDOT        STOR1       STWAY       
+  RF          R1MACH      XERMSG      
+  RFFTB       RFFTB1      
+  RFFTB1      RADB2       RADB3       RADB4       RADB5       RADBG       
+  RFFTF       RFFTF1      
+  RFFTF1      RADF2       RADF3       RADF4       RADF5       RADFG       
+  RFFTI       RFFTI1      
+  RFFTI1      (NONE)      
+  RG          BALANC      BALBAK      ELMHES      ELTRAN      HQR         
+              HQR2        
+  RGAUSS      RAND        
+  RGG         QZHES       QZIT        QZVAL       QZVEC       
+  RJ          R1MACH      RC          XERMSG      
+  RKFAB       BVDER       DEABM       DERKF       REORT       STOR1       
+  RPQR79      HQR         XERMSG      
+  RPZERO      CPZERO      
+  RS          TQL2        TQLRAT      TRED1       TRED2       
+  RSB         BANDR       TQL2        TQLRAT      
+  RSCO        (NONE)      
+  RSG         REBAK       REDUC       TQL2        TQLRAT      TRED1       
+              TRED2       
+  RSGAB       REBAK       REDUC2      TQL2        TQLRAT      TRED1       
+              TRED2       
+  RSGBA       REBAKB      REDUC2      TQL2        TQLRAT      TRED1       
+              TRED2       
+  RSP         TQL2        TQLRAT      TRBAK3      TRED3       
+  RST         IMTQL1      IMTQL2      
+  RT          FIGI        FIGI2       IMTQL1      IMTQL2      
+  RUNIF       RAND        
+  RWUPDT      (NONE)      
+  S1MERG      SCOPY       
+  SASUM       (NONE)      
+  SAXPY       (NONE)      
+  SBCG        ISSBCG      R1MACH      SAXPY       SCOPY       SDOT        
+  SBHIN       (NONE)      
+  SBOCLS      R1MACH      SASUM       SBOLS       SCOPY       SDOT        
+              SNRM2       SSCAL       XERMSG      
+  SBOLS       ISAMAX      SBOLSM      SCOPY       SNRM2       SROT        
+              SROTG       XERMSG      
+  SBOLSM      IVOUT       R1MACH      SAXPY       SCOPY       SDOT        
+              SMOUT       SNRM2       SROT        SROTG       SSWAP       
+              SVOUT       XERMSG      
+  SCASUM      (NONE)      
+  SCG         ISSCG       R1MACH      SAXPY       SCOPY       SDOT        
+  SCGN        ISSCGN      R1MACH      SAXPY       SCOPY       SDOT        
+  SCGS        ISSCGS      R1MACH      SAXPY       SDOT        
+  SCHDC       SAXPY       SSWAP       
+  SCHDD       SDOT        SNRM2       
+  SCHEX       SROTG       
+  SCHKW       R1MACH      XERMSG      
+  SCHUD       SROTG       
+  SCLOSM      XERMSG      
+  SCNRM2      (NONE)      
+  SCOEF       SDOT        SUDS        XGETF       XSETF       
+  SCOPY       (NONE)      
+  SCOPYM      (NONE)      
+  SCOV        ENORM       FDJAC3      QRFAC       RWUPDT      XERMSG      
+  SCPPLT      (NONE)      
+  SDAINI      SDAJAC      SDANRM      SDASLV      
+  SDAJAC      SGBFA       SGEFA       
+  SDANRM      (NONE)      
+  SDASLV      SGBSL       SGESL       
+  SDASSL      R1MACH      SDAINI      SDANRM      SDASTP      SDATRP      
+              SDAWTS      XERMSG      
+  SDASTP      SDAJAC      SDANRM      SDASLV      SDATRP      
+  SDATRP      (NONE)      
+  SDAWTS      (NONE)      
+  SDCOR       SGBSL       SGESL       SNRM2       
+  SDCST       (NONE)      
+  SDNTL       SDCST       SDSCL       SGBFA       SGBSL       SGEFA       
+              SGESL       SNRM2       
+  SDNTP       (NONE)      
+  SDOT        (NONE)      
+  SDPSC       (NONE)      
+  SDPST       SGBFA       SGEFA       SNRM2       
+  SDRIV1      SDRIV3      XERMSG      
+  SDRIV2      SDRIV3      XERMSG      
+  SDRIV3      R1MACH      SDNTP       SDSTP       SDZRO       SGBFA       
+              SGBSL       SGEFA       SGESL       SNRM2       XERMSG      
+  SDSCL       (NONE)      
+  SDSDOT      (NONE)      
+  SDSTP       SDCOR       SDCST       SDNTL       SDPSC       SDPST       
+              SDSCL       SNRM2       
+  SDZRO       SDNTP       
+  SEPELI      CHKPRM      SPELIP      
+  SEPX4       CHKPR4      SPELI4      
+  SGBCO       SASUM       SAXPY       SDOT        SGBFA       SSCAL       
+  SGBDI       (NONE)      
+  SGBFA       ISAMAX      SAXPY       SSCAL       
+  SGBMV       LSAME       XERBLA      
+  SGBSL       SAXPY       SDOT        
+  SGECO       SASUM       SAXPY       SDOT        SGEFA       SSCAL       
+  SGEDI       SAXPY       SSCAL       SSWAP       
+  SGEEV       BALANC      BALBAK      HQR         HQR2        ORTHES      
+              ORTRAN      SCOPY       SCOPYM      XERMSG      
+  SGEFA       ISAMAX      SAXPY       SSCAL       
+  SGEFS       R1MACH      SGECO       SGESL       XERMSG      
+  SGEIR       R1MACH      SASUM       SCOPY       SDSDOT      SGEFA       
+              SGESL       XERMSG      
+  SGEMM       LSAME       XERBLA      
+  SGEMV       LSAME       XERBLA      
+  SGER        XERBLA      
+  SGESL       SAXPY       SDOT        
+  SGLSS       LLSIA       ULSIA       
+  SGMRES      R1MACH      SCOPY       SNRM2       SPIGMR      
+  SGTSL       (NONE)      
+  SHELS       SAXPY       
+  SHEQR       (NONE)      
+  SINDG       (NONE)      
+  SINQB       COSQB       
+  SINQF       COSQF       
+  SINQI       COSQI       
+  SINT        RFFTF       
+  SINTI       RFFTI       
+  SINTRP      (NONE)      
+  SIR         ISSIR       R1MACH      
+  SLLTI2      (NONE)      
+  SLPDOC      (NONE)      
+  SLVS        SGBSL       SGESL       
+  SMOUT       I1MACH      
+  SNBCO       SASUM       SAXPY       SDOT        SNBFA       SSCAL       
+  SNBDI       (NONE)      
+  SNBFA       ISAMAX      SAXPY       SSCAL       SSWAP       
+  SNBFS       R1MACH      SNBCO       SNBSL       XERMSG      
+  SNBIR       R1MACH      SASUM       SCOPY       SDSDOT      SNBFA       
+              SNBSL       XERMSG      
+  SNBSL       SAXPY       SDOT        
+  SNLS1       CHKDER      ENORM       FDJAC3      LMPAR       QRFAC       
+              R1MACH      RWUPDT      XERMSG      
+  SNLS1E      SNLS1       XERMSG      
+  SNRM2       (NONE)      
+  SNSQ        DOGLEG      ENORM       FDJAC1      QFORM       QRFAC       
+              R1MACH      R1MPYQ      R1UPDT      XERMSG      
+  SNSQE       SNSQ        XERMSG      
+  SODS        LSSODS      
+  SOMN        ISSOMN      R1MACH      SAXPY       SCOPY       SDOT        
+  SOPENM      XERMSG      
+  SORTH       SAXPY       SDOT        SNRM2       
+  SOS         SOSEQS      XERMSG      
+  SOSEQS      I1MACH      R1MACH      SOSSOL      
+  SOSSOL      (NONE)      
+  SPBCO       SASUM       SAXPY       SDOT        SPBFA       SSCAL       
+  SPBDI       (NONE)      
+  SPBFA       SDOT        
+  SPBSL       SAXPY       SDOT        
+  SPELI4      CHKSN4      DEFE4       GENBUN      MINSO4      ORTHO4      
+              TRIS4       
+  SPELIP      BLKTRI      CHKSNG      DEFER       MINSOL      ORTHOG      
+              TRISP       
+  SPENC       CSEVL       INITS       R1MACH      
+  SPIGMR      ISSGMR      SAXPY       SCOPY       SHELS       SHEQR       
+              SNRM2       SORTH       SRLCAL      SSCAL       
+  SPINCW      IPLOC       LA05BS      PRWPGE      SCOPY       SDOT        
+  SPINIT      PNNZRS      SASUM       SCOPY       
+  SPLP        SPLPMN      XERMSG      
+  SPLPCE      IPLOC       LA05BS      PRWPGE      SASUM       SCOPY       
+  SPLPDM      LA05AS      PNNZRS      SASUM       XERMSG      
+  SPLPFE      IPLOC       LA05BS      PRWPGE      SASUM       SCOPY       
+  SPLPFL      (NONE)      
+  SPLPMN      IVOUT       LA05BS      PINITM      PNNZRS      PRWPGE      
+              SASUM       SCLOSM      SCOPY       SDOT        SPINCW      
+              SPINIT      SPLPCE      SPLPDM      SPLPFE      SPLPFL      
+              SPLPMU      SPLPUP      SPOPT       SVOUT       XERMSG      
+  SPLPMU      IPLOC       LA05BS      LA05CS      PNNZRS      PRWPGE      
+              SASUM       SCOPY       SDOT        SPLPDM      XERMSG      
+  SPLPUP      PCHNGS      PNNZRS      XERMSG      
+  SPOCO       SASUM       SAXPY       SDOT        SPOFA       SSCAL       
+  SPODI       SAXPY       SSCAL       
+  SPOFA       SDOT        
+  SPOFS       R1MACH      SPOCO       SPOSL       XERMSG      
+  SPOIR       DSDOT       R1MACH      SASUM       SCOPY       SPOFA       
+              SPOSL       XERMSG      
+  SPOPT       R1MACH      XERMSG      
+  SPOSL       SAXPY       SDOT        
+  SPPCO       SASUM       SAXPY       SDOT        SPPFA       SSCAL       
+  SPPDI       SAXPY       SSCAL       
+  SPPERM      XERMSG      
+  SPPFA       SDOT        
+  SPPSL       SAXPY       SDOT        
+  SPSORT      XERMSG      
+  SPTSL       (NONE)      
+  SQRDC       SAXPY       SDOT        SNRM2       SSCAL       SSWAP       
+  SQRSL       SAXPY       SCOPY       SDOT        
+  SREADP      XERMSG      
+  SRLCAL      SCOPY       SSCAL       
+  SROT        (NONE)      
+  SROTG       (NONE)      
+  SROTM       (NONE)      
+  SROTMG      (NONE)      
+  SS2LT       (NONE)      
+  SS2Y        QS2I1R      
+  SSBMV       LSAME       XERBLA      
+  SSCAL       (NONE)      
+  SSD2S       (NONE)      
+  SSDBCG      SBCG        SCHKW       SS2Y        SSDI        SSDS        
+              SSMTV       SSMV        
+  SSDCG       SCG         SCHKW       SS2Y        SSDI        SSDS        
+              SSMV        
+  SSDCGN      SCGN        SCHKW       SS2Y        SSD2S       SSDI        
+              SSMTV       SSMV        
+  SSDCGS      SCGS        SCHKW       SS2Y        SSDI        SSDS        
+              SSMV        
+  SSDGMR      SCHKW       SGMRES      SS2Y        SSDI        SSDS        
+              SSMV        
+  SSDI        (NONE)      
+  SSDOMN      SCHKW       SOMN        SS2Y        SSDI        SSDS        
+              SSMV        
+  SSDS        (NONE)      
+  SSDSCL      (NONE)      
+  SSGS        SCHKW       SIR         SS2LT       SS2Y        SSLI        
+              SSMV        
+  SSICCG      SCG         SCHKW       SS2Y        SSICS       SSLLTI      
+              SSMV        XERMSG      
+  SSICO       SASUM       SAXPY       SDOT        SSCAL       SSIFA       
+  SSICS       XERMSG      
+  SSIDI       SAXPY       SCOPY       SDOT        SSWAP       
+  SSIEV       IMTQL2      TQLRAT      TRED1       TRED2       XERMSG      
+  SSIFA       ISAMAX      SAXPY       SSWAP       
+  SSILUR      SCHKW       SIR         SS2Y        SSILUS      SSLUI       
+              SSMV        
+  SSILUS      (NONE)      
+  SSISL       SAXPY       SDOT        
+  SSJAC       SCHKW       SIR         SS2Y        SSDI        SSDS        
+              SSMV        
+  SSLI        SSLI2       
+  SSLI2       (NONE)      
+  SSLLTI      SLLTI2      
+  SSLUBC      SBCG        SCHKW       SS2Y        SSILUS      SSLUI       
+              SSLUTI      SSMTV       SSMV        
+  SSLUCN      SCGN        SCHKW       SS2Y        SSILUS      SSMMTI      
+              SSMTV       SSMV        
+  SSLUCS      SCGS        SCHKW       SS2Y        SSILUS      SSLUI       
+              SSMV        
+  SSLUGM      SCHKW       SGMRES      SS2Y        SSILUS      SSLUI       
+              SSMV        
+  SSLUI       SSLUI2      
+  SSLUI2      (NONE)      
+  SSLUI4      (NONE)      
+  SSLUOM      SCHKW       SOMN        SS2Y        SSILUS      SSLUI       
+              SSMV        
+  SSLUTI      SSLUI4      
+  SSMMI2      (NONE)      
+  SSMMTI      SSMMI2      
+  SSMTV       (NONE)      
+  SSMV        (NONE)      
+  SSORT       XERMSG      
+  SSPCO       SASUM       SAXPY       SDOT        SSCAL       SSPFA       
+  SSPDI       SAXPY       SCOPY       SDOT        SSWAP       
+  SSPEV       IMTQL2      TQLRAT      TRBAK3      TRED3       XERMSG      
+  SSPFA       ISAMAX      SAXPY       SSWAP       
+  SSPMV       LSAME       XERBLA      
+  SSPR        LSAME       XERBLA      
+  SSPR2       LSAME       XERBLA      
+  SSPSL       SAXPY       SDOT        
+  SSVDC       SAXPY       SDOT        SNRM2       SROT        SROTG       
+              SSCAL       SSWAP       
+  SSWAP       (NONE)      
+  SSYMM       LSAME       XERBLA      
+  SSYMV       LSAME       XERBLA      
+  SSYR        LSAME       XERBLA      
+  SSYR2       LSAME       XERBLA      
+  SSYR2K      LSAME       XERBLA      
+  SSYRK       LSAME       XERBLA      
+  STBMV       LSAME       XERBLA      
+  STBSV       LSAME       XERBLA      
+  STEPS       HSTART      R1MACH      
+  STIN        (NONE)      
+  STOD        CFOD        PJAC        SLVS        VNWRMS      
+  STOR1       (NONE)      
+  STOUT       (NONE)      
+  STPMV       LSAME       XERBLA      
+  STPSV       LSAME       XERBLA      
+  STRCO       SASUM       SAXPY       SSCAL       
+  STRDI       SAXPY       SSCAL       
+  STRMM       LSAME       XERBLA      
+  STRMV       LSAME       XERBLA      
+  STRSL       SAXPY       SDOT        
+  STRSM       LSAME       XERBLA      
+  STRSV       LSAME       XERBLA      
+  STWAY       STOR1       
+  SUDS        LSSUDS      
+  SVCO        (NONE)      
+  SVD         PYTHAG      
+  SVECS       MGSBV       
+  SVOUT       I1MACH      
+  SWRITP      XERMSG      
+  SXLCAL      SAXPY       SCOPY       SHELS       
+  TEVLC       (NONE)      
+  TEVLS       (NONE)      
+  TINVIT      (NONE)      
+  TQL1        PYTHAG      
+  TQL2        PYTHAG      
+  TQLRAT      PYTHAG      R1MACH      
+  TRBAK1      (NONE)      
+  TRBAK3      (NONE)      
+  TRED1       (NONE)      
+  TRED2       (NONE)      
+  TRED3       (NONE)      
+  TRI3        (NONE)      
+  TRIDIB      R1MACH      
+  TRIDQ       (NONE)      
+  TRIS4       (NONE)      
+  TRISP       (NONE)      
+  TRIX        (NONE)      
+  TSTURM      R1MACH      
+  U11LS       ISAMAX      ISWAP       SAXPY       SDOT        SNRM2       
+              SSCAL       SSWAP       XERMSG      
+  U11US       ISAMAX      ISWAP       SAXPY       SDOT        SNRM2       
+              SSCAL       SSWAP       XERMSG      
+  U12LS       SAXPY       SDOT        SNRM2       SSWAP       
+  U12US       SAXPY       SDOT        SNRM2       SSWAP       
+  ULSIA       R1MACH      U11US       U12US       XERMSG      
+  USRMAT      (NONE)      
+  VNWRMS      (NONE)      
+  WNLIT       H12         ISAMAX      SCOPY       SROTM       SROTMG      
+              SSCAL       SSWAP       WNLT1       WNLT2       WNLT3       
+  WNLSM       H12         ISAMAX      R1MACH      SASUM       SAXPY       
+              SCOPY       SNRM2       SROTM       SROTMG      SSCAL       
+              SSWAP       WNLIT       XERMSG      
+  WNLT1       ISAMAX      
+  WNLT2       (NONE)      
+  WNLT3       SSWAP       
+  WNNLS       WNLSM       XERMSG      
+  XADD        XADJ        
+  XADJ        XERMSG      
+  XC210       XERMSG      
+  XCON        XADJ        XC210       XRED        
+  XERBLA      XERMSG      
+  XERCLR      J4SAVE      
+  XERCNT      (NONE)      
+  XERDMP      XERSVE      
+  XERHLT      (NONE)      
+  XERMAX      J4SAVE      
+  XERMSG      FDUMP       J4SAVE      XERCNT      XERHLT      XERPRN      
+              XERSVE      
+  XERPRN      I1MACH      XGETUA      
+  XERSVE      I1MACH      XGETUA      
+  XGETF       J4SAVE      
+  XGETUA      J4SAVE      
+  XGETUN      J4SAVE      
+  XLEGF       XERMSG      XPMU        XPMUP       XPNRM       XPQNU       
+              XQMU        XQNU        XRED        XSET        
+  XNRMP       XADD        XADJ        XERMSG      XRED        XSET        
+  XPMU        XADD        XADJ        XPQNU       
+  XPMUP       XADJ        
+  XPNRM       XADJ        
+  XPQNU       XADD        XADJ        XPSI        
+  XPSI        (NONE)      
+  XQMU        XADD        XADJ        XPQNU       
+  XQNU        XADD        XADJ        XPQNU       
+  XRED        (NONE)      
+  XSET        I1MACH      XERMSG      
+  XSETF       J4SAVE      XERMSG      
+  XSETUA      J4SAVE      XERMSG      
+  XSETUN      J4SAVE      
+  YAIRY       (NONE)      
+  ZABS        (NONE)      
+  ZACAI       D1MACH      ZABS        ZASYI       ZBKNU       ZMLRI       
+              ZS1S2       ZSERI       
+  ZACON       D1MACH      ZABS        ZBINU       ZBKNU       ZMLT        
+              ZS1S2       
+  ZAIRY       D1MACH      I1MACH      ZABS        ZACAI       ZBKNU       
+              ZEXP        ZSQRT       
+  ZASYI       D1MACH      ZABS        ZDIV        ZEXP        ZMLT        
+              ZSQRT       
+  ZBESH       D1MACH      I1MACH      ZABS        ZACON       ZBKNU       
+              ZBUNK       ZUOIK       
+  ZBESI       D1MACH      I1MACH      ZABS        ZBINU       
+  ZBESJ       D1MACH      I1MACH      ZABS        ZBINU       
+  ZBESK       D1MACH      I1MACH      ZABS        ZACON       ZBKNU       
+              ZBUNK       ZUOIK       
+  ZBESY       D1MACH      I1MACH      ZBESH       
+  ZBINU       ZABS        ZASYI       ZBUNI       ZMLRI       ZSERI       
+              ZUOIK       ZWRSK       
+  ZBIRY       D1MACH      I1MACH      ZABS        ZBINU       ZDIV        
+              ZSQRT       
+  ZBKNU       D1MACH      DGAMLN      I1MACH      ZABS        ZDIV        
+              ZEXP        ZKSCL       ZLOG        ZMLT        ZSHCH       
+              ZSQRT       ZUCHK       
+  ZBUNI       D1MACH      ZABS        ZUNI1       ZUNI2       
+  ZBUNK       ZUNK1       ZUNK2       
+  ZDIV        ZABS        
+  ZEXP        (NONE)      
+  ZKSCL       ZABS        ZLOG        ZUCHK       
+  ZLOG        ZABS        
+  ZMLRI       D1MACH      DGAMLN      ZABS        ZEXP        ZLOG        
+              ZMLT        
+  ZMLT        (NONE)      
+  ZRATI       ZABS        ZDIV        
+  ZS1S2       ZABS        ZEXP        ZLOG        
+  ZSERI       D1MACH      DGAMLN      ZABS        ZDIV        ZLOG        
+              ZMLT        ZUCHK       
+  ZSHCH       (NONE)      
+  ZSQRT       ZABS        
+  ZUCHK       (NONE)      
+  ZUNHJ       D1MACH      ZABS        ZDIV        ZLOG        ZSQRT       
+  ZUNI1       D1MACH      ZABS        ZUCHK       ZUNIK       ZUOIK       
+  ZUNI2       D1MACH      ZABS        ZAIRY       ZUCHK       ZUNHJ       
+              ZUOIK       
+  ZUNIK       D1MACH      ZDIV        ZLOG        ZSQRT       
+  ZUNK1       D1MACH      ZABS        ZS1S2       ZUCHK       ZUNIK       
+  ZUNK2       D1MACH      ZABS        ZAIRY       ZS1S2       ZUCHK       
+              ZUNHJ       
+  ZUOIK       D1MACH      ZABS        ZLOG        ZUCHK       ZUNHJ       
+              ZUNIK       
+  ZWRSK       D1MACH      ZABS        ZBKNU       ZRATI       

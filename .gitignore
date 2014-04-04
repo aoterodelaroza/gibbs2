@@ -1,0 +1,4 @@
+# object, module, library files
+*.o
+*.mod
+*.a
