@@ -2,3 +2,7 @@
 *.o
 *.mod
 *.a
+
+# binary
+src/gibbs2
+
