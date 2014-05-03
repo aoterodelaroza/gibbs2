@@ -19,8 +19,8 @@
 # Set compiler and options in Makefile.inc
 include Makefile.inc
 
-BINS=gibbs2
-BINS_dbg=gibbs2_dbg
+BINS=gibbs2$(EXE)
+BINS_dbg=gibbs2_dbg$(EXE)
 OBJS= debye.o eos.o evfunc.o fit.o gibbs2.o gnuplot_templates.o param.o setvariables.o\
       tools.o topcalc.o varbas.o dgam.o
 LIBS=slatec/libslatec.a minpack/libminpack.a pppack/libpppack.a 
@@ -60,11 +60,11 @@ mrproper:
 	cd minpack ; $(MAKE) mrproper
 	cd pppack  ; $(MAKE) mrproper
 
-gibbs2: $(OBJS) $(LIBS)
-	$(FC) -o gibbs2 $(LDFLAGS) $(OBJS) $(LIBS)
+gibbs2$(EXE): $(OBJS) $(LIBS)
+	$(FC) -o gibbs2$(EXE) $(LDFLAGS) $(OBJS) $(LIBS)
 
-gibbs2_dbg: $(OBJS) $(LIBS)
-	$(FC) -o gibbs2_dbg $(LDFLAGS) $(OBJS) $(LIBS)
+gibbs2_dbg$(EXE): $(OBJS) $(LIBS)
+	$(FC) -o gibbs2_dbg$(EXE) $(LDFLAGS) $(OBJS) $(LIBS)
 
 # Libraries, static object targets
 slatec/libslatec.a: dummy

@@ -4,7 +4,6 @@
 
 include ../Makefile.inc
 
-AR=ar
 OBJS1=dp1vlu.o dpcoef.o dpolft.o fdump.o i1mach.o j4save.o xercnt.o xerhlt.o\
      xermsg.o xerprn.o xersve.o xgetua.o  
 

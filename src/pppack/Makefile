@@ -4,7 +4,6 @@
 
 include ../Makefile.inc
 
-AR=ar
 OBJS1=cubspl.o interv.o ppvalu.o
 
 .f90.o:

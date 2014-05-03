@@ -4,7 +4,6 @@
 
 include ../Makefile.inc
 
-AR=ar
 OBJS1=dpmpar.o enorm.o fdjac2.o lmdif1.o lmdif.o lmpar.o qrfac.o qrsolv.o lmder.o
 
 .f90.o:
