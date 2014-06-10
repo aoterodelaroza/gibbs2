@@ -244,7 +244,7 @@ contains
        if (i == imasknph) ends = "   "
        if (i /= 2) starts = "     "
 
-       if (i > 9) then
+       if (i < 9) then
           write (lu,'(A5,"''",A,"'' u 1:",I1," w points ls ",I2," title ''",A10,"'' ",A2)') &
              starts, trim(fileroot)//"_dH.aux", i, imaskph(i), ph(i)%name(1:leng(ph(i)%name)), ends
        else
