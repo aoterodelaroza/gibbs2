@@ -187,9 +187,9 @@ contains
        else
           starts = "     "
        end if
-       write (lu,'(A5,"''",A,"'' u 1:2 index",I2," w points ls ",I2," notitle,\")') &
+       write (lu,'(A5,"''",A,"'' u 1:2 index ",I2," w points ls ",I2," notitle,\")') &
           starts, trim(fileroot)//".efit", i-1, i
-       write (lu,'("     ''",A,"'' u 1:2 index",I2," w lines ls ",I2," title ''",A10,"'' ",A2)') &
+       write (lu,'("     ''",A,"'' u 1:2 index ",I2," w lines ls ",I2," title ''",A10,"'' ",A2)') &
           trim(fileroot)//"_efit.aux",i-1, i, ph(i)%name(1:leng(ph(i)%name)), ends
     end do
     call closegnu(trim(fileroot)//"_efit",lu)
