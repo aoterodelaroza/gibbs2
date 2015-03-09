@@ -2101,7 +2101,7 @@ contains
        p%phdos_f = p%phdos_f / hy2cm_1
        p%phdos_d = p%phdos_d * hy2cm_1
        p%phstep = p%phstep / hy2cm_1
-    elseif (p%units_f == units_f_cm1) then
+    elseif (p%units_f == units_f_thz) then
        p%phdos_f = p%phdos_f / hy2thz
        p%phdos_d = p%phdos_d * hy2thz
        p%phstep = p%phstep / hy2thz
