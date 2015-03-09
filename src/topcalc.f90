@@ -167,8 +167,8 @@ contains
     ! write the gnu file
     write (uout,'("  Writing file : ",A/)') trim(fileroot)//"_efit.gnu"
     lu = opengnu(trim(fileroot)//"_efit")
-    write (lu,'("set xrange ["F10.4":"F10.4"]")') vmin, vmax
-    write (lu,'("set yrange ["F10.4":"F10.4"]")') emin, emax
+    write (lu,'("set xrange ["F20.4":"F20.4"]")') vmin, vmax
+    write (lu,'("set yrange ["F20.4":"F20.4"]")') emin, emax
     write (lu,'("set ylabel ""Energy (Hy)""")')
     write (lu,'("set xlabel ""Volume (bohr^3)""")')
     ends = ",\ "
@@ -337,8 +337,8 @@ contains
     lu = opengnu(trim(fileroot)//"_ptrans")
     write(lu,'("set ylabel ""p (GPa)""")')
     write(lu,'("set xlabel ""T (K)""")')
-    write(lu,'("set yrange [0:",F12.4,"]")') plist(nps)
-    write(lu,'("set xrange [0:",F12.4,"]")') tlist(nts)
+    write(lu,'("set yrange [0:",F20.4,"]")') plist(nps)
+    write(lu,'("set xrange [0:",F20.4,"]")') tlist(nts)
     write(lu,'("unset key")')
     
     ! transition pressures (T)

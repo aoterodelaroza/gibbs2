@@ -106,7 +106,7 @@ contains
     write (lu,'("!sed ''/^ *$/d'' ",A," | awk ''$1+0==0'' | awk ''/# Phase/{print """"; print """"} {print}''> temp.dat")') &
        trim(fileroot)//".eos"
     write (lu,*)
-    write (lu,'("set xrange [0:",F8.1,"]")') tlist(nts)
+    write (lu,'("set xrange [0:",F20.1,"]")') tlist(nts)
     write (lu,'("set xlabel ""T (K)""")')
     write (lu,*)
 
@@ -176,7 +176,7 @@ contains
 
     write (lu,'("!cp ",A," temp.dat")') trim(fileroot)//".eos"
     write (lu,*)
-    write (lu,'("set xrange [0:",F8.1,"]")') plist(nps)
+    write (lu,'("set xrange [0:",F20.1,"]")') plist(nps)
     write (lu,'("set xlabel ""p (GPa)""")')
     write (lu,*)
 
