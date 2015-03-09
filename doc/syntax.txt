@@ -1,0 +1,118 @@
+## Keywords are in CAPS, .s are strings, .i are integers,
+## .r are real numbers,
+
+## nat.i  atom from the nonequivalent list (asymmetric unit)
+## ncp.i  critical point from the non-equivalent list
+## at.i   atom from the complete list (unit cell)
+## cp.i   critical point from the complete list (unit cell)
+## at.s   atomic symbol 
+
+# comment
+TITLE title.s
+{NAT|VFREE} nat.i
+MM mm.r
+NELECTRONS nelec.i
+EINF einf.r
+#
+PRESSURE pini.r pstep.r pend.r
+PRESSURE pstep.r
+PRESSURE npres.i
+PRESSURE
+ p1.r p2.r p3.r ...
+ p4.r ...
+ENDPRESSURE
+PRESSURE 0
+#
+VOLUME vini.r vstep.r vend.r
+VOLUME vstep.r
+VOLUME nvols.i
+VOLUME
+ v1.r v2.r v3.r ...
+ v4.r ...
+ENDVOLUME
+VOLUME INPUT
+#
+TEMPERATURE tini.r tstep.r tend.r
+TEMPERATURE tstep.r
+TEMPERATURE ntemp.i
+TEMPERATURE
+ t1.r t2.r t3.r ...
+ t4.r ...
+ENDTEMPERATURE
+TEMPERATURE 0
+TEMPERATURE -1
+#
+FREQG0 {name.s|num.i} [FILE file.s]
+  # comment
+  freq1.r freq2.r ...
+  ...
+ENDFREQG0
+#
+INTERPOLATE INPUT [STATIC]
+INTERPOLATE
+ [P]
+ p1 p2 ..
+ p3 ..
+ V
+ v1 v2 ..
+ PT
+ p1 t1 p2 t2 ...
+ENDINTERPOLATE
+#
+PHASE name.s \
+      [FILE file.s [U|USING a:b[:c]]] \
+      [Z z.r] \
+      [POISSON sigma.r] \
+      [LAUE laue.s] \
+      [FIT {POLYGIBBS|BM2|BM3|BM4|PT2|PT3|PT4|PT5|MURN|ANTONS|VINET|AP2|
+	      STRAIN {EULERIAN|BM|NATURAL|PT|LAGRANGIAN|LAGR|
+	       	      INFINITESIMAL|INF|QUOTIENT|X1|X3|XINV3|X3INV|V} [order.i|0]}]\
+      [REG {LAD|LSQ}] \
+      [FIX i1.i v1.r i2.i v2.r ...] \
+      [TMODEL {STATIC|DEBYE_INPUT|DEBYE|DEBYE_EINSTEIN|
+               DEBYE_GRUNEISEN {SLATER|DM|VZ|MFV|a.r b.r}|
+               {QHAFULL|QHA} [PHFIELD ifield.i] [DOSFIELD i1.i i2.i]|
+               QHA_ESPRESSO [PHFIELD ifield.i]] \
+      [PREFIX prefix.s] \
+      [ELEC SOMMERFELD FREE
+            SOMMERFELD [icol.i]
+            POL4 [icol1.i]] \
+      [NELEC nelec.i] \
+      [EEC NOSCAL|PSHIFT vexp.r|BPSCAL vexp.r bexp.r|APBAF vexp.r|
+       USE phase.i] \
+	 [EEC_P pext.r] [EEC_T text.r]
+	 [ESHIFT eshift.r}
+      [PVDATA] \
+      [UNITS {VOLUME {BOHR|BOHR3|BOHR^3|ANG|ANG3|ANG^3}}
+             {ENERGY {HY|HARTREE|HA|EV|EVOLT|ELECTRONVOLT|RY|RYDBERG}}
+             {PRESSURE {AU|A.U.|GPA}}
+             {{FREQ|FREQUENCY} {HARTREE|HY|HA|CM-1|CM^-1|CM_1|THZ}}
+             {EDOS {HY|HARTREE|HA|EV|EVOLT|ELECTRONVOLT|RY|RYDBERG}}] \
+      [INTERPOLATE f1.i [f2.i ...]]
+      [FSTEP step.r]
+  # comment
+  v1.r e1.r [td1.r nef1.r f1.r f2.r f3.r f4.r ts1.r ts2.r ts3.r ts4.r phdos1.s
+             int1.r int2.r ...]
+  ...
+ENDPHASE
+#
+SET ROOT root.s
+SET PFIT_MODE {GAUSS|SLATEC}
+SET PWEIGH_MODE {GIBBS1|GIBBS2|SLATEC}
+SET MPAR mpar.i
+SET MPARMIN mparmin.i
+SET NDEL ndel.i
+SET NOEFIT
+SET NOPLOTDH
+SET NEWPTS
+SET NOTRANS
+SET ERRORBAR|ERROR_BAR|ERRORBARS|ERROR_BARS
+SET FACEXPAND
+SET PHONFIT {LINEAR|SPLINE}
+SET WRITELEVEL {0|1|2}
+ACTIVATE {ALL|v1.i v2.i v3.i...}
+PRINTFREQ|PRINTFREQS
+EOUTPUT [vini.r vstep.r vend.r]
+DRHOUSE
+END
+
