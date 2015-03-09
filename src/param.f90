@@ -64,6 +64,8 @@ module param
   real*8, parameter :: hy2k = 3.1577465d5              !hartree -> K (nist2006)
   real*8, parameter :: hy2ev = 27.21138386d0           !hartree -> eV (nist2006)
   real*8, parameter :: hy2cm_1 = 2.194746313705d5      !hartree -> cm**(-1) (nist2006)
+  real*8, parameter :: thz2cm_1 = 33.35641d0           !THz -> cm**(-1) (nist2006)
+  real*8, parameter :: hy2thz = hy2cm_1 / thz2cm_1     !hartree -> THz
   real*8, parameter :: hy2kjmol = 2625.4996d0          !hartree -> kJ/mol (nist2006)
   real*8, parameter :: au2gpa = 29421.0108037190       !at.u.(pres) --> GPa (nist2006)
   real*8, parameter :: amu2au = pcamu/pcme           !amu --> at. units
@@ -119,6 +121,7 @@ module param
   integer, parameter :: units_p_gpa = 2
   integer, parameter :: units_f_hy = 1
   integer, parameter :: units_f_cm1 = 2
+  integer, parameter :: units_f_thz = 3
 
   ! colors
   integer, parameter :: mcols = 13

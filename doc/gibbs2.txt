@@ -1601,7 +1601,7 @@ The phase keyword
          [units {volume {bohr|bohr3|bohr^3|ang|ang3|ang^3}}
                 {energy {hy|hartree|ha|ev|evolt|electronvolt|ry|rydberg}}
                 {pressure {au|a.u.|gpa}}
-                {{freq|frequency} {hartree|hy|ha|cm-1|cm^-1|cm_1}}
+                {{freq|frequency} {hartree|hy|ha|cm-1|cm^-1|cm_1|thz}}
                 {edos {hy|hartree|ha|ev|evolt|electronvolt|ry|rydberg}}] \
          [interpolate f1.i [f2.i ...]]
          [fstep step.r]
@@ -2077,12 +2077,12 @@ A description of the rest of keywords optional to **phase** follows:
       units [{volume {bohr|bohr3|bohr^3|ang|ang3|ang^3}}]
             [{energy {hy|hartree|ha|ev|evolt|electronvolt|ry|rydberg}}]
             [{pressure {au|a.u.|gpa}}]
-            [{{freq|frequency} {hartree|hy|ha|cm-1|cm^-1|cm_1}}]
+            [{{freq|frequency} {hartree|hy|ha|cm-1|cm^-1|cm_1|thz}}]
             [{edos {hy|hartree|ha|ev|evolt|electronvolt|ry|rydberg}}] \
 
    Specifies the units of input data. All data is converted to atomic
    units internally, so most output is also in atomic units, except
-   where it is explicitely noted. Pressure input units are relevant to
+   where it is explicitly noted. Pressure input units are relevant to
    the **pvdata** keyword. The frequency units apply to the
    vibrational density of states, frequencies at Gamma,... The
    **edos** units apply to the Fermi level read in **edos sommerfeld**

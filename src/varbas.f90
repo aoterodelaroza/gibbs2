@@ -461,6 +461,8 @@ contains
     ffnegcrit = fnegcrit
     if (units == units_f_hy) then
        ffnegcrit = ffnegcrit / hy2cm_1
+    elseif (units == units_f_thz) then
+       ffnegcrit = ffnegcrit / thz2cm_1
     end if
 
     msize = size(f)
@@ -528,6 +530,8 @@ contains
     eps = eps_nointerp
     if (units == units_f_hy) then
        eps = eps / hy2cm_1
+    elseif (units == units_f_thz) then
+       eps = eps / thz2cm_1
     end if
     do i = 1, nfmax-1
        do while(ff(nn2) < f(i) - eps)
@@ -576,6 +580,8 @@ contains
     ffnegcrit = fnegcrit
     if (units == units_f_hy) then
        ffnegcrit = ffnegcrit / hy2cm_1
+    elseif (units == units_f_thz) then
+       ffnegcrit = ffnegcrit / thz2cm_1
     end if
 
     ! open the file
@@ -1014,6 +1020,8 @@ contains
                 elseif (equal(word,'cm-1'//null).or.equal(word,'cm^-1'//null).or.&
                    equal(word,'cm_1'//null)) then
                    p%units_f = units_f_cm1
+                elseif (equal(word,'thz'//null)) then
+                   p%units_f = units_f_thz
                 else
                    call error('phase_init','unknown FREQUENCY unit in PHASE',faterr)
                 end if
@@ -1169,7 +1177,7 @@ contains
        ok = fgetline(uuin,line)
        if (.not.ok) exit
 
-       ! skip commentaries and blank lines and read endphase
+       ! skip comments and blank lines and read endphase
        lp = 1
        word = getword(word,line,lp)
        word = lower(word)
@@ -1406,8 +1414,12 @@ contains
        vmax_setv = min(vmax_setv,ph(i)%v(ph(i)%nv))
 
        ! tmodel-dependent setup
-       if (allocated(ph(i)%freqg0) .and. ph(i)%units_f == units_f_cm1) then
-          ph(i)%freqg0 = ph(i)%freqg0 / hy2cm_1
+       if (allocated(ph(i)%freqg0)) then
+          if (ph(i)%units_f == units_f_cm1) then
+             ph(i)%freqg0 = ph(i)%freqg0 / hy2cm_1
+          else if (ph(i)%units_f == units_f_thz) then
+             ph(i)%freqg0 = ph(i)%freqg0 / hy2thz
+          end if
        end if
        if ((ph(i)%tmodel == tm_debye_einstein) .and. .not.allocated(ph(i)%freqg0)) then
            call error('setup_phases','Eins/Debeins requires freqg0',faterr)
@@ -1742,6 +1754,8 @@ contains
        write (uout,'("    Frequency : Hartree")')
     case(units_f_cm1)
        write (uout,'("    Frequency : cm^(-1)")')
+    case(units_f_thz)
+       write (uout,'("    Frequency : Thz")')
     end select
     select case(p%eunits_e)
     case(units_e_hy)
@@ -2048,6 +2062,8 @@ contains
     ! convert input units
     if (p%units_f == units_f_cm1) then
        p%omega = p%omega / hy2cm_1
+    else if (p%units_f == units_f_thz) then
+       p%omega = p%omega / hy2thz
     else
        call error('phase_phespresso',&
           'Espresso -> isnt the matdyn.freq in cm_1? (UNITS keyword)',warning)
@@ -2085,6 +2101,10 @@ contains
        p%phdos_f = p%phdos_f / hy2cm_1
        p%phdos_d = p%phdos_d * hy2cm_1
        p%phstep = p%phstep / hy2cm_1
+    elseif (p%units_f == units_f_cm1) then
+       p%phdos_f = p%phdos_f / hy2thz
+       p%phdos_d = p%phdos_d * hy2thz
+       p%phstep = p%phstep / hy2thz
     end if
 
     ! number of frequencies
