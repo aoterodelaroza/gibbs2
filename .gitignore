@@ -4,6 +4,8 @@
 *.a
 
 # binary
+src/gibbs2_dbg
+src/gibbs2_dbg.exe
 src/gibbs2
 src/gibbs2.exe
 
