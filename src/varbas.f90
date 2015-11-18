@@ -2152,8 +2152,8 @@ contains
     ! normalization
     do iv = 1, p%nv
        if (.not.p%dyn_active(iv)) cycle
-       if (step > 0d0) then
-          sumn = simpson(p%phdos_d(:,1,iv),step)
+       if (p%phstep > 0d0) then
+          sumn = simpson(p%phdos_d(:,1,iv),p%phstep)
        else
           sumn = trapezoidal(p%phdos_f,p%phdos_d(:,1,iv))
        end if
