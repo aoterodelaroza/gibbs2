@@ -407,7 +407,11 @@ contains
 
     ! calculate vibrational free energy (zp + thermal), atomic units
     if (abs(T) < 1d-5) then
-       aux = d*(0.5d0*f+pckbau*T*log(1-exp(-f/pckbau/T)))
+       if (abs(T) < 1d-10) then
+          aux = 0d0
+       else
+          aux = d*(0.5d0*f+pckbau*T*log(1-exp(-f/pckbau/T)))
+       end if
        if (step > 0d0) then
           he = simpson(aux,step)
        else
