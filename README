@@ -5,3 +5,8 @@ initio results.
 The instructions for installation and usage of gibbs2 are contained in
 the documentation, doc/gibbs2.txt and doc/gibbs2.pdf .
 
+Note: the Intel fortran comiler (ifort) version 15.0.2 seems to have
+problems running gibbs2. Even though it compiles just fine, it gives a
+segmentation fault for unknown reasons for some of the test
+cases. Other versions of ifort work just fine.
+
