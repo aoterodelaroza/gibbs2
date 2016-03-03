@@ -80,7 +80,7 @@ module varbas
 
      ! debye
      real*8 :: poisson = 0.25d0
-     real*8 :: poratio
+     real*8 :: pofunc
      real*8 :: a_grun = -1d0/6d0
      real*8 :: b_grun = half
      real*8 :: td0
@@ -1097,7 +1097,7 @@ contains
     fx=2*(1+p%poisson)/3d0/(1-2*p%poisson)
     gx=(1+p%poisson)/3d0/(1-p%poisson)
     hx=2d0*sqrt(fx**3)+sqrt(gx**3)
-    p%poratio=exp(-log(hx/3)/3)
+    p%pofunc=exp(-log(hx/3)/3)
 
     ! set column identifiers
     i = 0
@@ -1779,8 +1779,8 @@ contains
        write (uout,'("  First/last Debye temp. (K): ",1p,2(E20.12,2X))') &
           p%td(1), p%td(p%nv)
     end if
-    write (uout,'("  Poisson ratio (sigma): ",F14.6)') p%poisson
-    write (uout,'("  Poisson function, f(sigma): ",F14.6)') p%poratio
+    write (uout,'("  Poisson ratio from input (sigma): ",F14.6)') p%poisson
+    write (uout,'("  Poisson function, f(sigma): ",F14.6)') p%pofunc
     if (allocated(p%freqg0)) then
        write (uout,'("  Number of freq. at G (p=0) : ",I4)') p%nfreq
        write (uout,'("  First/last frequency (cm^-1) : ",1p,2(E20.12,2X))') &

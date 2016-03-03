@@ -47,7 +47,7 @@ contains
     integer :: ierr
     character*(mline_fmt) :: fm
     real*8 :: gamma, td, td0, f2s, f3s
-    real*8 :: fx, gx, hx, poi, poratio
+    real*8 :: fx, gx, hx, poi, pofunc
 
     if (mm < 0d0 .or. vfree < 0d0) return
 
@@ -78,9 +78,9 @@ contains
           fx=2*(1+poi)/3d0/(1-2*poi)
           gx=(1+poi)/3d0/(1-poi)
           hx=2d0*sqrt(fx**3)+sqrt(gx**3)
-          poratio=exp(-log(hx/3)/3)
+          pofunc=exp(-log(hx/3)/3)
           f2s = fv2(p%fit_mode,p%v(j),p%npol,p%cpol)
-          p%td(j) = (6*pi*pi*vfree*p%v(j)*p%v(j))**third / pckbau * poratio * sqrt(f2s/mm)
+          p%td(j) = (6*pi*pi*vfree*p%v(j)*p%v(j))**third / pckbau * pofunc * sqrt(f2s/mm)
        end do
     end if
 
@@ -90,11 +90,12 @@ contains
        p%ntpol = p%ntpol + 1
        p%tpol(p%ntpol) = 0d0
        if (ierr > 0) call error('get_thetad','Can not fit logTd vs. logV',faterr)
+       p%td0 = exp(fv0(p%tdfit_mode,log(p%veq_static),p%ntpol,p%tpol))
+    else
+       ! fill td0
+       f2s = fv2(p%fit_mode,p%veq_static,p%npol,p%cpol)
+       p%td0 = (6*pi*pi*vfree*p%veq_static*p%veq_static)**third / pckbau * p%pofunc * sqrt(f2s/mm)
     end if
-
-    ! fill td0
-    f2s = fv2(p%fit_mode,p%veq_static,p%npol,p%cpol)
-    p%td0 = (6*pi*pi*vfree*p%veq_static*p%veq_static)**third / pckbau * p%poratio * sqrt(f2s/mm)
 
     ! header
     if (verbose) then
@@ -115,7 +116,7 @@ contains
        end if
 
        if (verbose) then
-          td0 = (6*pi*pi*vfree*p%v(j)*p%v(j))**third / pckbau * p%poratio * sqrt(f2s/mm)
+          td0 = (6*pi*pi*vfree*p%v(j)*p%v(j))**third / pckbau * p%pofunc * sqrt(f2s/mm)
           write (uout,fm) p%v(j), p%td(j), td0
        end if
     end do
@@ -147,7 +148,7 @@ contains
        gamma = -fv1(p%tdfit_mode,log(v),p%ntpol,p%tpol)
        
     case(tm_debye,tm_debye_einstein)
-       td = (6*pi*pi*vfree*v*v)**third / pckbau * p%poratio * sqrt(f2/mm)
+       td = (6*pi*pi*vfree*v*v)**third / pckbau * p%pofunc * sqrt(f2/mm)
        gamma = -1d0/6d0 - 0.5d0 * (1+v*f3/f2)
 
     case(tm_debyegrun)
