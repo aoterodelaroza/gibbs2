@@ -457,7 +457,7 @@ program gibbs2
 
      ! phase name.s [Z z.r] [poisson sigma.r] [file file.s]
      ! tmodel {static|debye_input|debye_static|debye_sc|debye_staticbv|
-     !        debye_einstein|einstein} [sigma.r] ...
+     !        debye_einstein|debye_poisson_input|einstein} [sigma.r] ...
      !   v1 e1 [td1]
      !   ...
      ! endphase
@@ -696,12 +696,14 @@ program gibbs2
   doit = .false.
   do i = 1, nph
      doit = doit .or. (ph(i)%tmodel == tm_debye_input .or. ph(i)%tmodel == tm_debye .or.&
-                       ph(i)%tmodel == tm_debyegrun .or. ph(i)%tmodel == tm_debye_einstein)
+                       ph(i)%tmodel == tm_debyegrun .or. ph(i)%tmodel == tm_debye_einstein .or.&
+                       ph(i)%tmodel == tm_debye_poisson_input)
   end do
   if (doit) write (uout,'("* Computed Debye temperatures from static data")')
   do i = 1, nph
      verbose = (ph(i)%tmodel == tm_debye_input .or. ph(i)%tmodel == tm_debye .or.&
-                ph(i)%tmodel == tm_debyegrun .or. ph(i)%tmodel == tm_debye_einstein)
+                ph(i)%tmodel == tm_debyegrun .or. ph(i)%tmodel == tm_debye_einstein .or.&
+                ph(i)%tmodel == tm_debye_poisson_input)
      call fill_thetad(ph(i),verbose)
   end do
   if (doit) write (uout,*)

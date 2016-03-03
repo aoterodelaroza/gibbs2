@@ -689,7 +689,7 @@ contains
     !  sets Uvib, Cv_vib, Svib, Fvib, theta and gamma
     call get_thetad(p,v,f2s,f3s,theta,gamma)
     select case(p%tmodel)
-    case(tm_debye_input, tm_debye, tm_debyegrun)
+    case(tm_debye_input, tm_debye, tm_debyegrun, tm_debye_poisson_input)
        if (gamma_from_s .and. t < tlim_gamma) then
           call thermal (theta,t,D,Derr,uvib,cv_lowt,fvib,svib)
        end if

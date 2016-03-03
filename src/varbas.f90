@@ -87,7 +87,7 @@ module varbas
      real*8, allocatable :: td(:)
      integer :: ntpol
      real*8 :: tpol(0:mmpar)
-     
+
      ! debye-einstein
      integer :: nfreq = 0
      real*8, allocatable :: freqg0(:)
@@ -147,6 +147,7 @@ module varbas
   integer, parameter :: tm_qhafull = 8
   integer, parameter :: tm_qhafull_espresso = 9
   integer, parameter :: tm_debyegrun = 10
+  integer, parameter :: tm_debye_poisson_input = 11
 
   ! scaling modes
   integer, parameter :: scal_noscal = 1
@@ -815,6 +816,9 @@ contains
              p%tmodel = tm_debye
           elseif (equal(word,'debye_einstein'//null)) then
              p%tmodel = tm_debye_einstein
+          elseif (equal(word,'debye_poisson_input'//null)) then
+             p%tmodel = tm_debye_poisson_input
+             icol_td = 0
           elseif (equal(word,'debye_gruneisen'//null)) then
              p%tmodel = tm_debyegrun
              lp2 = lp
@@ -1421,16 +1425,15 @@ contains
              ph(i)%freqg0 = ph(i)%freqg0 / hy2thz
           end if
        end if
-       if ((ph(i)%tmodel == tm_debye_einstein) .and. .not.allocated(ph(i)%freqg0)) then
+       if ((ph(i)%tmodel == tm_debye_einstein) .and. .not.allocated(ph(i)%freqg0)) &
            call error('setup_phases','Eins/Debeins requires freqg0',faterr)
-       end if
        if (ph(i)%tmodel == tm_qhafull) then
           call phase_phdos(ph(i))
        else if (ph(i)%tmodel == tm_qhafull_espresso) then
           call phase_phespresso(ph(i))
        end if
 
-       ! entropy and ThetaD fit modes
+       ! entropy and ThetaD ratio fit modes
        if (ph(i)%fit_mode > 10000) then
           strain = (ph(i)%fit_mode - fit_strain * 10000) / 100
           order =  (ph(i)%fit_mode - fit_strain * 10000 - 100 * strain)
@@ -1831,6 +1834,8 @@ contains
        write (uout,'("  Temperature model: Debye, Td from static B(V).")')
     case(tm_debye_einstein)
        write (uout,'("  Temperature model: Debye-Einstein.")')
+    case(tm_debye_poisson_input)
+       write (uout,'("  Temperature model: Debye with Poisson ratio in input.")')
     case(tm_qhafull)
        write (uout,'("  Temperature model: QHA (phonon DOS).")')
        write (uout,'("  Frequency step: ",1p,E12.4)') p%phstep

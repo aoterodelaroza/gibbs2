@@ -1584,7 +1584,7 @@ The phase keyword
  	       	      infinitesimal|inf|quotient|x1|x3|xinv3|x3inv|v} [order.i|0]}]\
          [reg {lad|lsq}] \
          [fix i1.i v1.r i2.i v2.r ...] \
-         [tmodel {static|debye_input|debye|debye_einstein|
+         [tmodel {static|debye_input|debye_poisson_input|debye|debye_einstein|
                   debye_gruneisen {slater|dm|vz|mfv|a.r b.r}|
                   {qhafull|qha} [phfield ifield.i] [dosfield i1.i i2.i]|
                   qha_espresso [phfield ifield.i]] \
@@ -1655,8 +1655,9 @@ with the **using** (or **u** for short) keyword. For instance:
 
 reads the file mgo.dat: the fourth field is interpreted as the cell
 volume and the fifth is the energy. The optional third field
-identifier is assigned to the Debye temperature and is read only when
-the debye_input temperature model is used. It is ignored otherwise.
+identifier is assigned to the Debye temperature or the Poisson
+ratio. It is read only when the debye_input or the debye_poisson_input
+temperature models are used, respectively. It is ignored otherwise.
 
 A description of the rest of keywords optional to **phase** follows:
 
@@ -1842,7 +1843,7 @@ A description of the rest of keywords optional to **phase** follows:
    ::
 
       #gibbslang
-      tmodel {static|debye_input|debye|debye_einstein|
+      tmodel {static|debye_input|debye_poisson_input|debye|debye_einstein|
               debye_gruneisen {slater|dm|vz|mfv|a.r b.r}|
               {qhafull|qha} [phfield ifield.i] [dosfield i1.i i2.i]|
               qha_espresso [phfield ifield.i]]
@@ -1858,6 +1859,10 @@ A description of the rest of keywords optional to **phase** follows:
    - **debye_input**: Debye model, the Debye temperatures are read
        from input. Each volume-energy record must contain an
        additional field, corresponding to the Debye tempearture at
+       that volume.
+   - **debye_input**: Debye model, the Poisson ratio at each volume
+       are read from input. Each volume-energy record must contain an
+       additional field, corresponding to the Poisson ratio at
        that volume.
    - **debye_einstein**: Debye model for the acoustic branches and
        3n-3 Dirac deltas representing the optic part of the phonon
