@@ -43,7 +43,7 @@ program gibbs2
   logical :: callhouse, callpf, calleout
   integer :: nhouse
   real*8 :: pini, pend, tini, tend, tmaxmin, vini, vend
-  real*8 :: vout_ini, vout_end, vout_step
+  real*8 :: vout_ini, vout_end, vout_step, e0
   integer :: ierr, idum, isv, onxint, nid
   real*8, allocatable :: va(:,:), ba(:,:), ga(:,:)   ! v(p), b(p) and g(p) for all the phases.
 
@@ -684,7 +684,7 @@ program gibbs2
      ! Calculate static V(p1..pn) (fit)
      do j = 1, nps
         call fit_pshift(ph(i)%fit_mode,ph(i)%v,plist(j),ph(i)%npol,ph(i)%cpol,&
-           va(j,i),ba(j,i),ga(j,i),ierr)
+           va(j,i),ba(j,i),e0,ga(j,i),ierr)
      end do
   end do
 

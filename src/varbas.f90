@@ -171,7 +171,7 @@ module varbas
      "p(GPa)        ",&
      "T(K)          ",&
      "V(bohr^3)     ",&
-     "Estatic(Hy)   ",&
+     "Estatic(Ha)   ",&
      "G(kJ/mol)     ",&
      "Gerr(kJ/mol)  ",&
      "p_sta(GPa)    ",&
@@ -1548,7 +1548,7 @@ contains
 
     integer :: i, idx, idxx(1), j
     character*(mline) :: msg
-    real*8 :: xmin, fa, fb, fx, vk, bk, gk
+    real*8 :: xmin, fa, fb, fx, vk, bk, ek, gk
     integer :: istep, ierr
 
     ! check that it is possible to minimize G(static) = E(static) + pV vs. V
@@ -1556,7 +1556,7 @@ contains
     do i = 1, nph
        ! check that it is possible to minimize G(static) = E(static) + pV vs. V
        do j = 1, nps
-          call fit_pshift(ph(i)%fit_mode, ph(i)%v,plist(j),ph(i)%npol,ph(i)%cpol,vk,bk,gk,ierr)
+          call fit_pshift(ph(i)%fit_mode, ph(i)%v,plist(j),ph(i)%npol,ph(i)%cpol,vk,bk,ek,gk,ierr)
           if (ierr > 0) then
              write (msg,&
                 '("Phase ",A,": for pressure (",F12.3,"), no min. in static H.")')&
@@ -1768,12 +1768,12 @@ contains
     case(units_e_ry)
        write (uout,'("    DOS energy : Ry")')
     end select
-    write (uout,'("  Output units are atomic units (Hy), except where noted.")')
+    write (uout,'("  Output units are atomic units (Ha), except where noted.")')
 
     ! static energy fit
     write (uout,'("  First/last volume (bohr^3): ",1p,2(E20.12,2X))') &
        p%v(1), p%v(p%nv)
-    write (uout,'("  First/last energy (Hy): ",1p,2(E20.12,2X))') &
+    write (uout,'("  First/last energy (Ha): ",1p,2(E20.12,2X))') &
        p%e(1)+einf, p%e(p%nv)+einf
     if (allocated(p%td)) then
        write (uout,'("  First/last Debye temp. (K): ",1p,2(E20.12,2X))') &
@@ -1815,11 +1815,11 @@ contains
        write (uout,'("  Val. of fixed parameters: ",1p,99(E12.4,X))') p%obelix(1:p%nfix)
     end if
     write (uout,'("  Static equilibrium volume (bohr^3): ",F20.10)') p%veq_static
-    write (uout,'("  Static equilibrium energy (Hy): ",F20.10)') p%eeq_static / hy2kjmol
-    write (uout,'("  Static equilibrium energy (kJ/mol): ",F20.10)') p%eeq_static 
+    write (uout,'("  Static equilibrium energy (Ha): ",F20.10)') p%eeq_static 
+    write (uout,'("  Static equilibrium energy (kJ/mol): ",F20.10)') p%eeq_static * hy2kjmol
     write (uout,'("  Static bulk modulus (GPa): ",F15.6)') p%beq_static
-    write (uout,'("  Static EOS fit, error RMS (Hy): ",1p,E15.7)') p%rms
-    write (uout,'("  Static EOS fit, max|error| (Hy): ",1p,E15.7)') p%maxdev
+    write (uout,'("  Static EOS fit, error RMS (Ha): ",1p,E15.7)') p%rms
+    write (uout,'("  Static EOS fit, max|error| (Ha): ",1p,E15.7)') p%maxdev
     write (uout,'("  r2 of the fit: ",1p,E20.12)') p%r2
     write (uout,'("  Akaike information criterion: ",1p,E20.12)') p%aic
     write (uout,'("  Bayesian information (Schwarz) criterion: ",1p,E20.12)') p%bic
@@ -2184,7 +2184,7 @@ contains
     
     integer :: i
     character*(mline_fmt) :: fm
-    real*8 :: vk, bk, gk, f1, f2, f3, f4, b1, b2
+    real*8 :: vk, bk, ek, gk, f1, f2, f3, f4, b1, b2
     integer :: ierr
     real*8 :: prop(5), prop2(5)
 
@@ -2196,38 +2196,38 @@ contains
     fm = format_string_header( &
        (/1,ifmt_order,ifmt_bp,ifmt_v,ifmt_e,ifmt_b,ifmt_bp,ifmt_bpp/),&
        (/1,1,6,9,5,6,2,10/))
-    write (uout,fm) "#","n","weight","V(bohr^3)","E(Hy)","B(GPa)","Bp","Bpp(GPa-1)"
+    write (uout,fm) "#","n","weight","V(bohr^3)","E(Ha)","B(GPa)","Bp","Bpp(GPa-1)"
     fm = format_string((/ifmt_order,ifmt_bp,ifmt_v,ifmt_e,ifmt_b,ifmt_bp,ifmt_bpp/),1)
 
     prop = 0d0
     prop2 = 0d0
     do i = 1, p%pfit%nfit
-       call fit_pshift(p%pfit%mode(i),p%v,0d0,p%pfit%npar(i),p%pfit%apar(:,i),vk,bk,gk,ierr)
+       call fit_pshift(p%pfit%mode(i),p%v,0d0,p%pfit%npar(i),p%pfit%apar(:,i),vk,bk,ek,gk,ierr)
        f1 = fv1(p%pfit%mode(i),vk,p%pfit%npar(i),p%pfit%apar(:,i))
        f2 = fv2(p%pfit%mode(i),vk,p%pfit%npar(i),p%pfit%apar(:,i))
        f3 = fv3(p%pfit%mode(i),vk,p%pfit%npar(i),p%pfit%apar(:,i))
        f4 = fv4(p%pfit%mode(i),vk,p%pfit%npar(i),p%pfit%apar(:,i))
        b1 = -(1+vk*f3/f2)
        b2 = ((f3+vk*f4)/f2**2 - vk*f3**2/f2**3) / au2gpa
-       write (uout,fm) p%pfit%npar(i)-2, p%pfit%wei(i), vk, gk/hy2kjmol, bk, b1, b2
+       write (uout,fm) p%pfit%npar(i)-2, p%pfit%wei(i), vk, gk, bk, b1, b2
 
        p%pfit%veq(i) = vk
        p%pfit%beq(i) = bk
 
-       prop = prop + (/vk, gk/hy2kjmol, bk, b1, b2/) * p%pfit%wei(i)
-       prop2 = prop2 + (/vk, gk/hy2kjmol, bk, b1, b2/)**2 * p%pfit%wei(i)
+       prop = prop + (/vk, gk, bk, b1, b2/) * p%pfit%wei(i)
+       prop2 = prop2 + (/vk, gk, bk, b1, b2/)**2 * p%pfit%wei(i)
     end do
     prop2 = sqrt(max(prop2 - prop*prop,0d0))
     fm = format_string((/15,ifmt_v,ifmt_e,ifmt_b,ifmt_bp,ifmt_bpp/),1)
 
-    call fit_pshift(p%fit_mode,p%v,0d0,p%npol,p%cpol,vk,bk,gk,ierr)
+    call fit_pshift(p%fit_mode,p%v,0d0,p%npol,p%cpol,vk,bk,ek,gk,ierr)
     f1 = fv1(p%fit_mode,vk,p%npol,p%cpol)
     f2 = fv2(p%fit_mode,vk,p%npol,p%cpol)
     f3 = fv3(p%fit_mode,vk,p%npol,p%cpol)
     f4 = fv4(p%fit_mode,vk,p%npol,p%cpol)
     b1 = -(1+vk*f3/f2)
     b2 = ((f3+vk*f4)/f2**2 - vk*f3**2/f2**3) / au2gpa
-    write (uout,fm) "-average pol.--", vk, gk/hy2kjmol, bk, b1, b2
+    write (uout,fm) "-average pol.--", vk, gk, bk, b1, b2
     write (uout,fm) "--dir. average-", prop
     write (uout,fm) "---std. dev.---", prop2
     if (prop2(3) > bfrac_warn * prop(3)) then

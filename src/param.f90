@@ -45,12 +45,12 @@ module param
 
   ! Physical constants and conversion factors.
   !
-  ! Most of them involve atomic units:  hartree (Hy), bohr, ...
+  ! Most of them involve atomic units:  hartree (Ha), bohr, ...
   ! The physical constant names begin with pc.
   ! The conversion factors are named as: <unit1>2<unit2>
   ! meaning that the factor converts <unit1> to <unit2>.
   !
-  real*8, parameter :: pckbau = 3.166815d-6    !Boltzmann ct. [Hy/K] (nist2006,wikipedia 10/10/10)
+  real*8, parameter :: pckbau = 3.166815d-6    !Boltzmann ct. [Ha/K] (nist2006,wikipedia 10/10/10)
   real*8, parameter :: pcamu = 1.660538782d-24 !atomic mass unit [g] (nist2006)
   real*8, parameter :: pcme = 9.10938215d-28   !electron mass [g] (nist2006)
   real*8, parameter :: pcna = 6.02214179d23    !Avogadro ct. [1/mol] (nist2006)

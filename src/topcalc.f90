@@ -129,7 +129,7 @@ contains
     do i = 1, nph
        write (lu,'("# Phase ",A)') trim(adjustl(ph(i)%name(1:leng(ph(i)%name))))
        fm = format_string_header((/1,ifmt_v,ifmt_eprec,ifmt_eprec,ifmt_p/),(/1,9,9,9,10/))
-       write (lu,fm) "#", "V(bohr^3)", "E_inp(Hy)", "E_fit(Hy)","p_fit(GPa)"
+       write (lu,fm) "#", "V(bohr^3)", "E_inp(Ha)", "E_fit(Ha)","p_fit(GPa)"
        fm = format_string((/ifmt_v,ifmt_eprec,ifmt_eprec,ifmt_p/),1)
        do j = 1, ph(i)%nv
           f0 = fv0(ph(i)%fit_mode, ph(i)%v(j), ph(i)%npol, ph(i)%cpol)
@@ -152,7 +152,7 @@ contains
     do i = 1, nph
        write (lu,'("# Phase ",A)') trim(adjustl(ph(i)%name(1:leng(ph(i)%name))))
        fm = format_string_header((/1,ifmt_v,ifmt_eprec/),(/1,9,9/))
-       write (lu,fm) "#", "V(bohr^3)", "E_fit(Hy)"
+       write (lu,fm) "#", "V(bohr^3)", "E_fit(Ha)"
        fm = format_string((/ifmt_v,ifmt_eprec/),1)
        do j = igrid, 0, -1
           fac = real(j,8) / real(igrid,8)
@@ -169,7 +169,7 @@ contains
     lu = opengnu(trim(fileroot)//"_efit")
     write (lu,'("set xrange ["F20.4":"F20.4"]")') vmin, vmax
     write (lu,'("set yrange ["F20.4":"F20.4"]")') emin, emax
-    write (lu,'("set ylabel ""Energy (Hy)""")')
+    write (lu,'("set ylabel ""Energy (Ha)""")')
     write (lu,'("set xlabel ""Volume (bohr^3)""")')
     ends = ",\ "
     iact = 0
@@ -221,7 +221,7 @@ contains
     write (uout,'("  Writing file : ",A/)') trim(fileroot) // "_dH.aux"
     lu = fopen(lu,trim(fileroot) // "_dH.aux"//null,iowrite)
     write (lu,'("# H(p) plot, auxiliary file. ")') 
-    write (lu,'("# Contains dH(p) (Hy) calculated on input pressures. ")') 
+    write (lu,'("# Contains dH(p) (Ha) calculated on input pressures. ")') 
     write (lu,'("# p(GPa)",999(2X,A13,4X))') &
        (trim(adjustl(ph(imaskph(k))%name(1:leng(ph(imaskph(k))%name)))),k=2,imasknph)
     do j = 1, nps
@@ -234,7 +234,7 @@ contains
     ! write the gnu file
     write (uout,'("  Writing file : ",A/)') trim(fileroot) // "_dH.gnu"
     lu = opengnu(trim(fileroot) // "_dH")
-    write (lu,'("set ylabel ""{/Symbol D}H (Hy)""")')
+    write (lu,'("set ylabel ""{/Symbol D}H (Ha)""")')
     write (lu,'("set xlabel ""p (GPa)""")')
     write (lu,'("set xzeroaxis")')
     starts = "plot "
@@ -437,7 +437,7 @@ contains
 
     integer :: lu
     integer :: i, j, k, ierr, id
-    real*8 :: v, b, g
+    real*8 :: v, b, e, g
     character*(mline) :: msg, msg2
     character*(mline_fmt) :: fm, fme
     type(fitinfo) :: pfit
@@ -506,7 +506,7 @@ contains
           ! the rest of properties, from min(G): etc(p,T).
           do k = 1, nps
              ! equilibrium volume (p,T)
-             call fit_pshift(ft%amode,ph(i)%v,plist(k),ft%napol,ft%apol,v,b,g,ierr)
+             call fit_pshift(ft%amode,ph(i)%v,plist(k),ft%napol,ft%apol,v,b,e,g,ierr)
              if (ierr > 0 .or..not.is_dyn_v_in(ph(i),v)) then
                 write (msg,'(" T = ",F10.2," P = ",F10.2,", G minimum not found, skipping.")') &
                    tlist(j), plist(k)
@@ -567,6 +567,8 @@ contains
 
   end subroutine dyneos
 
+  ! Helper routine for dyneos. Calculates the output properties at a given
+  ! volume/temperature/pressure
   subroutine dyneos_outprop(p,v,t,pres,ft,pfit,proplist,errlist)
     use fit
 
@@ -577,7 +579,7 @@ contains
     real*8, dimension(mpropout), intent(out) :: proplist, errlist
     
     real*8, dimension(mpropout) :: prop, prop2, aux
-    real*8 :: vol, b0, g
+    real*8 :: vol, b0, e, g
     integer :: i, id, ierr
     type(fitpack) :: ft_aux
 
@@ -593,7 +595,7 @@ contains
           ! is this coming from a fixed pressure or fixed volume calc.?
           if (pres /= undef) then
              ! obtain equilibrium volume for this fit
-             call fit_pshift(pfit%mode(i),p%v,pres,pfit%npar(i),pfit%apar(:,i),vol,b0,g,ierr)
+             call fit_pshift(pfit%mode(i),p%v,pres,pfit%npar(i),pfit%apar(:,i),vol,b0,e,g,ierr)
              if (ierr > 0) cycle
 
              ! check the volume is not out of the region active for T-calc.
@@ -630,6 +632,7 @@ contains
 
   end subroutine dyneos_outprop
 
+  ! Calculate peroperties at a given volume and temperature.
   subroutine dyneos_calc(p,v,t,ft,proplist)
     use debye
     use eos
@@ -957,7 +960,7 @@ contains
 
     integer :: i, j, k
     integer :: mint, n, lu
-    real*8 :: v, p, t, x, b, g, fac, f1
+    real*8 :: v, p, t, e, x, b, g, fac, f1
     real*8, allocatable :: fi(:)
     integer, allocatable :: ifm(:), ilens(:)
     character*(mline_fmt) :: fm1, fms
@@ -1035,7 +1038,7 @@ contains
           else if (iint(j) == 2) then
              p = fint(j)
              t = 0d0
-             call fit_pshift(ph(i)%fit_mode,ph(i)%v,p,ph(i)%npol,ph(i)%cpol,v,b,g,ierr)
+             call fit_pshift(ph(i)%fit_mode,ph(i)%v,p,ph(i)%npol,ph(i)%cpol,v,b,e,g,ierr)
              if (ierr > 0) then
                 write (uout,'(" Pressure = ",F12.4)') p
                 call error('dyneos','minimum of static H not found',warning)
@@ -1047,7 +1050,7 @@ contains
              j = j + 1
 
              call fit_agrid_t(ph(i),t,napol,apol,imode,ierr,.true.,.true.,.true.)
-             call fit_pshift(imode,ph(i)%v,p,napol,apol,v,b,g,ierr)
+             call fit_pshift(imode,ph(i)%v,p,napol,apol,v,b,e,g,ierr)
              if (ierr > 0) then
                 write (uout,'(" Temperature = ",F12.4)') t
                 write (uout,'(" Pressure = ",F12.4)') p
@@ -1100,7 +1103,7 @@ contains
     
     integer :: imode, niter
     real*8 :: vexpt, bexpt, fac
-    real*8 :: v0, b0, g0, g0new, v0t, b0t, g0t
+    real*8 :: v0, b0, e0, g0, e0new, g0new, v0t, b0t, e0t, g0t
     real*8 :: vexp, bexp
     real*8 :: q1, q2
     real*8 :: fa, fb, qfa, qfb, qfx
@@ -1116,11 +1119,10 @@ contains
        if (ph(i)%scaltype == scal_noscal) cycle
 
        ! fill static properties to uncorrected static energy
-       call fit_pshift(ph(i)%fit_mode,ph(i)%v,0d0,ph(i)%npol,ph(i)%cpol,v0,b0,g0,ierr)
+       call fit_pshift(ph(i)%fit_mode,ph(i)%v,0d0,ph(i)%npol,ph(i)%cpol,v0,b0,e0,g0,ierr)
        ph(i)%veq_static = v0
-       ph(i)%eeq_static = g0
+       ph(i)%eeq_static = g0 ! because the fit_pshift had p = 0.
        ph(i)%beq_static = b0
-       g0 = g0 / hy2kjmol
        b0 = b0 / au2gpa
 
        ! header
@@ -1153,7 +1155,7 @@ contains
 
        ! find v0, b0 and g0 at temperature t0
        call fit_agrid_t(ph(i),ph(i)%eec_t,napol,apol,imode,ierr,.true.,.true.,.true.)
-       call fit_pshift(imode,ph(i)%v,ph(i)%eec_p,napol,apol,v0t,b0t,g0t,ierr)
+       call fit_pshift(imode,ph(i)%v,ph(i)%eec_p,napol,apol,v0t,b0t,e0t,g0t,ierr)
        if (ierr > 0) then
           write (msg,'("Phase ",A,": Can not find minimum of F(V,T). Using NOSCAL.")')&
              trim(adjustl(ph(i)%name(1:leng(ph(i)%name))))
@@ -1254,8 +1256,7 @@ contains
           ph(i)%cpol, ierr, .false., ph(i)%nfix, ph(i)%idfix, ph(i)%obelix)
        if (ierr > 0) call error('eshift_vexp','Minimum E(x) not found',faterr)
        call phase_checkfiterr(ph(i),.false.)
-       call fit_pshift(ph(i)%fit_mode,ph(i)%v,0d0,ph(i)%npol,ph(i)%cpol,v0,b0,g0new,ierr)
-       g0new = g0new / hy2kjmol
+       call fit_pshift(ph(i)%fit_mode,ph(i)%v,0d0,ph(i)%npol,ph(i)%cpol,v0,b0,e0new,g0new,ierr)
        ph(i)%e = ph(i)%e + g0 - g0new
        write (uout,'("  Energy step: ",1p,E20.12)') g0new-g0
 
@@ -1266,11 +1267,10 @@ contains
           call error('eshift_vexp','Minimum E(x) not found',faterr)
        end if
        call phase_checkfiterr(ph(i),.false.)
-       call fit_pshift(ph(i)%fit_mode,ph(i)%v,0d0,ph(i)%npol,ph(i)%cpol,v0,b0,g0new,ierr)
+       call fit_pshift(ph(i)%fit_mode,ph(i)%v,0d0,ph(i)%npol,ph(i)%cpol,v0,b0,e0new,g0new,ierr)
        ph(i)%veq_static = v0
-       ph(i)%eeq_static = g0
+       ph(i)%eeq_static = g0new
        ph(i)%beq_static = b0
-       g0new = g0new / hy2kjmol
        write (uout,'("  Energy step after E0 correction: ",1p,E20.12)') g0new-g0
 
        ! pmin and pmax
@@ -1282,7 +1282,7 @@ contains
 
        ! ! output new energy and static p
        ! fm = format_string_header((/1,ifmt_v,ifmt_e,ifmt_e,ifmt_p/),(/1,9,9,9,10/))
-       ! write (uout,fm) "#", "V(bohr^3)", "E_inp(Hy)", "E_new(Hy)","p_sta(GPa)"
+       ! write (uout,fm) "#", "V(bohr^3)", "E_inp(Ha)", "E_new(Ha)","p_sta(GPa)"
        ! fm = format_string((/ifmt_v,ifmt_e,ifmt_e,ifmt_p/),1)
        ! do j = 1, ph(i)%nv
        !    f1 = fv1(ph(i)%fit_mode, ph(i)%v(j), ph(i)%npol, ph(i)%cpol)
@@ -1535,7 +1535,7 @@ contains
     integer :: nx(nsamples), nv
     integer :: nparmin, nparmax
     integer :: mode, deg, idx, idxx(1), ierr
-    real*8 :: vscal, rms, rms2min, fdum1, fdum2
+    real*8 :: vscal, rms, rms2min, fdum1, fdum2, fdum3
     real*8 :: v0, f0, f1, f2, f3, f4
     character*(mline) :: fm, fme, msg
     real*8 :: prop(5), prop2(5), quo(5), amean, astd, yleft, yright
@@ -1623,7 +1623,7 @@ contains
              rms2min = min(rms2min,pol(npol)%rms2)
 
              call fit_pshift(mode,v(1:nx(n)),0d0,pol(npol)%npar,pol(npol)%c,&
-                v0,fdum1,fdum2,ierr)
+                v0,fdum1,fdum2,fdum3,ierr)
              if (ierr > 0) then
                 npol = npol - 1
                 nrej = nrej + 1
@@ -1677,7 +1677,7 @@ contains
        
        pavg%ndat = ph(i)%nv
        pavg%w = 1d0
-       call fit_pshift(mode,ph(i)%v,0d0,pavg%npar,pavg%c,v0,fdum1,fdum2,ierr)
+       call fit_pshift(mode,ph(i)%v,0d0,pavg%npar,pavg%c,v0,fdum1,fdum2,fdum3,ierr)
        if (ierr > 0) then
           call error('drhouse','No minimum found for average polynomial.',faterr)
        end if
@@ -1699,7 +1699,7 @@ contains
        fm = format_string_header( &
           (/1,ifmt_order,ifmt_bp,ifmt_v,ifmt_e,ifmt_b,ifmt_bp,ifmt_bpp/),&
           (/1,1,6,9,5,6,2,10/))
-       write (uout,fm) "#","n","weight","V(bohr^3)","E(Hy)","B(GPa)","Bp","Bpp(GPa-1)"
+       write (uout,fm) "#","n","weight","V(bohr^3)","E(Ha)","B(GPa)","Bp","Bpp(GPa-1)"
        fm = format_string((/ifmt_order,ifmt_bp,ifmt_v,ifmt_e,ifmt_b,ifmt_bp,ifmt_bpp/),1)
        do j = 1, npol
           write (uout,fm) pol(j)%deg, pol(j)%w, pol(j)%vmin, &
