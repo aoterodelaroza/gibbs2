@@ -75,7 +75,7 @@ contains
 
     if (writelevel > 0) then
        write (luw,'("# Phase ",A)') trim(adjustl(p%name(1:leng(p%name))))
-       write (luw,fm) "#","p(GPa)","E(Ha)","H(Ha)","V(bohr^3)","V/V0","p_fit(GPa)","B(GPa)",&
+       write (luw,fm) "##","p(GPa)","E(Ha)","H(Ha)","V(bohr^3)","V/V0","p_fit(GPa)","B(GPa)",&
           "Bp","Bpp(GPa-1)"
     end if
 
