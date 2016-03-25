@@ -208,7 +208,12 @@ contains
     integer :: imasknph, imaskph(nph)
 
     if (.not.doplotdh .or. writelevel < 2) return
-    if (n_not_pv_min() < 2) return
+    if (n_not_pv_min() < 2) then
+       if (nph >= 2) then
+          call error('plotdh','Not enough phases with p = 0 minimum to plot enthalpies.',warning)
+       end if
+       return
+    end if
 
     imasknph = 0
     do i = 1, nph
@@ -265,8 +270,13 @@ contains
     integer :: i1trans(mtrans), i2trans(mtrans)
     integer :: ntrans
 
-    if (n_not_pv_min() < 2) return
     if (.not.dotrans) return
+    if (n_not_pv_min() < 2) then
+       if (nph >= 2) then
+          call error('static_transp','Not enough phases with p = 0 minimum to find transition pressures.',warning)
+       end if
+       return
+    end if
 
     i1trans = 0
     i2trans = 0
