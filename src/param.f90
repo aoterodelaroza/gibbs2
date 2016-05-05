@@ -61,12 +61,12 @@ module param
   real*8, parameter :: bohr2cm = 0.52917720859d-8      !bohr -> cm (nist2006)
   real*8, parameter :: bohr2angstrom = 0.52917720859d0 !bohr -> angstrom (nist2006)
   real*8, parameter :: bohr2pm = 0.52917720859d2       !bohr -> pm (nist2006)
-  real*8, parameter :: hy2k = 3.1577465d5              !hartree -> K (nist2006)
-  real*8, parameter :: hy2ev = 27.21138386d0           !hartree -> eV (nist2006)
-  real*8, parameter :: hy2cm_1 = 2.194746313705d5      !hartree -> cm**(-1) (nist2006)
+  real*8, parameter :: ha2k = 3.1577465d5              !hartree -> K (nist2006)
+  real*8, parameter :: ha2ev = 27.21138386d0           !hartree -> eV (nist2006)
+  real*8, parameter :: ha2cm_1 = 2.194746313705d5      !hartree -> cm**(-1) (nist2006)
   real*8, parameter :: thz2cm_1 = 33.35641d0           !THz -> cm**(-1) (nist2006)
-  real*8, parameter :: hy2thz = hy2cm_1 / thz2cm_1     !hartree -> THz
-  real*8, parameter :: hy2kjmol = 2625.4996d0          !hartree -> kJ/mol (nist2006)
+  real*8, parameter :: ha2thz = ha2cm_1 / thz2cm_1     !hartree -> THz
+  real*8, parameter :: ha2kjmol = 2625.4996d0          !hartree -> kJ/mol (nist2006)
   real*8, parameter :: au2gpa = 29421.0108037190       !at.u.(pres) --> GPa (nist2006)
   real*8, parameter :: amu2au = pcamu/pcme           !amu --> at. units
 
@@ -114,12 +114,12 @@ module param
   ! input units
   integer, parameter :: units_v_bohr3 = 1
   integer, parameter :: units_v_ang3 = 2
-  integer, parameter :: units_e_hy = 1
+  integer, parameter :: units_e_ha = 1
   integer, parameter :: units_e_ev = 2
   integer, parameter :: units_e_ry = 3
   integer, parameter :: units_p_au = 1
   integer, parameter :: units_p_gpa = 2
-  integer, parameter :: units_f_hy = 1
+  integer, parameter :: units_f_ha = 1
   integer, parameter :: units_f_cm1 = 2
   integer, parameter :: units_f_thz = 3
 

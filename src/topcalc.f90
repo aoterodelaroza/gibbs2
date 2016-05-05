@@ -75,7 +75,7 @@ contains
     write (uout,'("  Units: output is in atomic units, except where noted.")')
     write (uout,'("  Number of atoms per primitive cell: ",I3)') vfree
     write (uout,'("  Molecular mass (amu): ",F17.8)') mm/amu2au
-    write (uout,'("  Infinite V energy (hy): ",1p,E20.12)') einf
+    write (uout,'("  Infinite V energy (ha): ",1p,E20.12)') einf
     write (uout,'("  Number of phases: ",I3)') nph
     do i = 1, nph
        write (uout,'("  Phase ",I3,": ",A)') i, ph(i)%name(1:leng(ph(i)%name))
@@ -832,25 +832,25 @@ contains
     dg = f0 - f0s - fsum
 
     ! conversion to output units
-    g = g * hy2kjmol 
-    dg = dg * hy2kjmol
+    g = g * ha2kjmol 
+    dg = dg * ha2kjmol
     pext = pext * au2gpa
     pth = pth * au2gpa
     psta = psta * au2gpa
-    cp = cp * hy2kjmol * 1000
+    cp = cp * ha2kjmol * 1000
     alpha = alpha * 1d5
-    fvib = fvib * hy2kjmol
-    uvib = uvib * hy2kjmol
-    svib = svib * hy2kjmol * 1000
-    cv_vib = cv_vib * hy2kjmol * 1000
-    fel = fel * hy2kjmol
-    uel = uel * hy2kjmol
-    sel = sel * hy2kjmol * 1000
-    cv_el = cv_el * hy2kjmol * 1000
-    fsum = fsum * hy2kjmol
-    usum = usum * hy2kjmol
-    ssum = ssum * hy2kjmol * 1000
-    cv_sum = cv_sum * hy2kjmol * 1000
+    fvib = fvib * ha2kjmol
+    uvib = uvib * ha2kjmol
+    svib = svib * ha2kjmol * 1000
+    cv_vib = cv_vib * ha2kjmol * 1000
+    fel = fel * ha2kjmol
+    uel = uel * ha2kjmol
+    sel = sel * ha2kjmol * 1000
+    cv_el = cv_el * ha2kjmol * 1000
+    fsum = fsum * ha2kjmol
+    usum = usum * ha2kjmol
+    ssum = ssum * ha2kjmol * 1000
+    cv_sum = cv_sum * ha2kjmol * 1000
 
     ! output properties list -> coordinated with preamble of varbas.f90 
     proplist( 1) = pext
@@ -1796,7 +1796,7 @@ contains
              tmpPB = (1d0 - twothird*pstat/bstat)**(half)
              tmpTot = tmpVol*tmpB*tmpPB
 
-             freq(1:n) = ph(i)%freqg0 * tmpTot * hy2cm_1
+             freq(1:n) = ph(i)%freqg0 * tmpTot * ha2cm_1
              
              write (lu,'(F10.4,9999(F16.8))') ph(i)%v(j), freq(1:n) 
           end do
@@ -1839,7 +1839,7 @@ contains
           end if
           if (ph(i)%units_e == units_e_ev) then
              write (lu,'("# energy ev")')
-             efac = hy2ev
+             efac = ha2ev
           else if (ph(i)%units_e == units_e_ry) then
              write (lu,'("# energy ry")')
              efac = 2d0
@@ -1875,7 +1875,7 @@ contains
           vend = vend / vfac
           if (ph(i)%units_e == units_e_ev) then
              write (lu,'("# energy ev")')
-             efac = hy2ev
+             efac = ha2ev
           else if (ph(i)%units_e == units_e_ry) then
              write (lu,'("# energy ry")')
              efac = 2d0

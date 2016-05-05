@@ -25,7 +25,7 @@ module varbas
 
   integer :: vfree   !< number of atoms per primitive cell
   real*8 :: mm       !< molecular mass (atomic units)
-  real*8 :: einf     !< energy zero (hy)
+  real*8 :: einf     !< energy zero (ha)
 
   ! phases
   integer, parameter :: phase_max = 50
@@ -460,8 +460,8 @@ contains
     
     ! set units for cutoffs
     ffnegcrit = fnegcrit
-    if (units == units_f_hy) then
-       ffnegcrit = ffnegcrit / hy2cm_1
+    if (units == units_f_ha) then
+       ffnegcrit = ffnegcrit / ha2cm_1
     elseif (units == units_f_thz) then
        ffnegcrit = ffnegcrit / thz2cm_1
     end if
@@ -529,8 +529,8 @@ contains
     nn2 = 1
     didinterp = .false.
     eps = eps_nointerp
-    if (units == units_f_hy) then
-       eps = eps / hy2cm_1
+    if (units == units_f_ha) then
+       eps = eps / ha2cm_1
     elseif (units == units_f_thz) then
        eps = eps / thz2cm_1
     end if
@@ -579,8 +579,8 @@ contains
     
     ! cutoffs with units
     ffnegcrit = fnegcrit
-    if (units == units_f_hy) then
-       ffnegcrit = ffnegcrit / hy2cm_1
+    if (units == units_f_ha) then
+       ffnegcrit = ffnegcrit / ha2cm_1
     elseif (units == units_f_thz) then
        ffnegcrit = ffnegcrit / thz2cm_1
     end if
@@ -687,10 +687,10 @@ contains
     p%z = 1d0
     ! input units
     p%units_v = units_v_bohr3
-    p%units_e = units_e_hy
+    p%units_e = units_e_ha
     p%units_p = units_p_gpa
-    p%units_f = units_f_hy
-    p%eunits_e = units_e_hy
+    p%units_f = units_f_ha
+    p%eunits_e = units_e_ha
     ! energy fits
     p%fit_mode = fit_strain * 10000 + fit_strain_bm * 100 + 0
     p%sfit_mode = p%fit_mode
@@ -1006,7 +1006,7 @@ contains
                 word = lower(word)
                 if (equal(word,'hy'//null).or.equal(word,'ha'//null).or.&
                    equal(word,'hartree'//null)) then
-                   p%units_e = units_e_hy
+                   p%units_e = units_e_ha
                 elseif (equal(word,'ry'//null).or.equal(word,'rydberg'//null)) then
                    p%units_e = units_e_ry
                 elseif (equal(word,'ev'//null).or.equal(word,'evolt'//null).or.&
@@ -1020,7 +1020,7 @@ contains
                 word = lower(word)
                 if (equal(word,'hy'//null).or.equal(word,'ha'//null).or.&
                    equal(word,'hartree'//null)) then
-                   p%units_f = units_f_hy
+                   p%units_f = units_f_ha
                 elseif (equal(word,'cm-1'//null).or.equal(word,'cm^-1'//null).or.&
                    equal(word,'cm_1'//null)) then
                    p%units_f = units_f_cm1
@@ -1034,7 +1034,7 @@ contains
                 word = lower(word)
                 if (equal(word,'hy'//null).or.equal(word,'ha'//null).or.&
                    equal(word,'hartree'//null)) then
-                   p%eunits_e = units_e_hy
+                   p%eunits_e = units_e_ha
                 elseif (equal(word,'ry'//null).or.equal(word,'rydberg'//null)) then
                    p%eunits_e = units_e_ry
                 elseif (equal(word,'ev'//null).or.equal(word,'evolt'//null).or.&
@@ -1420,9 +1420,9 @@ contains
        ! tmodel-dependent setup
        if (allocated(ph(i)%freqg0)) then
           if (ph(i)%units_f == units_f_cm1) then
-             ph(i)%freqg0 = ph(i)%freqg0 / hy2cm_1
+             ph(i)%freqg0 = ph(i)%freqg0 / ha2cm_1
           else if (ph(i)%units_f == units_f_thz) then
-             ph(i)%freqg0 = ph(i)%freqg0 / hy2thz
+             ph(i)%freqg0 = ph(i)%freqg0 / ha2thz
           end if
        end if
        if ((ph(i)%tmodel == tm_debye_einstein) .and. .not.allocated(ph(i)%freqg0)) &
@@ -1739,7 +1739,7 @@ contains
        write (uout,'("    Volume : ang^3")')
     end select
     select case(p%units_e)
-    case(units_e_hy)
+    case(units_e_ha)
        write (uout,'("    Energy : Hartree")')
     case(units_e_ev)
        write (uout,'("    Energy : eV")')
@@ -1753,7 +1753,7 @@ contains
        write (uout,'("    Pressure : GPa")')
     end select
     select case(p%units_f)
-    case(units_f_hy)
+    case(units_f_ha)
        write (uout,'("    Frequency : Hartree")')
     case(units_f_cm1)
        write (uout,'("    Frequency : cm^(-1)")')
@@ -1761,7 +1761,7 @@ contains
        write (uout,'("    Frequency : Thz")')
     end select
     select case(p%eunits_e)
-    case(units_e_hy)
+    case(units_e_ha)
        write (uout,'("    DOS energy : Hartree")')
     case(units_e_ev)
        write (uout,'("    DOS energy : eV")')
@@ -1784,7 +1784,7 @@ contains
     if (allocated(p%freqg0)) then
        write (uout,'("  Number of freq. at G (p=0) : ",I4)') p%nfreq
        write (uout,'("  First/last frequency (cm^-1) : ",1p,2(E20.12,2X))') &
-          p%freqg0(1)*hy2cm_1, p%freqg0(p%nfreq)*hy2cm_1
+          p%freqg0(1)*ha2cm_1, p%freqg0(p%nfreq)*ha2cm_1
     end if
     if (.not.p%staticmin) then
        write (uout,'("  Beware!! Static properties are EXTRAPOLATED ")')
@@ -1816,7 +1816,7 @@ contains
     end if
     write (uout,'("  Static equilibrium volume (bohr^3): ",F20.10)') p%veq_static
     write (uout,'("  Static equilibrium energy (Ha): ",F20.10)') p%eeq_static 
-    write (uout,'("  Static equilibrium energy (kJ/mol): ",F20.10)') p%eeq_static * hy2kjmol
+    write (uout,'("  Static equilibrium energy (kJ/mol): ",F20.10)') p%eeq_static * ha2kjmol
     write (uout,'("  Static bulk modulus (GPa): ",F15.6)') p%beq_static
     write (uout,'("  Static EOS fit, error RMS (Ha): ",1p,E15.7)') p%rms
     write (uout,'("  Static EOS fit, max|error| (Ha): ",1p,E15.7)') p%maxdev
@@ -1992,7 +1992,7 @@ contains
     if (.not.p%pvdata) then
        p%e = p%e / zz - einf
        if (p%units_e == units_e_ev) then
-          p%e = p%e / hy2ev
+          p%e = p%e / ha2ev
        else if (p%units_e == units_e_ry) then
           p%e = p%e / 2d0
        end if
@@ -2006,15 +2006,15 @@ contains
        if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / 2d0 / zz
        if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol / 2d0 / zz
     else if (p%units_e == units_e_ev) then
-       if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / hy2ev / zz
-       if (allocated(p%tsel_cpol)) p%fel_cpol = p%tsel_cpol / hy2ev / zz
+       if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / ha2ev / zz
+       if (allocated(p%tsel_cpol)) p%fel_cpol = p%tsel_cpol / ha2ev / zz
     end if
 
     ! convert input units
     if (p%eunits_e == units_e_ry) then
        if (allocated(p%nefermi)) p%nefermi = p%nefermi * 2d0
     else if (p%eunits_e == units_e_ev) then
-       if (allocated(p%nefermi)) p%nefermi = p%nefermi * hy2ev
+       if (allocated(p%nefermi)) p%nefermi = p%nefermi * ha2ev
     end if
   end subroutine phase_inputdata
 
@@ -2066,9 +2066,9 @@ contains
 
     ! convert input units
     if (p%units_f == units_f_cm1) then
-       p%omega = p%omega / hy2cm_1
+       p%omega = p%omega / ha2cm_1
     else if (p%units_f == units_f_thz) then
-       p%omega = p%omega / hy2thz
+       p%omega = p%omega / ha2thz
     else
        call error('phase_phespresso',&
           'Espresso -> isnt the matdyn.freq in cm_1? (UNITS keyword)',warning)
@@ -2097,19 +2097,19 @@ contains
 
     real*8, parameter :: stepcrit = 1d-6
     real*8, parameter :: deps = 1d-6
-    real*8, parameter :: fsmallcrit = 0.1d0 / hy2cm_1
+    real*8, parameter :: fsmallcrit = 0.1d0 / ha2cm_1
 
     if (p%tmodel /= tm_qhafull) return
 
     ! convert input units
     if (p%units_f == units_f_cm1) then
-       p%phdos_f = p%phdos_f / hy2cm_1
-       p%phdos_d = p%phdos_d * hy2cm_1
-       p%phstep = p%phstep / hy2cm_1
+       p%phdos_f = p%phdos_f / ha2cm_1
+       p%phdos_d = p%phdos_d * ha2cm_1
+       p%phstep = p%phstep / ha2cm_1
     elseif (p%units_f == units_f_thz) then
-       p%phdos_f = p%phdos_f / hy2thz
-       p%phdos_d = p%phdos_d * hy2thz
-       p%phstep = p%phstep / hy2thz
+       p%phdos_f = p%phdos_f / ha2thz
+       p%phdos_d = p%phdos_d * ha2thz
+       p%phstep = p%phstep / ha2thz
     end if
 
     ! number of frequencies
