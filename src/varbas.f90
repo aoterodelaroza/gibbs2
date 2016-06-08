@@ -678,7 +678,7 @@ contains
     integer :: idum, ifound, iphdos_1, iphdos_2, isep, isep2, nn, nq, numax, uuin
     character*(mline) :: line, word, prefix, file, linedum, msg
     real*8 :: fx, gx, hx, rdum, zz, eshift
-    logical :: ok, d0, didinterp
+    logical :: ok, d0, didinterp, havev, havee
 
     ! Set defaults for this phase. also, check type definition
     ! basic info
@@ -1198,15 +1198,19 @@ contains
        ! parse fields
        lp = 1
        idum = 0
+       havev = .false.
+       havee = .false.
        ok = .true.
        do while(ok .and. lp < leng(line))
           idum = idum + 1
           if (idum == icol_v) then
              ! volume field
              ok = isreal(p%v(nn),line,lp)
+             havev = .true.
           else if (idum == icol_e) then
              ! energy field
              ok = isreal(p%e(nn),line,lp)
+             havee = .true.
           else if (idum == icol_td) then
              ! thetad field
              ok = isreal(p%td(nn),line,lp)
@@ -1279,6 +1283,12 @@ contains
           call error('phase_init','Error input, PHASE..ENDPHASE environment',faterr)
        end if
 
+       if (.not.havev.or..not.havee) then
+          if (uuin /= uin) then
+             write (uout,'("In file: ",A)') trim(file(1:leng(file)))
+          end if
+          call error('phase_init','Error reading file: volume or energy missing.',faterr)
+       end if
     end do
 
     if (didinterp) then
