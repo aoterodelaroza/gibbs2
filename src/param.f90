@@ -277,9 +277,9 @@ contains
     write (uout,'("These articles describe the strain polynomial fits:")')
     write (uout,'("  * Comput. Phys. Commun. 182 (2011) 2232--2248.")')
     write (uout,'("  * Comput. Theor. Chem. doi:10.1016/j.comptc.2011.03.050 ")')
-    write (uout,'("The empirical energy corrections: ")')
+    write (uout,'("Empirical energy corrections: ")')
     write (uout,'("  * Phys. Rev. B 84 (2011) 024109 "/)')
-
+    write (uout,'("Dedicated to the memory of Miguel Alvarez Blanco (1969--2010)."/)')
 
   end subroutine header
 
