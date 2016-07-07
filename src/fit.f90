@@ -56,14 +56,20 @@ contains
 
   end subroutine fit_init
 
-  subroutine fit_pshift(mode,v,p_in,npol,cpol,vx,bx,gx,ierr)
+  ! Given a volume grid (v, au), an energy (npol, cpol) with some
+  ! fitting mode (mode), and a pressure (p_in, GPa), calculate the
+  ! volume that corresponds to that pressure (vx, au), the bulk
+  ! modulus (bx, GPa), and the value of the energy (ex, Ha) and
+  ! enthalpy (hx, Ha) at that point. Return ierr /= 0 if the fit
+  ! fails.
+  subroutine fit_pshift(mode,v,p_in,npol,cpol,vx,bx,ex,hx,ierr)
 
     integer, intent(in) :: mode
     real*8, intent(in) :: v(:)
     real*8, intent(in) :: p_in
     integer, intent(in) :: npol
     real*8, intent(in) :: cpol(0:npol)
-    real*8, intent(out) :: vx, bx, gx
+    real*8, intent(out) :: vx, bx, ex, hx
     integer, intent(out) :: ierr
 
     real*8, parameter :: tol = 1d-10
@@ -105,7 +111,8 @@ contains
           vx = v(ndat)
        end if
        bx = vx * fv2(mode,vx,npol,cpol) * au2gpa 
-       gx = (fv0(mode,vx,npol,cpol) + p * vx) * hy2kjmol
+       ex = fv0(mode,vx,npol,cpol)
+       hx = (ex + p * vx)
        return
     end if
 
@@ -139,7 +146,8 @@ contains
     end do
 
     bx = vx * fv2(mode,vx,npol,cpol) * au2gpa 
-    gx = (fv0(mode,vx,npol,cpol) + p * vx) * hy2kjmol
+    ex = fv0(mode,vx,npol,cpol)
+    hx = (ex + p * vx)
 
     if (ierr == 1) then
        call error('fit_pshift','Error finding minimum',faterr)

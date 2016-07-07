@@ -47,6 +47,7 @@ contains
     integer :: ierr
     character*(mline_fmt) :: fm
     real*8 :: gamma, td, td0, f2s, f3s
+    real*8 :: fx, gx, hx, poi, pofunc
 
     if (mm < 0d0 .or. vfree < 0d0) return
 
@@ -67,18 +68,34 @@ contains
        end if
     end do
 
-    ! fit thetad(V) if debye_input
     if (.not.allocated(p%td)) allocate(p%td(p%nv))
-    if (p%tmodel == tm_debye_input) then
+
+    ! If the model is debye with poisson, p%td contains the poisson
+    ! coefficient; convert them to thetad(V).
+    if (p%tmodel == tm_debye_poisson_input) then
+       do j = 1, p%nv
+          poi = p%td(j)
+          fx=2*(1+poi)/3d0/(1-2*poi)
+          gx=(1+poi)/3d0/(1-poi)
+          hx=2d0*sqrt(fx**3)+sqrt(gx**3)
+          pofunc=exp(-log(hx/3)/3)
+          f2s = fv2(p%fit_mode,p%v(j),p%npol,p%cpol)
+          p%td(j) = (6*pi*pi*vfree*p%v(j)*p%v(j))**third / pckbau * pofunc * sqrt(f2s/mm)
+       end do
+    end if
+
+    ! fit thetad(V) if debye_input or debye_poisson_input
+    if (p%tmodel == tm_debye_input .or. p%tmodel == tm_debye_poisson_input) then
        call fitt_polygibbs(p%tdfit_mode,log(p%v),log(p%td),p%ntpol,p%tpol,ierr,.false.)
        p%ntpol = p%ntpol + 1
        p%tpol(p%ntpol) = 0d0
        if (ierr > 0) call error('get_thetad','Can not fit logTd vs. logV',faterr)
+       p%td0 = exp(fv0(p%tdfit_mode,log(p%veq_static),p%ntpol,p%tpol))
+    else
+       ! fill td0
+       f2s = fv2(p%fit_mode,p%veq_static,p%npol,p%cpol)
+       p%td0 = (6*pi*pi*vfree*p%veq_static*p%veq_static)**third / pckbau * p%pofunc * sqrt(f2s/mm)
     end if
-
-    ! fill td0
-    f2s = fv2(p%fit_mode,p%veq_static,p%npol,p%cpol)
-    p%td0 = (6*pi*pi*vfree*p%veq_static*p%veq_static)**third / pckbau * p%poratio * sqrt(f2s/mm)
 
     ! header
     if (verbose) then
@@ -94,12 +111,12 @@ contains
        f2s = fv2(p%fit_mode,p%v(j),p%npol,p%cpol)
        f3s = fv3(p%fit_mode,p%v(j),p%npol,p%cpol)
        call get_thetad(p,p%v(j),f2s,f3s,td,gamma)
-       if (p%tmodel /= tm_debye_input) then
+       if (p%tmodel /= tm_debye_input .and. p%tmodel /= tm_debye_poisson_input) then
           p%td(j) = td
        end if
 
        if (verbose) then
-          td0 = (6*pi*pi*vfree*p%v(j)*p%v(j))**third / pckbau * p%poratio * sqrt(f2s/mm)
+          td0 = (6*pi*pi*vfree*p%v(j)*p%v(j))**third / pckbau * p%pofunc * sqrt(f2s/mm)
           write (uout,fm) p%v(j), p%td(j), td0
        end if
     end do
@@ -126,12 +143,12 @@ contains
     end if
 
     select case(p%tmodel)
-    case(tm_debye_input)
+    case(tm_debye_input, tm_debye_poisson_input)
        td = exp(fv0(p%tdfit_mode,log(v),p%ntpol,p%tpol))
        gamma = -fv1(p%tdfit_mode,log(v),p%ntpol,p%tpol)
        
     case(tm_debye,tm_debye_einstein)
-       td = (6*pi*pi*vfree*v*v)**third / pckbau * p%poratio * sqrt(f2/mm)
+       td = (6*pi*pi*vfree*v*v)**third / pckbau * p%pofunc * sqrt(f2/mm)
        gamma = -1d0/6d0 - 0.5d0 * (1+v*f3/f2)
 
     case(tm_debyegrun)

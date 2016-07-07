@@ -425,7 +425,7 @@ wrapped, the rest have been trimmed for clarity):
 
    # Lines beginning with 'e' contain fit error estimation.
    # Phase mgo
-   #    p(GPa)      E (Hy)     V(bohr^3)   V/V0    p_fit(GPa)\
+   #    p(GPa)      E (Ha)     V(bohr^3)   V/V0    p_fit(GPa)\
                   B(GPa)    Bp     Bpp(GPa-1)
        0.0000  -7.358887030E+01 121.1510 1.0000000    0.0000 \
                 171.8631 4.1045942 -2.3291E-02
@@ -456,13 +456,13 @@ input. For instance, in our example,
 ::
 
    # Phase mgo
-   # 01:p(GPa) 02:T(K) 03:V(bohr^3) 04:Estatic(Hy) 05:G(kJ/mol)
+   # 01:p(GPa) 02:T(K) 03:V(bohr^3) 04:Estatic(Ha) 05:G(kJ/mol)
    # 06:Gerr(kJ/mol) 07:p_sta(GPa) 08:p_th(GPa) 09:B(GPa) 10:U-Esta(kJ/mol)
    # 11:Cv(J/molK) 12:F-Esta(kJ/mol) 13:S(J/molK) 14:ThetaD(K) 15:gamma
    # 16:alpha(10^-5/K) 17:dp/dT(GPa/K) 18:Bs(GPa) 19:Cp(J/molK) 20:B_Tp
    # 21:B_Tpp(GPa-1) 22:Fvib(kJ/mol) 23:Fel(kJ/mol) 24:Uvib(kJ/mol) 25:Uel(kJ/mol)
    # 26:Svib(J/molK) 27:Sel(J/molK) 28:Cv_vib(J/molK) 29:Cv_el(J/molK)
-   #    p(GPa)      T(K)   V(bohr^3)    Estatic(Hy)        G(kJ/mol)    ...
+   #    p(GPa)      T(K)   V(bohr^3)    Estatic(Ha)        G(kJ/mol)    ...
          0.0000       0.00   123.0980  -7.358878E+01  -1.9319213537E+05 ...
          5.0505       0.00   119.6117  -7.358881E+01  -1.9313745955E+05 ...
         10.1010       0.00   116.5693  -7.358833E+01  -1.9308425053E+05 ...
@@ -507,7 +507,7 @@ The calculated properties are:
 * 03:V(bohr^3)
      Equilibrium volume, V(p,T).
 
-* 04:Estatic(Hy)
+* 04:Estatic(Ha)
      Static energy, interpolated at the equilibrium volume.
 
 * 05:G(kJ/mol)
@@ -689,7 +689,7 @@ mgo.eos_static file:
      Fit to static E(V) data:
    # Copy in file : mgo.eos_static
    # Lines beginning with 'e' contain fit error estimation.
-   #    p(GPa)          E (Hy)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
+   #    p(GPa)          E (Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
          0.0000  -7.358887030E+01   121.1510  1.0000000     0.0000   171.8631    4.1045942  -2.3291E-02
    e     0.0000   0.000000000E+00     0.0016  0.0000130     0.0000     0.0325    0.0089770   8.0853E-04
      ...
@@ -1584,7 +1584,7 @@ The phase keyword
  	       	      infinitesimal|inf|quotient|x1|x3|xinv3|x3inv|v} [order.i|0]}]\
          [reg {lad|lsq}] \
          [fix i1.i v1.r i2.i v2.r ...] \
-         [tmodel {static|debye_input|debye|debye_einstein|
+         [tmodel {static|debye_input|debye_poisson_input|debye|debye_einstein|
                   debye_gruneisen {slater|dm|vz|mfv|a.r b.r}|
                   {qhafull|qha} [phfield ifield.i] [dosfield i1.i i2.i]|
                   qha_espresso [phfield ifield.i]] \
@@ -1655,8 +1655,9 @@ with the **using** (or **u** for short) keyword. For instance:
 
 reads the file mgo.dat: the fourth field is interpreted as the cell
 volume and the fifth is the energy. The optional third field
-identifier is assigned to the Debye temperature and is read only when
-the debye_input temperature model is used. It is ignored otherwise.
+identifier is assigned to the Debye temperature or the Poisson
+ratio. It is read only when the debye_input or the debye_poisson_input
+temperature models are used, respectively. It is ignored otherwise.
 
 A description of the rest of keywords optional to **phase** follows:
 
@@ -1842,7 +1843,7 @@ A description of the rest of keywords optional to **phase** follows:
    ::
 
       #gibbslang
-      tmodel {static|debye_input|debye|debye_einstein|
+      tmodel {static|debye_input|debye_poisson_input|debye|debye_einstein|
               debye_gruneisen {slater|dm|vz|mfv|a.r b.r}|
               {qhafull|qha} [phfield ifield.i] [dosfield i1.i i2.i]|
               qha_espresso [phfield ifield.i]]
@@ -1858,6 +1859,10 @@ A description of the rest of keywords optional to **phase** follows:
    - **debye_input**: Debye model, the Debye temperatures are read
        from input. Each volume-energy record must contain an
        additional field, corresponding to the Debye tempearture at
+       that volume.
+   - **debye_input**: Debye model, the Poisson ratio at each volume
+       are read from input. Each volume-energy record must contain an
+       additional field, corresponding to the Poisson ratio at
        that volume.
    - **debye_einstein**: Debye model for the acoustic branches and
        3n-3 Dirac deltas representing the optic part of the phonon
@@ -1893,8 +1898,8 @@ A description of the rest of keywords optional to **phase** follows:
        keyword is the equivalent of the **using** keyword for the
        volume and energy. Fields 1 and 2 are read from the files that
        contain the vibrational density of states: the first is the
-       frequency (default units Hy) and the second is the density of
-       states (default units 1/Hy), but which fields are read can be
+       frequency (default units Ha) and the second is the density of
+       states (default units 1/Ha), but which fields are read can be
        controlled using the **dosfield** keyword. The **prefix**
        keyword below is relevant to the determination of the path of
        these files.
@@ -2088,7 +2093,7 @@ A description of the rest of keywords optional to **phase** follows:
    **edos** units apply to the Fermi level read in **edos sommerfeld**
    with input N(Ef).
 
-   Defaults: bohr^3 (V), Hy (E), GPa (p), Hy (frequency) and Hy (edos).
+   Defaults: bohr^3 (V), Ha (E), GPa (p), Ha (frequency) and Ha (edos).
 
 * **interpolate** f1.i [f2.i ...]
 

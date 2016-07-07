@@ -45,12 +45,12 @@ module param
 
   ! Physical constants and conversion factors.
   !
-  ! Most of them involve atomic units:  hartree (Hy), bohr, ...
+  ! Most of them involve atomic units:  hartree (Ha), bohr, ...
   ! The physical constant names begin with pc.
   ! The conversion factors are named as: <unit1>2<unit2>
   ! meaning that the factor converts <unit1> to <unit2>.
   !
-  real*8, parameter :: pckbau = 3.166815d-6    !Boltzmann ct. [Hy/K] (nist2006,wikipedia 10/10/10)
+  real*8, parameter :: pckbau = 3.166815d-6    !Boltzmann ct. [Ha/K] (nist2006,wikipedia 10/10/10)
   real*8, parameter :: pcamu = 1.660538782d-24 !atomic mass unit [g] (nist2006)
   real*8, parameter :: pcme = 9.10938215d-28   !electron mass [g] (nist2006)
   real*8, parameter :: pcna = 6.02214179d23    !Avogadro ct. [1/mol] (nist2006)
@@ -61,12 +61,12 @@ module param
   real*8, parameter :: bohr2cm = 0.52917720859d-8      !bohr -> cm (nist2006)
   real*8, parameter :: bohr2angstrom = 0.52917720859d0 !bohr -> angstrom (nist2006)
   real*8, parameter :: bohr2pm = 0.52917720859d2       !bohr -> pm (nist2006)
-  real*8, parameter :: hy2k = 3.1577465d5              !hartree -> K (nist2006)
-  real*8, parameter :: hy2ev = 27.21138386d0           !hartree -> eV (nist2006)
-  real*8, parameter :: hy2cm_1 = 2.194746313705d5      !hartree -> cm**(-1) (nist2006)
+  real*8, parameter :: ha2k = 3.1577465d5              !hartree -> K (nist2006)
+  real*8, parameter :: ha2ev = 27.21138386d0           !hartree -> eV (nist2006)
+  real*8, parameter :: ha2cm_1 = 2.194746313705d5      !hartree -> cm**(-1) (nist2006)
   real*8, parameter :: thz2cm_1 = 33.35641d0           !THz -> cm**(-1) (nist2006)
-  real*8, parameter :: hy2thz = hy2cm_1 / thz2cm_1     !hartree -> THz
-  real*8, parameter :: hy2kjmol = 2625.4996d0          !hartree -> kJ/mol (nist2006)
+  real*8, parameter :: ha2thz = ha2cm_1 / thz2cm_1     !hartree -> THz
+  real*8, parameter :: ha2kjmol = 2625.4996d0          !hartree -> kJ/mol (nist2006)
   real*8, parameter :: au2gpa = 29421.0108037190       !at.u.(pres) --> GPa (nist2006)
   real*8, parameter :: amu2au = pcamu/pcme           !amu --> at. units
 
@@ -114,12 +114,12 @@ module param
   ! input units
   integer, parameter :: units_v_bohr3 = 1
   integer, parameter :: units_v_ang3 = 2
-  integer, parameter :: units_e_hy = 1
+  integer, parameter :: units_e_ha = 1
   integer, parameter :: units_e_ev = 2
   integer, parameter :: units_e_ry = 3
   integer, parameter :: units_p_au = 1
   integer, parameter :: units_p_gpa = 2
-  integer, parameter :: units_f_hy = 1
+  integer, parameter :: units_f_ha = 1
   integer, parameter :: units_f_cm1 = 2
   integer, parameter :: units_f_thz = 3
 
@@ -277,9 +277,9 @@ contains
     write (uout,'("These articles describe the strain polynomial fits:")')
     write (uout,'("  * Comput. Phys. Commun. 182 (2011) 2232--2248.")')
     write (uout,'("  * Comput. Theor. Chem. doi:10.1016/j.comptc.2011.03.050 ")')
-    write (uout,'("The empirical energy corrections: ")')
+    write (uout,'("Empirical energy corrections: ")')
     write (uout,'("  * Phys. Rev. B 84 (2011) 024109 "/)')
-
+    write (uout,'("Dedicated to the memory of Miguel Alvarez Blanco (1969--2010)."/)')
 
   end subroutine header
 

@@ -182,20 +182,20 @@ contains
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(npar) * au2gpa
     case(fit_bm2)
        write (lu,'("# Birch-Murnaghan, 2nd order EOS parameters: ")') 
-       write (lu,'("# E_0 (Hy) = ",1p,E17.9,0p)') apar(1)
+       write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(4) * au2gpa
     case(fit_bm3)
        write (lu,'("# Birch-Murnaghan, 3rd order EOS parameters: ")') 
-       write (lu,'("# E_0 (Hy) = ",1p,E17.9,0p)') apar(1)
+       write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(5) * au2gpa
     case(fit_bm4)
        write (lu,'("# Birch-Murnaghan, 4th order EOS parameters: ")') 
-       write (lu,'("# E_0 (Hy) = ",1p,E17.9,0p)') apar(1)
+       write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
@@ -203,20 +203,20 @@ contains
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(6) * au2gpa
     case(fit_pt2)
        write (lu,'("# Poirier-Tarantola, 2nd order EOS parameters: ")')
-       write (lu,'("# E_0 (Hy) = ",1p,E17.9,0p)') apar(1)
+       write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(4) * au2gpa
     case(fit_pt3)
        write (lu,'("# Poirier-Tarantola, 3rd order EOS parameters: ")')
-       write (lu,'("# E_0 (Hy) = ",1p,E17.9,0p)') apar(1)
+       write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(5) * au2gpa
     case(fit_pt4)
        write (lu,'("# Poirier-Tarantola, 4th order EOS parameters: ")') 
-       write (lu,'("# E_0 (Hy) = ",1p,E17.9,0p)') apar(1)
+       write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
@@ -224,7 +224,7 @@ contains
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(6) * au2gpa
     case(fit_pt5)
        write (lu,'("# Poirier-Tarantola, 5th order EOS parameters: ")') 
-       write (lu,'("# E_0 (Hy) = ",1p,E17.9,0p)') apar(1)
+       write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
@@ -233,28 +233,28 @@ contains
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(7) * au2gpa
     case(fit_murn)
        write (lu,'("# Murnaghan, 3th order EOS parameters: ")') 
-       write (lu,'("# E_0 (Hy) = ",1p,E17.9,0p)') apar(1)
+       write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(5) * au2gpa
     case(fit_antons)
        write (lu,'("# Anton-Schmidt, 3th order EOS parameters: ")') 
-       write (lu,'("# E_infty (Hy) = ",1p,E17.9,0p)') apar(1)
+       write (lu,'("# E_infty (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(5) * au2gpa
     case(fit_vinet)
        write (lu,'("# Vinet, 3th order EOS parameters: ")') 
-       write (lu,'("# E_0 (Hy) = ",1p,E17.9,0p)') apar(1)
+       write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(5) * au2gpa
     case(fit_ap2)
        write (lu,'("# Holzapfel AP2, 3th order EOS parameters: ")') 
-       write (lu,'("# E_0 (Hy) = ",1p,E17.9,0p)') apar(1)
+       write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
