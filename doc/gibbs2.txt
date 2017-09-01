@@ -3,7 +3,7 @@ Gibbs2 user's guide
 ===================
 
 :Author: Alberto Otero-de-la-Roza, Víctor Luaña and David Abbasi.
-:Contact: alberto@carbono.quimica.uniovi.es
+:Contact: aoterodelaroza@gmail.com
 :Contact: victor@carbono.quimica.uniovi.es
 :Address: Departamento de Química Física y Analítica, Universidad de Oviedo,
           Principado de Asturias,
@@ -2335,7 +2335,7 @@ original gibbs article is [orig]_.
 Copyright notice for gibbs2
 ===========================
 
-Copyright (c) 2011 Alberto Otero de la Roza <alberto@carbono.quimica.uniovi.es>,
+Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
 Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
 
@@ -2380,7 +2380,7 @@ netlib.org.
 Copyright notice for this document
 ==================================
 
-Copyright (c) 2011 Alberto Otero de la Roza <alberto@carbono.quimica.uniovi.es>,
+Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
 Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
 
