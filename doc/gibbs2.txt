@@ -2234,6 +2234,22 @@ Set options
 
   - 2: all.
 
+* **set ignore_neg_cutoff inegcut.r**
+
+  When negative phonon frequencies are passed to gibbs2, the program
+  assumes that the point does not correspond to a stable state of 
+  the system and deactivates it (i.e. drops the point from the 
+  calculation). Sometimes, small negative frequencies can be the
+  result of numerical errors in the program used to calculate the
+  phonons, particularly the calculation of phDOS in ph.x. This keyword
+  sets a cutoff for the negative frequencies. If a frequency is 
+  less than -abs(inegcut.r), the point is deactivated. If a frequency
+  is between -abs(inegcut.r) and 0, the point remains active, but
+  that frequency is discarded (and the phDOS renormalized to the
+  correct value). Units are cm-1.
+
+  Default: 20 cm-1.
+
 Test cases
 ==========
 
