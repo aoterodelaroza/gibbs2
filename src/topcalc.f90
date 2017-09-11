@@ -943,6 +943,7 @@ contains
     write (uout,'("  Writing file : ",A/)') trim(fileroot)//".tpstab"
     lu = fopen(lu,trim(fileroot)//".tpstab"//null,iowrite)
 
+    write (lu,'("## 1:T(K) 2:p(GPa) 3:stable phase 4:G(kJ/mol) 5:V(bohr^3) 6:B_T(GPa)")') 
     do i = 1, nts
        do j = 1, nps
           gmin = 1d30

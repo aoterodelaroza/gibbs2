@@ -1283,9 +1283,10 @@ generates a number of auxiliary files:
   transition sequence and phase stability, when there are several
   phases in competition.
 
-* 06_phases.tpstab : a file containing the identity, Gibbs free
-  energy, volume and adiabatic bulk modulus of the stable phase at
-  each pressuer and temperature data point.
+* 06_phases.tpstab : a file that gives the stable phase (minimum Gibbs
+  free energy) at each pressure and temperature. The columns are, in
+  order: temperature, pressure, identity of the stable phase, Gibbs
+  free energy, volume, and isothermal bulk modulus.
 
 * 06_phases.dgtp : difference in Gibbs free energy between all the
   calculated phases and the first, for all the temperature and
