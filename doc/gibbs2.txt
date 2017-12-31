@@ -1728,25 +1728,23 @@ A description of the rest of keywords optional to **phase** follows:
 
    The **fit** keyword chooses the equation of state (EOS) used for
    the fits to the energy-volume and free energy-volume data of the
-   phase. A large number of EOS are available, but they can be grouped
-   by how their parameters are found. If the EOS are expressed as a
-   polynomial in some strain, that is, a given function of volume
-   expressing the deviation of the geometry from a given reference,
-   then it is possible to carry out the fit using a linear polynomial
-   fitting algorithm. In any other case, non-linear minimization
-   techniques need to be used. In gibbs2, the slatec library is used
-   for the fitting of polynomials (unless **set pweigh_mode** changes
-   this behaviour)  and minpack for the non-linear fits. The latter
-   uses a Levenberg-Marquardt algorithm, for which the convergence to
-   the desired solution is not guaranteed. Therefore, it is in general
-   a good idea to use linear fits if possible. Additionally, linear
-   fits allow the user to fit strain polynomials to degrees much
-   higher than non-linear fits: for instance, Birch-Murnaghan 5+th
-   order.
+   phase. Many EOS expressions can be used in the fit. Some EOS are
+   expressed as a polynomial in the strain, i.e., a function of the
+   volume that gives the deviation from a reference (usually the
+   zero-pressure or static volume). Fits using EOS based on strain
+   polynomials are carried out using a linear least-squares fitting
+   method. Other EOSs, use a non-linear minimization
+   (Levenberg-Marquardt) technique for the fit. The slatec library is
+   used for the polynomial fits (unless **set pweigh_mode** changes
+   this behaviour) and minpack for the non-linear fits. since the
+   convergence of the non-linear fits to the desired solution is not
+   guaranteed, a linear fit is recommended, in general. Additionally,
+   linear fits also allow the user to use polynomials to degrees much
+   higher than non-linear fits.
 
    Linear fits (fits of polynomials of some strain) are requested by
-   usgin the **strain** keyword. The word following it must be the
-   type of strain to be used, that can be one of:
+   using the **strain** keyword. The word following this keyword must
+   be the type of strain to be used, and it can be one of:
 
    - **eulerian** or **bm**, Birch-Murnaghan or eulerian strain,
      f = ((V./V0).^(-2/3)-1)/2
@@ -1760,23 +1758,23 @@ A description of the rest of keywords optional to **phase** follows:
    - **v**, f = V
 
    Following the strain, the user must indicate the order of the
-   polynomial to be fit. Thus, for instance,
+   polynomial. Thus, for instance,
 
    ::
 
       #gibbslang
       phase mgo ... fit strain bm 4
 
-   fits a 4th order Birch-Murnaghan equation of state to the energy,
+   fits a 4th order Birch-Murnaghan EOS to the energy-volume data,
    which is equivalent to a 4th degree polynomial of the energy in the
    **bm** strain. If 0 is used as the degree of the polynomial, then
-   an average is used, as described in the companion articles of this
-   source. In short, a number of polynomials of degree varying from
-   **mparmin** to **mpar** (see the corresponding set options) are
-   fitted to the data. Each polynomial is assigned a weight, which is
-   larger the better it fits the data, but smaller the more parameters
-   the polynomial uses. The weights are used to find an average
-   polynomial of degree **mpar**, which is used as the final fitting
+   an average is used (see the companion articles of this program). In
+   short, a number of polynomials of degree varying from **mparmin**
+   to **mpar** (see the corresponding set options) are fitted to the
+   data. Each polynomial is assigned a weight, which is larger the
+   better it fits the data, but smaller the more parameters the
+   polynomial uses. The weights are used to find an average polynomial
+   of degree **mpar**, which is used as the final fitting
    function. The statistics of the polynomials also provide a measure
    of the quality of the data and of the reliability of the fit. Note
    that **fit strain bm 0** is the default behavior for all the phases
