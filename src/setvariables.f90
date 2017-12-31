@@ -1,4 +1,4 @@
-! Copyright (c) 2011 Alberto Otero de la Roza <alberto@carbono.quimica.uniovi.es>,
+! Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 ! Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
 ! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
 ! 
@@ -99,6 +99,10 @@ subroutine setvariables (line, lp)
      ok = isinteger(writelevel,line,lp)
      if (.not.ok) &
         call error('setvariables','Wrong WRITELEVEL value',faterr)
+  elseif (equal(word,'ignore_neg_cutoff'//null)) then
+     ok = isreal(ignore_neg_cutoff,line,lp)
+     if (.not.ok) &
+        call error('setvariables','Wrong IGNORE_NEG_CUTOFF',faterr)
   else
      call error ('setvariables','Unknown set option or keyword',faterr)
   endif

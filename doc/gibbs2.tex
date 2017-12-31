@@ -28,11 +28,12 @@
 }
 
 % docinfo (width of docinfo table)
-\DUprovidelength{\DUdocinfowidth}{0.9\textwidth}
+\DUprovidelength{\DUdocinfowidth}{0.9\linewidth}
 
 % hyperlinks:
 \ifthenelse{\isundefined{\hypersetup}}{
   \usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+  \usepackage{bookmark}
   \urlstyle{same} % normal text font (alternatives: tt, rm, sf)
 }{}
 \hypersetup{
@@ -57,7 +58,7 @@
 \textbf{Author}: &
 	Alberto Otero-de-la-Roza, Víctor Luaña and David Abbasi. \\
 \textbf{Contact}: &
-	\href{mailto:alberto@carbono.quimica.uniovi.es}{alberto@carbono.quimica.uniovi.es} \\
+	\href{mailto:aoterodelaroza@gmail.com}{aoterodelaroza@gmail.com} \\
 \textbf{Contact}: &
 	\href{mailto:victor@carbono.quimica.uniovi.es}{victor@carbono.quimica.uniovi.es} \\
 \textbf{Address}: &
@@ -70,7 +71,7 @@ Julián Clavería 8, 33007 Oviedo, Spain } \\
 \end{tabularx}
 \end{center}
 
-\noindent\makebox[\textwidth][c]{\includegraphics[scale=0.100000]{cover.jpg}}
+\noindent\makebox[\linewidth][c]{\includegraphics[scale=0.100000]{cover.jpg}}
 
 \clearpage
 
@@ -231,8 +232,8 @@ contains the description of the compiler and its options. By default,
 the GNU fortran compiler (gfortran) is used. The uncommented section
 should look like this:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 # The GNU fortran compiler (gfortran)
 ifeq ($(DEBUG),1)
   FC = gfortran
@@ -244,7 +245,8 @@ else
   FCFLAGS    = -O
   LDFLAGS =
 endif
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The variable FC is the name of the fortran90 compiler, FCFLAGS are the
 compiler flags and LDFLAGS the linker flags. Two sets of options can
@@ -252,30 +254,33 @@ be used: for a debug compilation (first block) and a normal
 compilation (second block). Once the Makefile.inc is ready, compile
 gibbs2 using:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 make
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The compilation generates a gibbs2 binary that can be moved or linked
 into your \$PATH. To compile with the DEBUG option activated, use:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 make debug
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The name of the debug binary file is gibbs2\_dbg. The compiled debug
 code is exactly the same (no preprocessor directives).
 
 Other make options are:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 make clean
 make veryclean
 make mrproper
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 These remove the objects (first), objects and static libraries
 (second) and objects, libraries and binaries (third).
@@ -291,10 +296,11 @@ stdout and several auxiliary files, as will be described below. The
 output files have the same root (that is, the name up to the last '.')
 as the input. The program is run as:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 gibbs2 [options] [file.ing [file.out]]
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 If file.ing is present, the input is read from that file. In any other
 case, the standard input is used. The same applies for file.out: if it
@@ -302,10 +308,11 @@ is present, output is redirected to it. Otherwise, the gibbs2 output
 is written to the standard output. As a corollary, gibbs2 can also be
 used:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 gibbs2 [options] < file.ing > file.out
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The command line options are described now. Each of them corresponds
 to a SET keyword in the input file, which is indicated in
@@ -394,8 +401,9 @@ Let us start with a simple example to introduce the
 basic keywords. For instance, the following is almost the simplest ing
 file possible, containing data from a LDA PP+PW calculation of MgO:
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 mm 40.3044
 vfree 2
 phase mgo
@@ -420,7 +428,8 @@ phase mgo
 156.5437326710878   -73.5693791200000
 160.0000000000000   -73.5662512150000
 endphase
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The tokens mm, vfree, phase and endphase are keywords: special words
 that are parsed by the program. MM is the molecular mass of the
@@ -432,8 +441,9 @@ a new phase of the considered solid is added for computation. Thus, if
 we were interested in the B1 -> B2 transition of MgO, we would have
 something like:
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 [...]
 phase mgo:B1
  ...
@@ -441,15 +451,17 @@ endphase
 phase mgo:B2
  ...
 endphase
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 and gibbs2 would actually compute transition pressures, the phase
 diagram, the thermodynamic properties of the stable phase,... If, for
 instance, we are interested in comparing different temperature models,
 we could do:
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 [...]
 phase mgo:debye tmodel debye
  ...
@@ -457,7 +469,8 @@ endphase
 phase mgo:debeins tmodel debye_einstein
  ...
 endphase
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 to compare the thermodynamic properties calculated by the Debye model
 or the Debye model with added Einstein frequencies. The same principle
@@ -484,17 +497,18 @@ are in bohr\textasciicircum{}3 and energies are in Hartree.
 
 This input is saved to a file (say, mgo.ing) and run using:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 gibbs2 mgo.ing mgo.out
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The run time is brief (less than 1 second using my 2GHz cpu). Gibbs2
 generates some output files, all using the same root as the input file
 (that is, mgo):
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 mgo.out
 mgo_all_p.gnu
 mgo_all_t.gnu
@@ -503,24 +517,26 @@ mgo_efit.aux
 mgo_efit.gnu
 mgo.eos
 mgo.eos_static
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The mgo.out file contains the main output, and we comment it
 below. The files mgo.efit, mgo\_efit.aux and mgo\_efit.gnu are plots of
 the fitted static energy vs. volume together with the original
 data. To obtain the plot, simply do:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 gnuplot mgo_efit.gnu
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 I am using gnuplot version 4.4 (probably any later or previous version
 down to 4.2 will do). The script requires the epstopdf and pdfcrop
 programs, easily obtainable from the net or your distribution's
 software repository. Gnuplot generates a pdf file containing the plot:
 
-\noindent\makebox[\textwidth][c]{\includegraphics[scale=1.000000]{simple_efit.pdf}}
+\noindent\makebox[\linewidth][c]{\includegraphics[scale=1.000000]{simple_efit.pdf}}
 
 The points represent the original data and the solid line is a 12-th
 degree polynomial in the Birch-Murnaghan strain. The fit is apparently
@@ -530,8 +546,8 @@ Another important file is mgo.eos\_static, containing the static
 properties derived from the E(V) curve (the first lines have been
 wrapped, the rest have been trimmed for clarity):
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 # Lines beginning with 'e' contain fit error estimation.
 # Phase mgo
 #    p(GPa)      E (Ha)     V(bohr^3)   V/V0    p_fit(GPa)\
@@ -549,7 +565,8 @@ e  10.1010   0.000000000E+00   0.0014 0.0000118    0.0000 ...
 e 141.4141   3.932099939E-06   0.0023 0.0000191    0.0000 ...
   146.4646  -7.310953178E+01  82.3100 0.6793997  146.4646 ...
 e 146.4646   2.697398305E-06   0.0144 0.0001189    0.0000 ...
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The calculated properties are the static energy, volume, compression,
 bulk modulus and its pressure derivatives for a set of pressures. This
@@ -563,8 +580,8 @@ The file mgo.eos contains the relation of the thermodynamic properties
 calculated for the pressure and temperature conditions given in
 input. For instance, in our example,
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 # Phase mgo
 # 01:p(GPa) 02:T(K) 03:V(bohr^3) 04:Estatic(Ha) 05:G(kJ/mol)
 # 06:Gerr(kJ/mol) 07:p_sta(GPa) 08:p_th(GPa) 09:B(GPa) 10:U-Esta(kJ/mol)
@@ -590,7 +607,8 @@ input. For instance, in our example,
       0.0000     650.12   125.8789  -7.358837E+01  -1.9321010456E+05 ...
        ...
     146.4646     650.12    83.3617  -7.352437E+01  -1.9192739359E+05 ...
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The file is organized in sucessive blocks, one for each phase in the
 input starting with the line '\# Phase' followed by the identifier of
@@ -831,11 +849,12 @@ The two gnuplot scripts mgo\_all\_p.gnu and mgo\_all\_t.gnu are simple
 ways of visualizing the information contained in the mgo.eos file. To
 run them:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 gnuplot mgo_all_p.gnu
 gnuplot mgo_all_t.gnu
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 This creates a good number of pdf files called mgo\_p\_xx.pdf
 and mgo\_t\_xx.pdf. The mgo\_p\_xx.pdf file represents the isotherms of
@@ -845,17 +864,17 @@ xx property at p = 0 GPa. For our example, mgo\_p\_03.pdf are the
 calculated V(p) isotherms and mgo\_t\_03.pdf is a plot representing
 thermal expansion at zero pressure:
 
-\noindent\makebox[\textwidth][c]{\includegraphics[scale=1.000000]{simple_mgo_p_03.pdf}}
+\noindent\makebox[\linewidth][c]{\includegraphics[scale=1.000000]{simple_mgo_p_03.pdf}}
 
-\noindent\makebox[\textwidth][c]{\includegraphics[scale=1.000000]{simple_mgo_t_03.pdf}}
+\noindent\makebox[\linewidth][c]{\includegraphics[scale=1.000000]{simple_mgo_t_03.pdf}}
 
 Similarly, mgo\_p\_09.pdf contains several curves representing the
 pressure dependence of the bulk modulus at the computed temperatures
 and mgo\_t\_09.pdf is a plot of B\_T(T) at 0 pressure:
 
-\noindent\makebox[\textwidth][c]{\includegraphics[scale=1.000000]{simple_mgo_p_09.pdf}}
+\noindent\makebox[\linewidth][c]{\includegraphics[scale=1.000000]{simple_mgo_p_09.pdf}}
 
-\noindent\makebox[\textwidth][c]{\includegraphics[scale=1.000000]{simple_mgo_t_09.pdf}}
+\noindent\makebox[\linewidth][c]{\includegraphics[scale=1.000000]{simple_mgo_t_09.pdf}}
 
 The standard output file generated by gibbs2, mgo.out, contains useful
 information and a detailed relation of the auxiliary output files. It
@@ -864,8 +883,8 @@ asterisk. For instance, the first block (Input) contains information
 about the input values of some general variables, and it is
 self-explanatory:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 * Input
   Title:
   Output file (lu= 2): stdout
@@ -873,7 +892,8 @@ self-explanatory:
   Number of atoms per formula:   2
   Molecular mass (amu):       40.30440000
   ...
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 Following this section, the pressure range is displayed. We have
 used the default pressures, so gibbs2 automatically sets this list to
@@ -883,23 +903,24 @@ volume grid with smallest volume: any pressure higher than p\_max would
 preclude the appearance of the minimum of the static enthalpy on the
 volume grid:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 * Pressure range examined
   Min_phases{p_max} (GPa):      118.529
   Pressure range (GPa):        0.000 ->      500.000
   Number of p points:    100
   New pressure range (GPa):        0.000 ->      146.465
   New number of p points:     30
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 Next, the information about the phases is presented, including static
 equilibrium properties, statistical measures about the quality of the
 static fit, and the static equation of state, much like in the
 mgo.eos\_static file:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 * Phase information after initial setup
 + Phase  1 (mgo)
   Number of volume points:   20
@@ -919,7 +940,8 @@ mgo.eos\_static file:
       0.0000  -7.358887030E+01   121.1510  1.0000000     0.0000   171.8631    4.1045942  -2.3291E-02
 e     0.0000   0.000000000E+00     0.0016  0.0000130     0.0000     0.0325    0.0089770   8.0853E-04
   ...
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The static energy plots are calculated next, and the Debye
 temperatures are computed. The default thermal model is the Debye
@@ -928,8 +950,8 @@ computed from the static bulk moduli B(V), and the Poisson ratio is
 assumed to be volume independent, and equal to 1/4. This information
 is presented in the output:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 * Computed Debye temperatures from static data
 + Phase mgo
 # ThetaD at static eq. volume:     836.45
@@ -940,41 +962,46 @@ is presented in the output:
  94.3309    1274.15    1274.15
 ...
 160.0000     433.41     433.41
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The minimum of Td(V) is usually found at the largest volume. This
 Td\_min is used to set the default temperature datasets used in the
 dynamic calculation:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 * Temperature range examined
   Min_{DebyeT} (K):      433.415
   Temperature range (K):        0.000 ->      650.122
   Number of T points:    100
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 Once the static calculation is over, gibbs2 loops over temperatures
 and pressures and calculates the thermodynamic properties for each pT
 point, and writes the results to the eos file:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 * Calculated temperature effects
   Writing file : mgo.eos
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 A final note: it is usually convenient to keep the gibbs2 input file
 separated from the actual phase data. The keywords \emph{file} and \emph{using}
 (or \emph{u} for short) can be used in \emph{phase} to read an external file
 containing the volume and energy data. For instance, mgo.ing could be:
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 mm 40.3044
 vfree 2
 phase mgo file mgo.dat u 1:3
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 and the E(V) data would be read from the fields 1 and 3.
 
@@ -993,8 +1020,9 @@ state used to fit the data changes.
 
 The input file is:
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 set notrans
 mm 24.0214
 vfree 2
@@ -1017,16 +1045,18 @@ phase Vinet file c.dat tmodel debye_gruneisen dm \
           units energy ry \
           fit vinet
 end
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 and the data file (c.dat) is:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 40.000000000000000 -22.107087940000000
 41.666666666666664 -22.204061660000001
 ...
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 Note the first lines in the input are preceded by '\#': this means
 these lines are comments, and therefore are ignored by gibbs2. Note
@@ -1058,14 +1088,15 @@ previous example, but each phase receives its own block inside each of
 the sections. Plotting the temperature dependence of the properties
 with:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 gnuplot c_all_t.gnu
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 yields, for instance, a B\_S(T) plot like the following:
 
-\noindent\makebox[\textwidth][c]{\includegraphics[scale=1.000000]{fits_c_t_18.pdf}}
+\noindent\makebox[\linewidth][c]{\includegraphics[scale=1.000000]{fits_c_t_18.pdf}}
 
 Judging from this picture, it is clear that choosing a good equation
 of state is very important. At 2000 K, the range spanned by different
@@ -1077,12 +1108,13 @@ calculated properties. It is interesting to note that, in spite of the
 dramatic differences between EOS in the B\_S(T) curve, the
 energy-volume curve is superbly represented by \emph{all} the EOS used:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 gnuplot c_efit.pdf
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
-\noindent\makebox[\textwidth][c]{\includegraphics[scale=1.000000]{fits_c_efit.pdf}}
+\noindent\makebox[\linewidth][c]{\includegraphics[scale=1.000000]{fits_c_efit.pdf}}
 
 Unfortunately, this plot is too often a criterion of the quality of a
 fit in the literature.
@@ -1131,8 +1163,9 @@ Let us illustrate the use of the various models with a simple
 example. The following input compares different models on the B1 phase
 of MgO (calculated with PP+PW, PBE xc functional).
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 set notrans
 mm 40.3044
 vfree 2
@@ -1155,7 +1188,8 @@ phase qha file ../dat/mgo_pbe/mgo.res tmodel qha \
                 units energy ry freq cm-1 \
                 prefix ../dat/mgo_pbe/
 end
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 In this case, we calculate the pressure dependence of the
 thermodynamic properties with pressure (up to 250 GPa) at room
@@ -1163,13 +1197,14 @@ temperature (\textbf{temperature} -1). Each model corresponds to a
 \textbf{phase} keyword, all of them using the same dataset and even the
 same input file, consisting of:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 40.000000000000000 -145.125645270000007 001_/001_.phdos
 40.700434586218826 -145.213514589999988 002_/002_.phdos
 ...
 160.000000000000000 -147.254963110000006 129/129.phdos
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 Depending on the model, some or all of these fields are read. In the
 Debye model, the fields 1 and 2 (volume and energy) are read and the
@@ -1200,7 +1235,7 @@ A preview of the results can be plotted running gnuplot on the
 'all\_p.gnu' script. For instance, the result for the thermal pressure
 is:
 
-\noindent\makebox[\textwidth][c]{\includegraphics[scale=1.000000]{tmodels_mgo_pth.pdf}}
+\noindent\makebox[\linewidth][c]{\includegraphics[scale=1.000000]{tmodels_mgo_pth.pdf}}
 
 As the MgO is a closely packed material with not many optic branches
 the result of the Debye models is quite reasonable, provided a good
@@ -1236,8 +1271,8 @@ data).
 In the next example, the three EECs and the unscaled results are
 calculated for the diamond:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 # Diamond
 # Bulk modulus: 446 (Occelli2004)
 # V0 : 3.4170 cm3/mol (/ 6.02214179e23 * 2 * 1e24 / .52917720859^3) =
@@ -1279,16 +1314,17 @@ phase PBE:bpscal file ../dat/c_pbe/c.res tmodel qha \
                  prefix ../dat/c_pbe/ \
                  eec bpscal 76.58092 446
 end
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 We have used the full QHA model for temperature effects and applied
 the correction using the experimental volume of the primitive cell
 (76.58092 bohr\textasciicircum{}3) and the experimental bulk modulus (446) at room
 temperature. Running the '\_all\_t.gnu' script file with gnuplot gives:
 
-\noindent\makebox[\textwidth][c]{\includegraphics[scale=1.000000]{eec_t_v.pdf}}
+\noindent\makebox[\linewidth][c]{\includegraphics[scale=1.000000]{eec_t_v.pdf}}
 
-\noindent\makebox[\textwidth][c]{\includegraphics[scale=1.000000]{eec_t_bs.pdf}}
+\noindent\makebox[\linewidth][c]{\includegraphics[scale=1.000000]{eec_t_bs.pdf}}
 
 The first graph is a plot of the calculated volume with
 temperature. Observe the enormous gap between uncorrected LDA and PBE
@@ -1328,8 +1364,9 @@ a polynomial fitted to results of finite temperature DFT calculations
 We can illustrate this with the following simple example, where we
 calculate the properties of fcc aluminium:
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 # Aluminium
 set notrans
 mm 26.981538
@@ -1351,7 +1388,8 @@ phase Al:pol4 file ../dat/al_lda/al.res tmodel qha phfield 12 \
          prefix ../dat/al_lda/ eec bpscal 112.04 72.7 \
          elec pol4 4
 end
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The primitive cell of fcc aluminium contains one atom, with molecular
 weight 26.981538 amu. The pressure list is composed only of the zero
@@ -1381,14 +1419,15 @@ The input datafile is always the same (al.res), and its structure is
 (the backslashes are not contained in the original input file, the
 lines have been wrapped for clarity):
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 35.200000000000003 -11.447724709999999  0.203700 2.0620541311e-09 \
 -1.8439425798e-10  7.4740480714e-15  -5.5458673605e-18 \
 -9.2793212377e-10 -3.5154688019e-10  -9.1949143703e-15 \
 -4.2538048412e-18  012_/012_.phdos
 ...
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 As always, the first field is the primitive cell volume and the second
 is the energy. Then, N(Ef) in 1/eV (see \textbf{units edos} in the ing
@@ -1431,7 +1470,7 @@ coefficients must always appear in sequence, with the correct order.
 
 The following plot represents the results of the above input:
 
-\noindent\makebox[\textwidth][c]{\includegraphics[scale=1.000000]{elec_v_f.pdf}}
+\noindent\makebox[\linewidth][c]{\includegraphics[scale=1.000000]{elec_v_f.pdf}}
 
 It represents the electronic Helmholtz free energy (the upper bunch of
 curves) and -T*S\_el against the input volume grid. Al is the prototype
@@ -1472,8 +1511,8 @@ keywords for further information.
 
 The input file for the MgO B1 -> B2 is:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 mm 40.3044
 vfree 2
 pressure 0 25 600
@@ -1488,7 +1527,8 @@ phase B2 file ../dat/mgob2_pbe/mgob2.res tmodel qha \
                  prefix ../dat/mgob2_pbe/ \
                  eec use 1
 end
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 This time, each \textbf{phase} keyword corresponds to a physical phase, and
 the two data files are different. Note that the energy correction is
@@ -1499,13 +1539,14 @@ coefficients as in the B1 phase (number 1), with \textbf{eec use 1}.
 
 The gibbs2 output contains the static transition pressures:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 * Static transition pressures (linear interpolation)
 #        Pressure range (GPa)      Stable phase
         0.0000 -->     503.1471          b1
       503.1471 -->     600.0000          b2
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The static transition pressure is 503.1 GPa, more or less the same
 result as other authors found for this transition. In addition, gibbs2
@@ -1535,8 +1576,8 @@ the gnu file yields:
 
 \end{itemize}
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
  #      T(K)                 b1              b2
         0.0000        0.0000 ->     492.1215 ->     600.0000
        20.0000        0.0000 ->     492.1215 ->     600.0000
@@ -1546,7 +1587,8 @@ Each '->' symbol corresponds to a stability domain, *not* a
 transition. For instance, at 20 K, the B1 phase is stable from 0 to
 492.1 GPa. The B2 phase is stable from the latter pressure to 600
 GPa at least. 600 GPa is the highest pressure explored in the input.
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 
 \section{5~~~Keyword reference%
@@ -1664,8 +1706,9 @@ energetic properties (default 0).
 %
 \begin{quote}
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 pressure pini.r pstep.r pend.r
 pressure pstep.r
 pressure npres.i
@@ -1674,7 +1717,8 @@ pressure
  p4.r ...
 endpressure
 pressure 0
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The list of pressures where the thermodynamic properties are
 calculated. pini.r, pstep.r and pend.r determine a pressure
@@ -1695,8 +1739,9 @@ Default: 100 points from 0 to max(p,500)
 %
 \begin{quote}
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 volume vini.r vstep.r vend.r
 volume vstep.r
 volume nvols.i
@@ -1705,7 +1750,8 @@ volume
  v4.r ...
 endvolume
 volume input
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 In addition to using a pressure list, properties can be calculated
 at states given temperature and \emph{volume}. The \textbf{volume} keyword
@@ -1721,8 +1767,9 @@ Default: no volumes.
 %
 \begin{quote}
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 temperature tini.r tstep.r tend.r
 temperature tstep.r
 temperature ntemp.i
@@ -1732,7 +1779,8 @@ temperature
 endtemperature
 temperature 0
 temperature -1
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 Same as above: the \textbf{temperature} keyword builds the list of
 temperatures where the thermodynamic properties are calculated. If
@@ -1748,14 +1796,16 @@ Default: 100 points from 0 to 1.5max(td).
 %
 \begin{quote}
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 freqg0 {name.s|num.i} [file file.s]
   # comment
   freq1.r freq2.r ...
   ...
 endfreqg0
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 Optical Frequencies at gamma for the phase with string identifier
 name.s or integer identifier num.i. The latter corresponds to the
@@ -1772,8 +1822,9 @@ file.s.
 %
 \begin{quote}
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 interpolate input [static]
 interpolate
  [P]
@@ -1784,7 +1835,8 @@ interpolate
  PT
  p1 t1 p2 t2 ...
 endinterpolate
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 In the definition of a phase, it is possible to define satellite
 data (e.g. internal coordinates, cell parameters,...) using the
@@ -1892,8 +1944,9 @@ termination of gibbs2.
   \label{the-phase-keyword}%
 }
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 phase name.s \
       [file file.s [u|using a:b[:c]]] \
       [Z z.r] \
@@ -1930,7 +1983,8 @@ phase name.s \
              int1.r int2.r ...]
   ...
 endphase
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 Adds a phase to be analyzed. The phase can be a physical phase, that
 is, it corresponds to a real phase of the solid under study, or a
@@ -1969,10 +2023,12 @@ parser. By default, the first field of each record is assigned to
 volume and the second is the energy. This behavior can be modified
 with the \textbf{using} (or \textbf{u} for short) keyword. For instance:
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 phase mgo file mgo.dat u 4:5:8
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 reads the file mgo.dat: the fourth field is interpreted as the cell
 volume and the fifth is the energy. The optional third field
@@ -2067,12 +2123,14 @@ ignored otherwise.
 
 \item \textbf{fit} keyword
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 fit {polygibbs|bm2|bm3|bm4|pt2|pt3|pt4|pt5|murn|antons|vinet|ap2|
      strain {eulerian|bm|natural|pt|lagrangian|lagr|
     infinitesimal|inf|quotient|x1|x3|xinv3|x3inv|v} [order.i|0]}
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The \textbf{fit} keyword chooses the equation of state (EOS) used for
 the fits to the energy-volume and free energy-volume data of the
@@ -2121,10 +2179,12 @@ f = log(V./V0)/3
 Following the strain, the user must indicate the order of the
 polynomial to be fit. Thus, for instance,
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 phase mgo ... fit strain bm 4
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 fits a 4th order Birch-Murnaghan equation of state to the energy,
 which is equivalent to a 4th degree polynomial of the energy in the
@@ -2224,13 +2284,15 @@ Default: no parameters fixed.
 %
 \begin{quote}
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 tmodel {static|debye_input|debye_poisson_input|debye|debye_einstein|
         debye_gruneisen {slater|dm|vz|mfv|a.r b.r}|
         {qhafull|qha} [phfield ifield.i] [dosfield i1.i i2.i]|
         qha_espresso [phfield ifield.i]]
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 Sets the temperature model. The keyword meaning is:
 %
@@ -2373,13 +2435,15 @@ Prefix for finding the files that contain the vibrational density
 of states or frequencies. For instance, let us consider an input
 phase such as:
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 phase tmodel qhafull
   81.8883583665837   -73.5171659350000 001/001.dos
   86.0358791612784   -73.5360133400000 002/002.dos
 endphase
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 Without any \textbf{prefix} keyword, gibbs2 expects that the files
 containing the phonon density of states are located in
@@ -2390,13 +2454,15 @@ read the energy-volume and phonon density of states from somewhere
 else. For instance, if the density of states were located in a
 directory called /home/user/calc ,
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 phase tmodel qhafull prefix /home/user/calc
   81.8883583665837   -73.5171659350000 001/001.dos
   86.0358791612784   -73.5360133400000 002/002.dos
 endphase
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 then gibbs2 looks for the phonon density of states in
 /home/user/calc/00x/00x.dos . It is also possible to include
@@ -2556,14 +2622,16 @@ Default: read E(V).
 %
 \begin{quote}
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 units [{volume {bohr|bohr3|bohr^3|ang|ang3|ang^3}}]
       [{energy {hy|hartree|ha|ev|evolt|electronvolt|ry|rydberg}}]
       [{pressure {au|a.u.|gpa}}]
       [{{freq|frequency} {hartree|hy|ha|cm-1|cm^-1|cm_1|thz}}]
       [{edos {hy|hartree|ha|ev|evolt|electronvolt|ry|rydberg}}] \
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 Specifies the units of input data. All data is converted to atomic
 units internally, so most output is also in atomic units, except
@@ -2597,18 +2665,21 @@ level, polynomial coefficients for the electronic free energy,
 polynomial coefficients for -TSel and phonon DOS or frequency
 file. Therefore, for an input like:
 %
-\gibbslist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
+#gibbslang
 phase tmodel debye_input elec sommerfeld
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 the input records must be:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 v1 e1 td1 nef1
 ...
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The default sequence can be modified by using some of the relevant
 keywords: \textbf{using}, \textbf{phfield},... If that is the case, the fields
@@ -2739,6 +2810,22 @@ Default: linear.
 
 \end{itemize}
 
+\item \textbf{set ignore\_neg\_cutoff inegcut.r}
+
+When negative phonon frequencies are passed to gibbs2, the program
+assumes that the point does not correspond to a stable state of
+the system and deactivates it (i.e. drops the point from the
+calculation). Sometimes, small negative frequencies can be the
+result of numerical errors in the program used to calculate the
+phonons, particularly the calculation of phDOS in ph.x. This keyword
+sets a cutoff for the negative frequencies. If a frequency is
+less than -abs(inegcut.r), the point is deactivated. If a frequency
+is between -abs(inegcut.r) and 0, the point remains active, but
+that frequency is discarded (and the phDOS renormalized to the
+correct value). Units are cm-1.
+
+Default: 20 cm-1.
+
 \end{itemize}
 
 
@@ -2789,10 +2876,11 @@ represents F\_el and -T*Sel versus the input volume.
 
 To run them, simply do:
 %
-\asciilist
-\begin{lstlisting}
+\begin{quote}
+\begin{verbatim}
 gibbs2 xx.ing xx.out
-\end{lstlisting}
+\end{verbatim}
+\end{quote}
 
 The xx.out is the main gibbs2 output file.
 
@@ -2812,7 +2900,7 @@ original gibbs article is \cite{orig}.
   \label{copyright-notice-for-gibbs2}%
 }
 
-Copyright (c) 2011 Alberto Otero de la Roza <\href{mailto:alberto@carbono.quimica.uniovi.es}{alberto@carbono.quimica.uniovi.es}>,
+Copyright (c) 2011 Alberto Otero de la Roza <\href{mailto:aoterodelaroza@gmail.com}{aoterodelaroza@gmail.com}>,
 Víctor Luaña <\href{mailto:victor@carbono.quimica.uniovi.es}{victor@carbono.quimica.uniovi.es}> and David
 Abbasi <\href{mailto:david@carbono.quimica.uniovi.es}{david@carbono.quimica.uniovi.es}>. Universidad de Oviedo.
 
@@ -2865,7 +2953,7 @@ netlib.org.
   \label{copyright-notice-for-this-document}%
 }
 
-Copyright (c) 2011 Alberto Otero de la Roza <\href{mailto:alberto@carbono.quimica.uniovi.es}{alberto@carbono.quimica.uniovi.es}>,
+Copyright (c) 2011 Alberto Otero de la Roza <\href{mailto:aoterodelaroza@gmail.com}{aoterodelaroza@gmail.com}>,
 Víctor Luaña <\href{mailto:victor@carbono.quimica.uniovi.es}{victor@carbono.quimica.uniovi.es}> and David
 Abbasi <\href{mailto:david@carbono.quimica.uniovi.es}{david@carbono.quimica.uniovi.es}>. Universidad de Oviedo.
 

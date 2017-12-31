@@ -3,7 +3,7 @@ Gibbs2 user's guide
 ===================
 
 :Author: Alberto Otero-de-la-Roza, Víctor Luaña and David Abbasi.
-:Contact: alberto@carbono.quimica.uniovi.es
+:Contact: aoterodelaroza@gmail.com
 :Contact: victor@carbono.quimica.uniovi.es
 :Address: Departamento de Química Física y Analítica, Universidad de Oviedo,
           Principado de Asturias,
@@ -1283,9 +1283,10 @@ generates a number of auxiliary files:
   transition sequence and phase stability, when there are several
   phases in competition.
 
-* 06_phases.tpstab : a file containing the identity, Gibbs free
-  energy, volume and adiabatic bulk modulus of the stable phase at
-  each pressuer and temperature data point.
+* 06_phases.tpstab : a file that gives the stable phase (minimum Gibbs
+  free energy) at each pressure and temperature. The columns are, in
+  order: temperature, pressure, identity of the stable phase, Gibbs
+  free energy, volume, and isothermal bulk modulus.
 
 * 06_phases.dgtp : difference in Gibbs free energy between all the
   calculated phases and the first, for all the temperature and
@@ -2232,6 +2233,22 @@ Set options
 
   - 2: all.
 
+* **set ignore_neg_cutoff inegcut.r**
+
+  When negative phonon frequencies are passed to gibbs2, the program
+  assumes that the point does not correspond to a stable state of 
+  the system and deactivates it (i.e. drops the point from the 
+  calculation). Sometimes, small negative frequencies can be the
+  result of numerical errors in the program used to calculate the
+  phonons, particularly the calculation of phDOS in ph.x. This keyword
+  sets a cutoff for the negative frequencies. If a frequency is 
+  less than -abs(inegcut.r), the point is deactivated. If a frequency
+  is between -abs(inegcut.r) and 0, the point remains active, but
+  that frequency is discarded (and the phDOS renormalized to the
+  correct value). Units are cm-1.
+
+  Default: 20 cm-1.
+
 Test cases
 ==========
 
@@ -2317,7 +2334,7 @@ original gibbs article is [orig]_.
 Copyright notice for gibbs2
 ===========================
 
-Copyright (c) 2011 Alberto Otero de la Roza <alberto@carbono.quimica.uniovi.es>,
+Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
 Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
 
@@ -2362,7 +2379,7 @@ netlib.org.
 Copyright notice for this document
 ==================================
 
-Copyright (c) 2011 Alberto Otero de la Roza <alberto@carbono.quimica.uniovi.es>,
+Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
 Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
 

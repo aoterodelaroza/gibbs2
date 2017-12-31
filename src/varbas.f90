@@ -1,4 +1,4 @@
-! Copyright (c) 2011 Alberto Otero de la Roza <alberto@carbono.quimica.uniovi.es>,
+! Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 ! Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
 ! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
 ! 
@@ -137,6 +137,7 @@ module varbas
 
   ! frequencies
   real*8, parameter :: fnegcrit = -1d-2 !< negative freq. criterion (cm_1)
+  real*8 :: ignore_neg_cutoff = 20d0 !< negative freqs below this trigger deactivation
   real*8 :: fgrid_step = -1d0
 
   ! temperature models
@@ -455,15 +456,18 @@ contains
     logical :: ok, doneg
     integer :: msize
     real*8 :: fdum
-    real*8 :: ffcrit, ffnegcrit, eps
+    real*8 :: ffcrit, ffnegcrit, fignore, eps
     integer :: nfmax
     
-    ! set units for cutoffs
+    ! cutoffs with units
     ffnegcrit = fnegcrit
+    fignore = abs(ignore_neg_cutoff)
     if (units == units_f_ha) then
        ffnegcrit = ffnegcrit / ha2cm_1
+       fignore = fignore / ha2cm_1
     elseif (units == units_f_thz) then
        ffnegcrit = ffnegcrit / thz2cm_1
+       fignore = fignore / thz2cm_1
     end if
 
     msize = size(f)
@@ -485,7 +489,8 @@ contains
           if (idum == i1) then
              ok = isreal(fdum,line,lp)             
              if (fdum < ffnegcrit) then
-                doneg = .true.
+                if (fdum < -fignore) &
+                   doneg = .true.
                 nn = nn - 1
                 exit
              end if
@@ -573,16 +578,19 @@ contains
     integer :: nrot, mult
     real*8 :: rot(3,3,48), thiswei
     real*8 :: omegain(nint(3*vfree*zz)), wei_in(size(wei))
-    real*8 :: ffnegcrit
+    real*8 :: ffnegcrit, fignore
 
     real*8, parameter :: eps = 1d-6
     
     ! cutoffs with units
     ffnegcrit = fnegcrit
+    fignore = abs(ignore_neg_cutoff)
     if (units == units_f_ha) then
        ffnegcrit = ffnegcrit / ha2cm_1
+       fignore = fignore / ha2cm_1
     elseif (units == units_f_thz) then
        ffnegcrit = ffnegcrit / thz2cm_1
+       fignore = fignore / thz2cm_1
     end if
 
     ! open the file
@@ -638,7 +646,7 @@ contains
           nqout = nqout + mfreq
        else
           ! zero-frequencies case, deactivate
-          if (any(omegain < ffnegcrit)) then
+          if (any(omegain < -fignore)) then
              nqout = -1
              omega(:) = 0d0
              wei = wei_in
