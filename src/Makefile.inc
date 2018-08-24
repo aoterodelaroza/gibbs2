@@ -2,35 +2,35 @@
 # Compiler 
 ############# 
 
-# The Intel(R) fortran compiler (ifort)
-ifeq ($(DEBUG),1)
-  FC = ifort
-  FCFLAGS = -g -CU -C -traceback -fpe0 -debug
-  LDFLAGS = 
-  AR = ar
-  EXE =
-else
-  FC = ifort
-  FCFLAGS = -O3 
-  LDFLAGS = -O3
-  AR = ar
-  EXE =
-endif
-
-## The GNU fortran compiler (gfortran)
+## The Intel(R) fortran compiler (ifort)
 #ifeq ($(DEBUG),1)
-#  FC = gfortran
-#  FCFLAGS = -g -fbounds-check -Wall -Wunused-parameter -ffpe-trap=invalid -fbacktrace -fdump-core
+#  FC = ifort
+#  FCFLAGS = -g -CU -C -traceback -fpe0 -debug
 #  LDFLAGS = 
 #  AR = ar
 #  EXE =
 #else
-#  FC = gfortran
-#  FCFLAGS = -O3
-#  LDFLAGS = 
+#  FC = ifort
+#  FCFLAGS = -O3 
+#  LDFLAGS = -O3
 #  AR = ar
 #  EXE =
 #endif
+
+# The GNU fortran compiler (gfortran)
+ifeq ($(DEBUG),1)
+  FC = gfortran
+  FCFLAGS = -g -fbounds-check -Wall -Wunused-parameter -ffpe-trap=invalid -fbacktrace -fdump-core
+  LDFLAGS = 
+  AR = ar
+  EXE =
+else
+  FC = gfortran
+  FCFLAGS = -O3
+  LDFLAGS = 
+  AR = ar
+  EXE =
+endif
 
 ## The minimalistic GNU cross-compiler (windows target)
 #ifeq ($(DEBUG),1)
