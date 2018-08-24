@@ -2182,7 +2182,7 @@ contains
        end if
        if (abs(sumn - real(3*vfree*p%z,8)) > 1d-2) then
           write (msg,'(" Volume num. ",I3,1p," [",E12.4,"] phDOS renormalized from ",E20.10," to ",E20.10)') &
-             iv, p%v(iv), sumn, 3d0*vfree
+             iv, p%v(iv), sumn/p%z, 3d0*vfree
           call error('phase_phdos',msg,warning)
        end if
        p%phdos_d(:,1,iv) = p%phdos_d(:,1,iv) / sumn * (3d0 * vfree)
