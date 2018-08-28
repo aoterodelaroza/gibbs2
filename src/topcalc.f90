@@ -328,7 +328,7 @@ contains
 
     real*8 :: gmin
     real*8 :: ptrans(mtrans)
-    integer :: i1trans(mtrans), i2trans(mtrans)
+    integer :: i1trans(0:mtrans), i2trans(0:mtrans)
     integer :: blknum(mtrans)
     integer :: ntrans
     logical :: trchange, ntranszero
