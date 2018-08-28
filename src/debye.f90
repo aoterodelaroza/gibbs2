@@ -401,68 +401,116 @@ contains
 
   end subroutine debeins
 
-  subroutine thermalphon (p,T,v,uvib,cv,he,ent,cv_lowt)
-
+  ! For phase p, calculate thermodynamic non-gamma-dependent
+  ! thermodynamic properties at V and T using phonon DOS QHA.
+  ! Returns: uvib = vibrational contribution to the internal energy,
+  ! cv = constant-volume heat capacity, fvib = vibrational
+  ! contribution to the free energy, ent = entropy, cv_lowt = 
+  ! low-temeprature cv (for the calculation of gamma).
+  subroutine thermalphon (p,T,v,uvib,cv,fvib,ent,cv_lowt)
     type(phase), intent(in) :: p
     real*8, intent(in) :: T, v
-    real*8, intent(out) :: uvib, cv, he, ent, cv_lowt
+    real*8, intent(out) :: uvib, cv, fvib, ent, cv_lowt
+
+    integer :: i, id, nf
+    real*8 :: fac, sum, step, sder, kt
+    real*8, allocatable :: emfkt(:), aux(:), tmin(:), f(:), d(:)
+    real*8, allocatable :: l1emfkt(:)
 
     real*8, parameter :: hvol = 1d-7, enterr = 1d-12
+    real*8, parameter :: logtiny = log(tiny(1d0))
 
-    integer :: i, id
-    real*8 :: f(size(p%phdos_f)), d(size(p%phdos_f))
-    real*8, dimension(size(p%phdos_f)) :: aux, aux2
-    real*8 :: fac, sum, step, sder
-    logical :: found
+    ! xxxx !
+    uvib = 0d0
+    cv = 0d0
+    fvib = 0d0
+    ent = 0d0
+    cv_lowt = 1d0
 
-    ! linear-interpolate phonon DOS
-    found = .false.
+    ! initialize
+    kt = pckbau * T
+
+    ! interpolate the phonon DOS at volume v. 
+    ! f = frequencies (Hartree), d = phDOS, on the same grid.
+    nf = size(p%phdos_f,1)
+    allocate(f(nf),d(nf))
     step = p%phstep
-    f = p%phdos_f(:)
-
+    f = p%phdos_f
     d = phdos_interpolate(p,v)
 
-    ! calculate vibrational free energy (zp + thermal), atomic units
-    if (abs(T) < 1d-5) then
-       if (abs(T) < 1d-10) then
-          aux = 0d0
-       else
-          aux = d*(0.5d0*f+pckbau*T*log(1-exp(-f/pckbau/T)))
-       end if
-       if (step > 0d0) then
-          he = simpson(aux,step)
-       else
-          he = trapezoidal(f,aux)
-       end if
-       ent = 0d0
-       cv = 0d0
-    else
-       aux = exp(-f / pckbau / T)
-       where (f > log(huge(hvol))/2*pckbau*T)
-          aux2 = aux
-       elsewhere
-          aux2 = 1d0 / (1d0-1d0/aux)
-       end where
+    ! calculate the minimum temperature
+    allocate(tmin(nf))
+    tmin = -f / (pckbau * logtiny)
+       
+    ! calculate emfkt = exp(-omega / (k*T))
+    allocate(emfkt(nf),l1emfkt(nf))
+    where (T < tmin)
+       emfkt = 0d0
+    elsewhere
+       emfkt = exp(-f / kt)
+    end where
+    l1emfkt = log(1d0 - emfkt)
 
-       he  = simpson(d*(0.5d0*f+pckbau*T*log(1-aux)),step)
-       ent = simpson(d*(-pckbau*log(1-aux)-f/T*aux2),step)
-       cv = simpson(d*(pckbau*(f/pckbau/T)**2 / (aux-1) * aux2),step)
+    ! note: frequency = 0 is gone from f(:)
+    allocate(aux(nf))
+
+    ! calculate fvib
+    do i = 1, nf
+       aux = d*(0.5d0 * f + kt * l1emfkt)
+    end do
+    if (step > 0d0) then
+       fvib = simpson(aux,step)
+    else
+       fvib = trapezoidal(f,aux)
     end if
+
+    ! calculate entropy (T < tmin implies aux = 0)
+    where (T < tmin)
+       aux = 0d0
+    elsewhere
+       aux = d*(-pckbau * l1emfkt + f/T * emfkt / (1d0 - emfkt))
+    end where
+    if (step > 0d0) then
+       ent = simpson(aux,step)
+    else
+       ent = trapezoidal(f,aux)
+    end if
+
+    ! calculate constant-volume heat capacity (T < tmin implies aux = 0)
+    where (T < tmin)
+       aux = 0d0
+    elsewhere
+       aux = d * (pckbau * (f / kt)**2 * emfkt / (1d0 - emfkt)**2)
+    end where
+    if (step > 0d0) then
+       cv = simpson(aux,step)
+    else
+       cv = trapezoidal(f,aux)
+    end if
+
+    ! internal energy
+    uvib = fvib + T * ent
 
     ! Cv is needed in the calculation of gamma -> 0/0 at low temp.
     cv_lowt = cv
     if (T < tlim_gamma) then
-       aux = exp(-f / pckbau / tlim_gamma)
-       where (f > log(huge(hvol))/2*pckbau*tlim_gamma)
-          aux2 = aux
+       where (tlim_gamma < tmin)
+          emfkt = 0d0
        elsewhere
-          aux2 = 1d0 / (1d0-1d0/aux)
+          emfkt = exp(-f / (pckbau * tlim_gamma))
        end where
-       cv_lowt = simpson(d*(pckbau*(f/pckbau/tlim_gamma)**2 / (aux-1) * aux2),step)
+       where (f > log(huge(hvol))/2*pckbau*tlim_gamma)
+          aux = emfkt
+       elsewhere
+          aux = 1d0 / (1d0 - 1d0/emfkt)
+       end where
+       if (step > 0d0) then
+          cv_lowt = simpson(d*(pckbau*(f/pckbau/tlim_gamma)**2 / (emfkt-1) * aux),step)
+       else
+          cv_lowt = trapezoidal(f,d*(pckbau*(f/pckbau/tlim_gamma)**2 / (emfkt-1) * aux))
+       end if
     end if
-
-    ! internal energy
-    uvib = he + T * ent
+    deallocate(f,d,tmin,emfkt,l1emfkt,aux)
 
   end subroutine thermalphon
 
