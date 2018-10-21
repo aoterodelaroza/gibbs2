@@ -129,7 +129,6 @@ contains
     real*8, intent(in) :: v, f2o, f3
     real*8, intent(out) :: td, gamma
 
-    integer :: ierr
     real*8 :: b, f2
 
     td = 0d0
@@ -275,16 +274,15 @@ contains
 
     real*8, parameter :: eps=1D-12
     integer, parameter :: maxnl=100
-    real*8, parameter :: cvlim = 1d-10
 
     real*8 :: nmolec
     integer :: i, nl
     real*8 :: x(maxnl), w(maxnl), y, z, fdebye
-    real*8 :: ThetaD, pstat, tmp, bstat
+    real*8 :: ThetaD, pstat, bstat
     real*8 :: tmpVol, tmpB, tmpPB, tmpTot
     real*8 :: sum_F_op, freq_i(p%nfreq), x_i(p%nfreq), ex_i(p%nfreq), summ, debye0
     real*8 :: sum_S_op, sum_Cv_op
-    real*8 :: en_ac, ent_ac, he_ac, tmp2
+    real*8 :: en_ac, ent_ac, he_ac
     real*8 :: ent_op, he_op, veq_static, beq_static
     real*8 :: prefac
 
@@ -412,12 +410,12 @@ contains
     real*8, intent(in) :: T, v
     real*8, intent(out) :: uvib, cv, fvib, ent, cv_lowt
 
-    integer :: i, id, nf
-    real*8 :: fac, sum, step, sder, kt
+    integer :: i, nf
+    real*8 :: step, kt
     real*8, allocatable :: emfkt(:), aux(:), tmin(:), f(:), d(:)
     real*8, allocatable :: l1emfkt(:)
 
-    real*8, parameter :: hvol = 1d-7, enterr = 1d-12
+    real*8, parameter :: hvol = 1d-7
     real*8, parameter :: logtiny = log(tiny(1d0))
 
     ! xxxx !
@@ -504,11 +502,9 @@ contains
     real*8, intent(in) :: v
     real*8 :: d(size(p%phdos_f))
 
-    real*8, parameter :: veps = 1d-10, deps = 1d-6
-    real*8, parameter :: veps2 = 1d-6
+    real*8, parameter :: deps = 1d-6
 
     integer :: i, id
-    logical :: found
     real*8 :: fac, ppvalu
 
     call vbracket(p,v,id,.true.)
@@ -548,11 +544,8 @@ contains
     real*8, intent(out), optional :: gamma
 
     integer :: nq
-    integer :: i, j
     real*8, dimension(size(p%omega,1)) :: omega, gammaj, aux, aux2
     character*(mline) :: msg
-
-    real*8, parameter :: tstep = 1d0
 
     nq = size(p%omega,1)
 
@@ -616,11 +609,7 @@ contains
     real*8, intent(in) :: v
     real*8, dimension(size(p%omega,1)) :: omega, gamma
 
-    real*8, parameter :: veps = 1d-10
-    real*8, parameter :: veps2 = 1d-6
-
     integer :: i, j, id
-    logical :: found
 
     call vbracket(p,v,id,.true.)
     if (id == 0) then

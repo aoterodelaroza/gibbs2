@@ -44,7 +44,7 @@ program gibbs2
   integer :: nhouse
   real*8 :: pini, pend, tini, tend, tmaxmin, vini, vend
   real*8 :: vout_ini, vout_end, vout_step, e0
-  integer :: ierr, idum, isv, onxint, nid
+  integer :: ierr, isv, onxint, nid
   real*8, allocatable :: va(:,:), ba(:,:), ga(:,:)   ! v(p), b(p) and g(p) for all the phases.
 
   ! initialize
@@ -643,7 +643,7 @@ program gibbs2
   ! pop header (varbas) + input (topcalc)
   call header()
   write (uout,'("tictac -- ",A)') trim(sdate)
-  call popinput(sdate,fileout)
+  call popinput(fileout)
 
   ! check phase data, set pressure range (varbas)
   call setup_phases()
@@ -759,7 +759,7 @@ program gibbs2
               tlist(i) = tlist(i-1) + tstep
            end do
         else
-           nts = tmaxmin / tstep + 1
+           nts = floor(tmaxmin / tstep) + 1
            allocate(tlist(nts))
            tlist(1) = 0d0
            do i = 2, nts

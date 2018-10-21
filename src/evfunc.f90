@@ -566,8 +566,6 @@ contains
     integer, intent(in) :: npar
     real*8, intent(in) :: x, apar(0:npar)
 
-    integer :: i
-
     select case(mode)
     case(fit_polygibbs,100:)
        y = polin0s(mode,x,npar-1,apar)
@@ -608,7 +606,6 @@ contains
     real*8, intent(in) :: x(:), apar(0:npar)
 
     real*8 :: y(size(x))
-    integer :: strain
 
     select case(mode)
     case(fit_polygibbs,100:)
@@ -650,8 +647,6 @@ contains
     integer, intent(in) :: npar
     real*8, intent(in) :: x, apar(0:npar)
 
-    integer :: i
-
     select case(mode)
     case(fit_polygibbs,100:)
        y = polin1s(mode,x,npar-1,apar)
@@ -691,8 +686,6 @@ contains
     integer, intent(in) :: npar
     real*8, intent(in) :: x(:), apar(0:npar)
     real*8 :: y(size(x))
-
-    integer :: strain
 
     select case(mode)
     case(fit_polygibbs,100:)
@@ -1366,7 +1359,7 @@ contains
     integer, intent(in) :: ider
     real*8 :: bm2s
     
-    real*8 :: c, d, f, ff
+    real*8 :: c, f, ff
 
     f = 0.5d0*((x(2) / V)**(twothird) - 1d0)
     c = 4.5d0*x(3)*x(2)
@@ -2009,9 +2002,8 @@ contains
     real*8 :: ap2s
 
     real*8 :: eta, pfg, c0, c2, z, ec0, g0, g1, g2, g3, g4, g5, g6
-    real*8 :: gg, gexp, gfac, dum1, dum2
+    real*8 :: gg, gexp, gfac
     real*8 :: gfz, gfc
-    integer :: ierr, ierr2
 
     interface
        subroutine dgam(A, X, ACC, G, GSTAR, IFLG, IFLGST)
@@ -2086,8 +2078,7 @@ contains
 
     real*8, dimension(size(v)) :: eta, z, gexp, gfac
     real*8, dimension(size(v)) :: g0, g1, g2, g3, g4, g5, g6, gg, gfz
-    real*8 :: pfg, c0, c2, ec0, gfc, dum1, dum2
-    integer :: i, ierr, ierr2
+    real*8 :: pfg, c0, c2, ec0, gfc
 
     interface
        subroutine dgam(A, X, ACC, G, GSTAR, IFLG, IFLGST)

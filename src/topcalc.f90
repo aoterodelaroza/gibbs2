@@ -59,12 +59,12 @@ contains
 
   end subroutine topcalc_init
 
-  subroutine popinput(sdate,fileout)
+  subroutine popinput(fileout)
     use debye
     use eos
     use evfunc
 
-    character*(mline), intent(in) :: sdate,fileout
+    character*(mline), intent(in) :: fileout
 
     integer :: i
 
@@ -111,7 +111,7 @@ contains
     real*8 :: xdum, f0, f1, fac
     character*5 :: starts
     character*3 :: ends
-    integer :: nact, iact
+    integer :: iact
     character*(mline_fmt) :: fm
     real*8 :: vmin, vmax, emin, emax
 
@@ -265,7 +265,7 @@ contains
 
     real*8, intent(in) :: ga(nps,nph)
 
-    integer :: i, j, iact, idmin, iold
+    integer :: i, j, idmin, iold
     real*8 :: ptrans(mtrans), gmin, pnew, pold
     integer :: i1trans(mtrans), i2trans(mtrans)
     integer :: ntrans
@@ -448,7 +448,7 @@ contains
     integer :: lu
     integer :: i, j, k, ierr, id
     real*8 :: v, b, e, g
-    character*(mline) :: msg, msg2
+    character*(mline) :: msg
     character*(mline_fmt) :: fm, fme
     type(fitinfo) :: pfit
     real*8 :: proplist(mpropout), errlist(mpropout)
@@ -653,12 +653,9 @@ contains
     real*8, intent(in) :: v, t
     real*8, intent(out) :: proplist(mpropout)
 
-    integer :: i, j
-    integer :: ntpol, ierr
     real*8 :: f0, f1, f2, f3, f4, b0, b1, b2, tmp
     real*8 :: f0s, f1s, f2s, f3s, b0s, b1s, g
     real*8 :: nef, ef, theta
-    real*8 :: tpol(0:mmpar)    
     real*8 :: pbeta, alpha, cp, bs, D, Derr
     real*8 :: cv_ac, cv_op, cv_lowt
     real*8 :: fvib, svib, uvib, cv_vib
@@ -666,12 +663,10 @@ contains
     real*8 :: fsum, ssum, usum, cv_sum
     real*8 :: gam_ac, gam_op, gamma
     real*8 :: pext, psta, pth, dg
-    integer :: ini, end, id
+    integer :: id
     real*8 :: auxcpol(0:mmpar)
     logical :: gamma_from_s
 
-    real*8, parameter :: feps = 1d-13
-    
     ! calculate gamma from entropy fit?
     gamma_from_s = (p%tmodel == tm_qhafull) .or. (p%emodel /= em_no)
 
@@ -971,9 +966,9 @@ contains
 
     integer :: i, j, k
     integer :: mint, n, lu
-    real*8 :: v, p, t, e, x, b, g, fac, f1
+    real*8 :: v, p, t, e, b, g, fac, f1
     real*8, allocatable :: fi(:)
-    integer, allocatable :: ifm(:), ilens(:)
+    integer, allocatable :: ifm(:)
     character*(mline_fmt) :: fm1, fms
     integer :: napol, ierr, imode
     real*8 :: apol(0:mmpar)
@@ -1106,17 +1101,15 @@ contains
     
     real*8, parameter :: facprec = 1d-10
 
-    integer :: i, j, ierr
+    integer :: i, ierr
     integer :: napol
-    real*8 :: apol(0:mmpar), psum, f1
-    character*(mline_fmt) :: fm
+    real*8 :: apol(0:mmpar), psum
     character*(mline) :: msg
     
     integer :: imode, niter
     real*8 :: vexpt, bexpt, fac
     real*8 :: v0, b0, e0, g0, e0new, g0new, v0t, b0t, e0t, g0t
     real*8 :: vexp, bexp
-    real*8 :: q1, q2
     real*8 :: fa, fb, qfa, qfb, qfx
     real*8 :: psta_vexpt, pth_vexpt, bsta_vexpt
     real*8 :: bt_vexpt, bpobj
@@ -1332,12 +1325,10 @@ contains
     logical, intent(in) :: dostatic, dovib, doel
     type(fitinfo), intent(out), optional :: pfit
 
-    integer :: i, j, rnv, ini, end, nend
-    real*8 :: uvib, cv, cv2, ent, D, Derr, cv_ac, cv_op, uel, sel
+    integer :: i, rnv
+    real*8 :: uvib, cv, cv2, D, Derr, cv_ac, cv_op
     real*8 :: realv(p%nv), reala(p%nv), aux(p%nv), dum, ef(p%nv)
     real*8 :: auxcpol(0:mmpar)
-
-    real*8, parameter :: feps = 1d-13
 
     rnv = count(p%dyn_active)
 
@@ -1405,7 +1396,7 @@ contains
     logical, intent(in) :: dovib, doel
 
     integer :: i, rnv
-    real*8 :: uvib, cv, cv2, ent, D, Derr, cv_ac, cv_op
+    real*8 :: uvib, cv, cv2, cv3, D, Derr, cv_ac, cv_op
     real*8 :: realv(p%nv), reals(p%nv), aux(p%nv), dum
     real*8 :: t0, ef(p%nv)
     real*8 :: auxcpol(0:mmpar)
@@ -1428,7 +1419,7 @@ contains
           else if (p%tmodel == tm_debye_einstein) then
              call debeins (p,p%td(i),t0,p%v(i),D,Derr,uvib,cv,dum,aux(i),cv_ac,cv_op)
           else if (p%tmodel == tm_qhafull_espresso) then
-             call thermalomega(p,t0,p%v(i),uvib,cv,dum,cv2,aux(i),cv2)
+             call thermalomega(p,t0,p%v(i),uvib,cv,dum,cv2,aux(i),cv3)
           else 
              call thermal (p%td(i),t0,D,Derr,uvib,cv,dum,aux(i))
           end if
@@ -1548,16 +1539,13 @@ contains
     integer :: mode, deg, idx, idxx(1), ierr
     real*8 :: vscal, rms, rms2min, fdum1, fdum2, fdum3
     real*8 :: v0, f0, f1, f2, f3, f4
-    character*(mline) :: fm, fme, msg
-    real*8 :: prop(5), prop2(5), quo(5), amean, astd, yleft, yright
+    character*(mline) :: fm
+    real*8 :: prop(5), prop2(5), quo(5)
     type(polyfit), allocatable :: pol(:)
     real*8, allocatable :: emean(:), emean2(:), eeval(:,:)
     type(polyfit) :: pavg
-    integer :: npol, nrej, nsrej, nsteps
+    integer :: npol, nrej, nsrej
     real*8, allocatable, dimension(:) :: xstep, ystep
-
-    real*8 :: outlier_fac = 10d0
-    real*8 :: step_fac = 100d0
 
     ! count max. number of volumes
     mv = 0
@@ -1760,7 +1748,7 @@ contains
 
     integer :: i, j
     real*8 :: vol, pstat, bstat, veq, beq
-    real*8 :: tmpvol, tmpb, tmppb, tmptot, f0
+    real*8 :: tmpvol, tmpb, tmppb, tmptot
     real*8, allocatable :: freq(:)
     integer :: mfreq, n
     integer :: lu

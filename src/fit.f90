@@ -169,10 +169,9 @@ contains
     real*8, intent(in), optional :: obelix(0:mmpar)
     type(fitinfo), intent(out), optional :: pfit
 
-    integer :: i, i1, i2, idx, idxx(1)
+    integer :: i, i1, idx, idxx(1)
     real*8 :: mslope, rfunc(size(func))
     logical :: dopshift
-    integer :: fmode1
 
     idxx = minloc(func)
     idx = idxx(1)
@@ -254,7 +253,7 @@ contains
     integer, allocatable :: nparfit(:), ndatafit(:)
     integer :: npar2(mpar+1)
     real*8 :: rms2(mpar+1), pwei(mpar+1), rms2min, apar2(0:mmpar,mpar+1)
-    integer :: nparmax, i, j, ifit
+    integer :: nparmax, i, ifit
     real*8  :: wnorm, wtmp, rmsmin, eps
     integer, parameter :: limit = 4
     integer :: nparmin, ndatamin, ndataact, iinf, isup
@@ -601,13 +600,10 @@ contains
     real*8, intent(out) :: apar(0:npar), rms
 
     real*8 :: c(0:mmpar,0:mmpar+1), wnorm, apar2(0:npar+1)
-    integer :: k, j, i, ij, ierr, iter
+    integer :: k, j, i, ij, ierr
     real*8 :: s2
     integer :: nfit, nparout
-    real*8 :: eps, ffit(ndata), a(3*(ndata+npar)+3), r(ndata)
-    integer :: iwa(npar+1)
-    real*8 :: wa(ndata*(npar+1) + (npar+1)*5)
-    integer :: lwa
+    real*8 :: eps, a(3*(ndata+npar)+3), r(ndata)
 
     if (pfit_mode == pfit_gauss) then
        !.calculate the norm of the weights

@@ -25,15 +25,6 @@ module eos
   ! public
   public :: eosfit_ev_fitt
 
-  ! info for optm, spinodal EOS
-  logical :: spinodal_opt
-  real*8 :: bcnt_vstatic, bcnt_gbao
-  real*8, allocatable :: bcnt_p(:), bcnt_b(:)
-  real*8 :: xkopt
-
-  ! info for minpack
-  real*8, allocatable :: xm(:), ym(:)
-
 contains
 
   !> Fit by weighed polynomials to static data. Output results.
@@ -44,8 +35,7 @@ contains
 
     integer :: i, j, ierr
     real*8 :: vk, gk, ek, bk
-    real*8 :: f1, f2, f3, f4, pt, tmp, tmp2, b1, b2
-    real*8 :: a(p%nv)
+    real*8 :: f1, f2, f3, f4, pt, b1, b2
     character*(mline_fmt) :: fm, fme
     integer :: luw
     logical, save :: luw_open = .false.

@@ -315,7 +315,7 @@ contains
     integer, parameter :: d = 3
 
     integer :: i
-    integer :: dif, ipad1, ipad2, ishift
+    integer :: dif, ipad1, ipad2
     character*(mline_fmt) :: aux
 
     if (size(ifmt) /= size(iout)) then

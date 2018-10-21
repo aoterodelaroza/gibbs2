@@ -312,7 +312,7 @@ contains
     character*(mline), intent(out) :: oline
     integer, intent(in) :: u
 
-    integer :: i, lp, lenu
+    integer :: i,lenu
     character*(mline) :: line
     logical :: notfirst
 
@@ -382,7 +382,6 @@ contains
 
     integer           wp, l, i
 
-1   continue
     l = len(word)
     do while (line(lp:lp) .eq. blank .or. line(lp:lp).eq.tab)   !skip blanks
        lp = lp + 1
@@ -467,7 +466,6 @@ contains
 
     integer :: i
 
-1   continue
     do while (line(lp:lp) .eq. blank)
        lp=lp+1
     enddo
@@ -508,7 +506,6 @@ contains
     isdigit(ch) = ch.ge.'0' .and. ch.le.'9'
 
 
-1   continue
     do while (line(lp:lp) .eq. blank)
        lp = lp + 1
     end do
@@ -1090,7 +1087,6 @@ contains
   !> quicksort algorithm. iord is the initial order of data in arr and 
   !> first and last the intervals for elements to be analyzed. In the output,
   !> iord contains the final order in the array arr.
-  !> WARNING! It is not stable!?!?
   subroutine qcksort (arr, iord, first, last)
 
     !.....Maximum number of elements to be sorted depends on nstack value:

@@ -393,8 +393,6 @@ contains
     real*8, intent(out) :: e(:), n(:)
     integer, intent(out) :: nread
 
-    real*8, parameter :: fcrit = 1d-3
-
     integer :: lu, lp, idum
     character*(mline) :: line, word
     logical :: ok
@@ -456,7 +454,7 @@ contains
     logical :: ok, doneg
     integer :: msize
     real*8 :: fdum
-    real*8 :: ffcrit, ffnegcrit, fignore, eps
+    real*8 :: ffnegcrit, fignore, eps
     integer :: nfmax
     
     ! cutoffs with units
@@ -685,7 +683,7 @@ contains
     integer :: icol_int(minterp)
     integer :: idum, ifound, iphdos_1, iphdos_2, isep, isep2, nn, nq, numax, uuin
     character*(mline) :: line, word, prefix, file, linedum, msg
-    real*8 :: fx, gx, hx, rdum, zz, eshift
+    real*8 :: fx, gx, hx, zz, eshift
     logical :: ok, d0, didinterp, havev, havee
 
     ! Set defaults for this phase. also, check type definition
@@ -1346,7 +1344,7 @@ contains
        ! check repeated points
        do j = 2, ph(i)%nv
           if (abs(ph(i)%v(j)-ph(i)%v(j-1)) < 1d-5) then
-             write (msg,'("Phase ",A," -- repeated volumes at ",F12.6," bohr^3")'),&
+             write (msg,'("Phase ",A," -- repeated volumes at ",F12.6," bohr^3")') &
                 trim(adjustl(ph(i)%name(1:leng(ph(i)%name)))), ph(i)%v(j)
              call error('setup_phases',msg,faterr)
           end if
@@ -1423,7 +1421,7 @@ contains
        call fit_ev(ph(i)%fit_mode, ph(i)%reg_mode, ph(i)%v, ph(i)%e, ph(i)%npol,&
           ph(i)%cpol, ierr, .false., ph(i)%nfix, ph(i)%idfix, ph(i)%obelix, ph(i)%pfit)
        if (ierr > 0) then
-          write (uout,'("Phase ",A)'), trim(adjustl(ph(i)%name(1:leng(ph(i)%name))))
+          write (uout,'("Phase ",A)') trim(adjustl(ph(i)%name(1:leng(ph(i)%name))))
           call error('setup_phases','E(V) fit: minimum not found',faterr)
        end if
        call phase_checkfiterr(ph(i),.false.)
@@ -1487,7 +1485,7 @@ contains
                 plist(i) = plist(i-1) + pstep
              end do
           else
-             nps = pmaxmin / pstep + 1
+             nps = floor(pmaxmin / pstep) + 1
              allocate(plist(nps))
              plist(1) = 0d0
              do i = 2, nps
@@ -1525,7 +1523,7 @@ contains
                 vlist(i) = vlist(i-1) + vstep
              end do
           else if (nvs == -1) then
-             nvs = (vmax_setv - vmin_setv) / vstep + 1
+             nvs = floor((vmax_setv - vmin_setv) / vstep) + 1
              allocate(vlist(nvs))
              vlist(1) = vmin_setv
              do i = 2, nvs
@@ -1564,10 +1562,10 @@ contains
 
   subroutine props_staticeq()
 
-    integer :: i, idx, idxx(1), j
+    integer :: i, j
     character*(mline) :: msg
-    real*8 :: xmin, fa, fb, fx, vk, bk, ek, gk
-    integer :: istep, ierr
+    real*8 :: vk, bk, ek, gk
+    integer :: ierr
 
     ! check that it is possible to minimize G(static) = E(static) + pV vs. V
     ! get static equilibrium properties.
@@ -1913,7 +1911,7 @@ contains
        call error('phase_popinfo','Static equilibrium volume out of grid bounds.',warning)
     end if
     if (p%pmax > warn_pmax) then
-       write (msg,'("Max. pressure (",F12.3,") exceeds ",F12.3)'), ph(i)%pmax, warn_pmax
+       write (msg,'("Max. pressure (",F12.3,") exceeds ",F12.3)') ph(i)%pmax, warn_pmax
        call error('phase_popinfo',msg,warning)
     end if
 
@@ -1931,7 +1929,7 @@ contains
     logical :: conv, firstconv, oconv
     integer :: inflidx(p%nv), ninf
     character*(mline) :: msg
-    real*8 :: f1, f2, v3, tmp, d2
+    real*8 :: f2
 
     ierr = 0
     firstconv = .true.
@@ -2041,7 +2039,7 @@ contains
     type(phase), intent(inout) :: p
     logical, intent(in) :: ispv
 
-    integer :: i, npar, ntot
+    integer :: i, ntot
     real*8 :: d, ymean, y2mean, yvar, sse
 
     ymean = sum(p%e) / p%nv
@@ -2078,7 +2076,7 @@ contains
 
     type(phase), intent(inout) :: p
 
-    integer :: iv, iq, mode, npar, ierr
+    integer :: iq, mode, npar, ierr
 
     if (p%tmodel /= tm_qhafull_espresso) return
 
@@ -2109,11 +2107,10 @@ contains
     type(phase), intent(inout) :: p
 
     integer :: iv
-    integer :: nfreq, i, j, ini, numax
-    real*8 :: step, step1, sumn
+    integer :: nfreq, i, ini, numax
+    real*8 :: sumn
     character*(mline) :: msg
 
-    real*8, parameter :: stepcrit = 1d-6
     real*8, parameter :: deps = 1d-6
     real*8, parameter :: fsmallcrit = 0.1d0 / ha2cm_1
 

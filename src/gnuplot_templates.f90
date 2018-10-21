@@ -31,7 +31,7 @@ contains
 
     integer :: lu
     character*(mline) :: file
-    integer :: i, ii
+    integer :: i
     logical :: doout
 
     doout = .true.
