@@ -412,18 +412,11 @@ contains
 
     integer :: i, nf
     real*8 :: step, kt
-    real*8, allocatable :: emfkt(:), aux(:), tmin(:), f(:), d(:)
+    real*8, allocatable :: emfkt(:), aux(:), tmin(:), d(:)
     real*8, allocatable :: l1emfkt(:)
 
     real*8, parameter :: hvol = 1d-7
     real*8, parameter :: logtiny = log(tiny(1d0))
-
-    ! xxxx !
-    uvib = 0d0
-    cv = 0d0
-    fvib = 0d0
-    ent = 0d0
-    cv_lowt = 1d0
 
     ! initialize
     kt = pckbau * T
@@ -431,21 +424,20 @@ contains
     ! interpolate the phonon DOS at volume v. 
     ! f = frequencies (Hartree), d = phDOS, on the same grid.
     nf = size(p%phdos_f,1)
-    allocate(f(nf),d(nf))
+    allocate(d(nf))
     step = p%phstep
-    f = p%phdos_f
     d = phdos_interpolate(p,v)
 
     ! calculate the minimum temperature
     allocate(tmin(nf))
-    tmin = -f / (pckbau * logtiny)
+    tmin = -p%phdos_f / (pckbau * logtiny)
        
     ! calculate emfkt = exp(-omega / (k*T))
     allocate(emfkt(nf),l1emfkt(nf))
     where (T < tmin)
        emfkt = 0d0
     elsewhere
-       emfkt = exp(-f / kt)
+       emfkt = exp(-p%phdos_f / kt)
     end where
     l1emfkt = log(1d0 - emfkt)
 
@@ -453,26 +445,24 @@ contains
     allocate(aux(nf))
 
     ! calculate fvib
-    do i = 1, nf
-       aux = d*(0.5d0 * f + kt * l1emfkt)
-    end do
-    fvib = quad1(f,aux,step)
+    aux = d*(0.5d0 * p%phdos_f + kt * l1emfkt)
+    fvib = quad1(p%phdos_f,aux,step)
 
     ! calculate entropy (T < tmin implies aux = 0)
     where (T < tmin)
        aux = 0d0
     elsewhere
-       aux = d*(-pckbau * l1emfkt + f/T * emfkt / (1d0 - emfkt))
+       aux = d*(-pckbau * l1emfkt + p%phdos_f/T * emfkt / (1d0 - emfkt))
     end where
-    ent = quad1(f,aux,step)
+    ent = quad1(p%phdos_f,aux,step)
 
     ! calculate constant-volume heat capacity (T < tmin implies aux = 0)
     where (T < tmin)
        aux = 0d0
     elsewhere
-       aux = d * (pckbau * (f / kt)**2 * emfkt / (1d0 - emfkt)**2)
+       aux = d * (pckbau * (p%phdos_f / kt)**2 * emfkt / (1d0 - emfkt)**2)
     end where
-    cv = quad1(f,aux,step)
+    cv = quad1(p%phdos_f,aux,step)
 
     ! internal energy
     uvib = fvib + T * ent
@@ -483,16 +473,16 @@ contains
        where (tlim_gamma < tmin)
           emfkt = 0d0
        elsewhere
-          emfkt = exp(-f / (pckbau * tlim_gamma))
+          emfkt = exp(-p%phdos_f / (pckbau * tlim_gamma))
        end where
-       where (f > log(huge(hvol))/2*pckbau*tlim_gamma)
+       where (p%phdos_f > log(huge(hvol))/2*pckbau*tlim_gamma)
           aux = emfkt
        elsewhere
           aux = 1d0 / (1d0 - 1d0/emfkt)
        end where
-       cv_lowt = quad1(f,d*(pckbau*(f/pckbau/tlim_gamma)**2 / (emfkt-1) * aux),step)
+       cv_lowt = quad1(p%phdos_f,d*(pckbau*(p%phdos_f/pckbau/tlim_gamma)**2 / (emfkt-1) * aux),step)
     end if
-    deallocate(f,d,tmin,emfkt,l1emfkt,aux)
+    deallocate(d,tmin,emfkt,l1emfkt,aux)
 
   end subroutine thermalphon
 

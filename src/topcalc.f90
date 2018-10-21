@@ -1345,7 +1345,7 @@ contains
           else if (p%tmodel == tm_qhafull_espresso) then
              call thermalomega(p,T,p%v(i),uvib,cv,aux(i),dum,cv2)
           else 
-             call thermal (p%td(i),T,D,Derr,uvib,cv,aux(i),dum)
+             call thermal(p%td(i),T,D,Derr,uvib,cv,aux(i),dum)
           end if
        end do
     end if
