@@ -2175,11 +2175,7 @@ contains
     ! normalization
     do iv = 1, p%nv
        if (.not.p%dyn_active(iv)) cycle
-       if (p%phstep > 0d0) then
-          sumn = simpson(p%phdos_d(:,1,iv),p%phstep)
-       else
-          sumn = trapezoidal(p%phdos_f,p%phdos_d(:,1,iv))
-       end if
+       sumn = quad1(p%phdos_f,p%phdos_d(:,1,iv),p%phstep)
        if (abs(sumn - real(3*vfree*p%z,8)) > 1d-2) then
           write (msg,'(" Volume num. ",I3,1p," [",E12.4,"] phDOS renormalized from ",E20.10," to ",E20.10)') &
              iv, p%v(iv), sumn/p%z, 3d0*vfree

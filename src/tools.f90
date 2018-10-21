@@ -42,7 +42,7 @@ module tools
   !xx! math
   public :: gauleg
   public :: gauss
-  public :: trapezoidal, simpson
+  public :: quad1, trapezoidal, simpson
   public :: gammai
   !xx! symmetry
   public :: laue
@@ -1325,6 +1325,23 @@ contains
     return
   end subroutine gauss
 
+  ! One-dimensional quadrature. If step > 0, assume x is equally
+  ! spaced and use Simpson's rule. If step < 0, use x and y with the 
+  ! trapezoidal rule
+  function quad1(x,y,step)
+    real*8, intent(in) :: x(:), y(:), step
+    real*8 :: quad1
+
+    if (step > 0d0) then
+       quad1 = simpson(y,step)
+    else
+       quad1 = trapezoidal(x,y)
+    end if
+
+  endfunction quad1
+
+  ! Integrate a function given by y(1:n) at non-equally-spaced points
+  ! x(1:n) using the trapezoidal rule.
   function trapezoidal(x,y)
 
     real*8, intent(in) :: x(:), y(:)
@@ -1332,11 +1349,19 @@ contains
 
     integer :: n
 
-    n = size(x)
-    trapezoidal = sum(0.5d0 * (x(2:n)-x(1:n-1)) * (y(2:n)+y(1:n-1)))
+    n = size(x,1)
+    if (n < 2) then
+       trapezoidal = 0d0
+       return
+    end if
+
+    trapezoidal = 0.5d0 * sum((x(2:n)-x(1:n-1)) * (y(2:n)+y(1:n-1)))
 
   end function trapezoidal
 
+  ! Integrate a function given by y(1:n) at equally-spaced points,
+  ! separated by step, using Simpson's rule (1424...241)/3. If the
+  ! number of points is even, use trapezoidal rule for the last one.
   function simpson(y,step)
 
     real*8, intent(in) :: y(:), step
@@ -1344,12 +1369,24 @@ contains
 
     integer :: i, n
 
-    n = size(y)
+    n = size(y,1)
+    if (n < 2) then
+       simpson = 0d0
+       return
+    elseif (n == 2) then
+       simpson = 0.5d0 * step * (y(1) + y(n))
+       return
+    end if
+
     simpson = 2 * sum(y(2:n-1)) + y(1) + y(n)
     do i = 2, n-1, 2
        simpson = simpson + 2 * y(i)
     end do
     simpson = simpson * step / 3d0
+    if (modulo(n,2) == 0) then
+       ! correct the last interval, if necessary
+       simpson = simpson + (y(n)+y(n-1)) * step / 6d0
+    end if
 
   end function simpson
 

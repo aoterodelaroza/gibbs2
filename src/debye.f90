@@ -458,11 +458,7 @@ contains
     do i = 1, nf
        aux = d*(0.5d0 * f + kt * l1emfkt)
     end do
-    if (step > 0d0) then
-       fvib = simpson(aux,step)
-    else
-       fvib = trapezoidal(f,aux)
-    end if
+    fvib = quad1(f,aux,step)
 
     ! calculate entropy (T < tmin implies aux = 0)
     where (T < tmin)
@@ -470,11 +466,7 @@ contains
     elsewhere
        aux = d*(-pckbau * l1emfkt + f/T * emfkt / (1d0 - emfkt))
     end where
-    if (step > 0d0) then
-       ent = simpson(aux,step)
-    else
-       ent = trapezoidal(f,aux)
-    end if
+    ent = quad1(f,aux,step)
 
     ! calculate constant-volume heat capacity (T < tmin implies aux = 0)
     where (T < tmin)
@@ -482,11 +474,7 @@ contains
     elsewhere
        aux = d * (pckbau * (f / kt)**2 * emfkt / (1d0 - emfkt)**2)
     end where
-    if (step > 0d0) then
-       cv = simpson(aux,step)
-    else
-       cv = trapezoidal(f,aux)
-    end if
+    cv = quad1(f,aux,step)
 
     ! internal energy
     uvib = fvib + T * ent
@@ -504,11 +492,7 @@ contains
        elsewhere
           aux = 1d0 / (1d0 - 1d0/emfkt)
        end where
-       if (step > 0d0) then
-          cv_lowt = simpson(d*(pckbau*(f/pckbau/tlim_gamma)**2 / (emfkt-1) * aux),step)
-       else
-          cv_lowt = trapezoidal(f,d*(pckbau*(f/pckbau/tlim_gamma)**2 / (emfkt-1) * aux))
-       end if
+       cv_lowt = quad1(f,d*(pckbau*(f/pckbau/tlim_gamma)**2 / (emfkt-1) * aux),step)
     end if
     deallocate(f,d,tmin,emfkt,l1emfkt,aux)
 
