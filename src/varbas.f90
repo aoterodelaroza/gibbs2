@@ -2109,7 +2109,7 @@ contains
     integer :: iv
     integer :: nfreq, i, ini, numax
     real*8 :: sumn
-    character*(mline) :: msg
+    character*(mline) :: msg, iref
 
     real*8, parameter :: deps = 1d-6
     real*8, parameter :: fsmallcrit = 0.1d0 / ha2cm_1
@@ -2175,7 +2175,7 @@ contains
        sumn = quad1(p%phdos_f,p%phdos_d(:,1,iv),p%phstep)
        if (abs(sumn - real(3*vfree*p%z,8)) > 1d-2) then
           write (msg,'(" Volume num. ",I3,1p," [",E12.4,"] phDOS renormalized from ",E20.10," to ",E20.10)') &
-             iv, p%v(iv), sumn/p%z, 3d0*vfree
+             iv, p%v(iv), sumn, 3*vfree*p%z
           call error('phase_phdos',msg,warning)
        end if
        p%phdos_d(:,1,iv) = p%phdos_d(:,1,iv) / sumn * (3d0 * vfree)

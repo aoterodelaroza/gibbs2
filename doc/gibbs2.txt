@@ -1859,7 +1859,7 @@ A description of the rest of keywords optional to **phase** follows:
        from input. Each volume-energy record must contain an
        additional field, corresponding to the Debye tempearture at
        that volume.
-   - **debye_input**: Debye model, the Poisson ratio at each volume
+   - **debye_poisson_input**: Debye model, the Poisson ratio at each volume
        are read from input. Each volume-energy record must contain an
        additional field, corresponding to the Poisson ratio at
        that volume.
