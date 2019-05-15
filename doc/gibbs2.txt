@@ -1974,30 +1974,32 @@ A description of the rest of keywords optional to **phase** follows:
 * **elec** {sommerfeld [free|icol.i|]|pol4 [icol.i]}
 
    Activate the calculation of the electronic contribution to the
-   properties of the solid, only relevant for metals. There are
-   currently two models implemented. With the **sommerfeld** keyword,
-   the Sommerfeld model of free and independent electrons is
-   used. Furthermore, if **free** is used, then the free electron
-   Fermi energy and density of states are used. If icol.i is used
-   instead, the occupation (total, up+down) at Fermi level is read
-   from an additional column in the input file (see the end of this
-   subsection for the interpretation sequence). With **pol4**, it is
-   possible to input the result of finite temperature density
-   functional calculations. Starting from icol.i (the deafult value
-   depends on the temperature model,... see the interpetation sequence
-   below), 8 fields are read. The first 4 fields are the coefficients
-   of a 4th degree polynomial fit to the electronic free energy (Fel)
-   with respect to temperature. That is, if the fields are i1, i2, i3,
-   i4, Fel = i4 * T^4 + i3 * T^3 + i2 * T^2 + i1 * T . The fields 4-8
-   represent -T*S_el = i5 * T^4 + i6 * T^3 + i7 * T^2 + i8 * T
-   . Usually, one fits the total free energy with respect to volume to
-   find the first four and the -T*S contribution to find the
-   last four. Both output fields should be available from any ab initio
-   program capable of this kind of calculations. Note that the
+   properties of the solid. This contribution is only relevant for
+   condcutors. There are currently two models implemented. With the
+   **sommerfeld** keyword, the Sommerfeld model of free and
+   independent electrons is used. Furthermore, if the additional
+   **free** keyword is used, then the free electron Fermi energy and
+   density of states are used. If **sommerfeld** is used with an
+   integer icol.i, then the occupation (total, up+down) at Fermi level
+   is read from an additional column in the input file (see the end of
+   this subsection for the interpretation sequence).  Note that the
    **sommerfeld** model requires the number of conduction electrons
    given by **nelec**, as explained next.
 
-   The coefficients related to the POL4 keyword are affected by the
+   The alternative to **sommerfeld** is **pol4**. This keyword is used
+   to read the result of finite-temperature DFT calculations. With
+   **pol4**, gibbs2 reads eight columns starting at icol.i 
+   (i1=icol.i, i2=icol.i+1,...). The first four columns are the
+   coefficients of a fourth-degree polynomial fit to the electronic
+   free energy (Fel) with respect to temperature:
+   Fel = i4 * T^4 + i3 * T^3 + i2 * T^2 + i1 * T.
+   The fields 4 to 8 represent a fourth-degree polynomial fit to
+   -T*S_el: 
+   -T*S_el = i5 * T^4 + i6 * T^3 + i7 * T^2 + i8 * T.
+   Both Fel and -T*Sel should be available from any ab initio program
+   capable of this kind of calculation.
+
+   The coefficients related to the **pol4** keyword are affected by the
    value of Z, in the same way as volumes and energies. That is, the
    fitted free energy contributions should corresopnd to Z units. 
 
