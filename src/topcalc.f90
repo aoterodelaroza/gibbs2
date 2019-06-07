@@ -974,12 +974,12 @@ contains
     real*8 :: apol(0:mmpar)
 
     if (writelevel < 2) return
-
+    
     if (interp_input > 0) then
        if (.not.allocated(fint)) allocate(fint(mxint))
        if (.not.allocated(iint)) allocate(iint(mxint))
        do i = 1, nps
-          if (interp_input > 1 .and. ph(i)%tmodel /= tm_static) then
+          if (interp_input > 1) then
              do j = 1, nts
                 nxint = nxint + 1
                 if (nxint > size(fint)) then
