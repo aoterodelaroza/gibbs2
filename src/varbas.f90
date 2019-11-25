@@ -684,7 +684,7 @@ contains
     integer :: idum, ifound, iphdos_1, iphdos_2, isep, isep2, nn, nq, numax, uuin
     character*(mline) :: line, word, prefix, file, linedum, msg
     real*8 :: fx, gx, hx, zz, eshift
-    logical :: ok, d0, didinterp, havev, havee
+    logical :: ok, d0, didinterp, havev, havee, haveph
 
     ! Set defaults for this phase. also, check type definition
     ! basic info
@@ -1206,9 +1206,11 @@ contains
        idum = 0
        havev = .false.
        havee = .false.
+       haveph = .false.
        ok = .true.
        do while(ok .and. lp < leng(line))
           idum = idum + 1
+
           if (idum == icol_v) then
              ! volume field
              ok = isreal(p%v(nn),line,lp)
@@ -1222,7 +1224,6 @@ contains
              ok = isreal(p%td(nn),line,lp)
           else if (idum == icol_ph) then
              ! phonon DOS or frequencies file name
-
              ! get name
              word = getword(word,line,lp)
              if (prefix(leng(prefix):leng(prefix)) == '/') then
@@ -1248,6 +1249,7 @@ contains
                 nq = abs(nq)
              end if
              numax = max(nq,numax)
+             haveph = .true.
           else if (idum == icol_nef) then
              ! nefermi field
              ok = isreal(p%nefermi(nn),line,lp)
@@ -1294,6 +1296,13 @@ contains
              write (uout,'("In file: ",A)') trim(file(1:leng(file)))
           end if
           call error('phase_init','Error reading file: volume or energy missing.',faterr)
+       end if
+
+       if ((p%tmodel == tm_qhafull .or. p%tmodel == tm_qhafull_espresso) .and..not.haveph) then
+          if (uuin /= uin) then
+             write (uout,'("In file: ",A)') trim(file(1:leng(file)))
+          end if
+          call error('phase_init','Error reading file: phonon DOS missing.',faterr)
        end if
     end do
 
