@@ -2235,6 +2235,8 @@ Set options
 
   - 2: all.
 
+  Default: 2.
+
 * **set ignore_neg_cutoff inegcut.r**
 
   When negative phonon frequencies are passed to gibbs2, the program

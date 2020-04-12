@@ -51,7 +51,7 @@ contains
     end if
     write (uout,'("# Copy in file : ",A)') trim(fileroot)//".eos_static"
 
-    if (p%pfit%nfit > 0) then
+    if (p%pfit%nfit > 0.and.doerrorbar) then
        write (uout,'("# Lines beginning with ''e'' contain fit error estimation.")')
        if (writelevel > 0) then
           write (luw,'("# Lines beginning with ''e'' contain fit error estimation.")')
@@ -105,9 +105,11 @@ contains
              prop2 = prop2 + (/ek,gk,vk,vk/p%veq_static,pt,bk,b1,b2/)**2 * p%pfit%wei(j)
           end do
           prop = sqrt(max(prop2 - prop*prop,0d0))
-          write (uout,fme) "e",plist(i),prop
-          if (writelevel > 0) then
-             write (luw,fme) "e",plist(i),prop
+          if (doerrorbar) then
+             write (uout,fme) "e",plist(i),prop
+             if (writelevel > 0) then
+                write (luw,fme) "e",plist(i),prop
+             end if
           end if
        end if
     end do
