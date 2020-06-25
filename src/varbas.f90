@@ -75,6 +75,9 @@ module varbas
      integer :: ninterp = 0
      real*8, allocatable :: interp(:,:)
 
+     ! extrapolations
+     logical :: extend = .false.
+
      ! dyn (all models)
      logical, allocatable :: dyn_active(:)
 
@@ -1054,6 +1057,8 @@ contains
                 exit
              end if
           end do
+       elseif (equal(word,'extend'//null)) then
+          p%extend = .true.
        elseif (equal(word,'nelec'//null)) then
           ok = isinteger(p%nelec,line,lp)
           if (.not.ok) call error('phase_init','wrong NELEC in PHASE keyword',faterr)
@@ -1588,7 +1593,7 @@ contains
                 trim(adjustl(ph(i)%name(1:leng(ph(i)%name)))), plist(j)
              call error('props_staticeq',msg,warning)
 
-             if (plist(j) > ph(i)%pmax) then
+             if (plist(j) > ph(i)%pmax .and..not.ph(i)%extend) then
                 nps = max(j-1,1)
                 call realloc(plist,nps)
                 write (uout,'("  New pressure range (GPa): ",F12.3," -> ",F12.3)') &

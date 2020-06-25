@@ -205,7 +205,6 @@ contains
     character*5 :: starts
     character*3 :: ends
     integer :: lu
-    integer :: imasknph, imaskph(nph)
 
     if (.not.doplotdh .or. writelevel < 2) return
     if (n_not_pv_min() < 2) then
@@ -215,12 +214,6 @@ contains
        return
     end if
 
-    imasknph = 0
-    do i = 1, nph
-       imasknph = imasknph + 1
-       imaskph(imasknph) = i
-    end do
-
     ! write the auxiliary file
     write (uout,'("* Plotting static DeltaH"/)')
     write (uout,'("  Writing file : ",A/)') trim(fileroot) // "_dH.aux"
@@ -228,10 +221,17 @@ contains
     write (lu,'("# H(p) plot, auxiliary file. ")') 
     write (lu,'("# Contains dH(p) (Ha) calculated on input pressures. ")') 
     write (lu,'("# p(GPa)",999(2X,A13,4X))') &
-       (trim(adjustl(ph(imaskph(k))%name(1:leng(ph(imaskph(k))%name)))),k=2,imasknph)
+       (trim(adjustl(ph(k)%name(1:leng(ph(k)%name)))),k=2,nph)
     do j = 1, nps
-       write (lu,'(F12.4,1X,1p,999(E20.10,2X))') &
-          plist(j), (ga(j,imaskph(k))-ga(j,imaskph(1)),k=2,imasknph)
+       write (lu,'(F12.4,1X)',advance='no') plist(j)
+       do k = 2, nph
+          if (plist(j) < ph(k)%pmin .or. plist(j) > ph(k)%pmax) then
+             write (lu,'(1p,A20,2X)',advance='no') "n/a"
+          else
+             write (lu,'(1p,E20.10,2X)',advance='no') ga(j,k)-ga(j,1)
+          end if
+       end do
+       write (lu,*)
     end do
     write (lu,*)
     call fclose(lu)
@@ -244,17 +244,17 @@ contains
     write (lu,'("set xzeroaxis")')
     starts = "plot "
     ends = ",\ "
-    do i = 1, imasknph
+    do i = 1, nph
        if (i == 1) cycle
-       if (i == imasknph) ends = "   "
+       if (i == nph) ends = "   "
        if (i /= 2) starts = "     "
 
        if (i < 9) then
           write (lu,'(A5,"''",A,"'' u 1:",I1," w points ls ",I2," title ''",A10,"'' ",A2)') &
-             starts, trim(fileroot)//"_dH.aux", i, imaskph(i), ph(i)%name(1:leng(ph(i)%name)), ends
+             starts, trim(fileroot)//"_dH.aux", i, i, ph(i)%name(1:leng(ph(i)%name)), ends
        else
           write (lu,'(A5,"''",A,"'' u 1:",I2," w points ls ",I2," title ''",A10,"'' ",A2)') &
-             starts, trim(fileroot)//"_dH.aux", i, imaskph(i), ph(i)%name(1:leng(ph(i)%name)), ends
+             starts, trim(fileroot)//"_dH.aux", i, i, ph(i)%name(1:leng(ph(i)%name)), ends
        end if
     end do
     call closegnu(trim(fileroot) // "_dH",lu)
@@ -288,7 +288,7 @@ contains
        idmin = -1
        gmin = 1d30
        do i = 1, nph
-          if (ga(j,i) < gmin) then
+          if (ga(j,i) < gmin .and. plist(j)>ph(i)%pmin .and. plist(j)<ph(i)%pmax) then
              gmin = ga(j,i)
              idmin = i
           end if

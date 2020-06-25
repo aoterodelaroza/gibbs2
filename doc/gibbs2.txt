@@ -1605,7 +1605,7 @@ The phase keyword
                 {{freq|frequency} {hartree|hy|ha|cm-1|cm^-1|cm_1|thz}}
                 {edos {hy|hartree|ha|ev|evolt|electronvolt|ry|rydberg}}] \
          [interpolate f1.i [f2.i ...]]
-         [fstep step.r]
+         [fstep step.r] [extend]
      # comment
      v1.r e1.r [td1.r nef1.r f1.r f2.r f3.r f4.r ts1.r ts2.r ts3.r ts4.r phdos1.s
                 int1.r int2.r ...]
@@ -2136,6 +2136,15 @@ phDOS read from input are interpolated to the same frequency grid. By
 default, the step of this grid is the difference in frequencies
 between the two highest frequencies of the first volume in input. With
 fstep, it is possible to modify this default behavior.
+
+* **extend**
+
+Each phase has a maximum calculable pressure, determined by the slope
+of the energy-volume curve at the first (smallest) volume. If the
+maximum pressure of any phase is smaller than the requested pressure
+range, then the pressure range is automatically reduced. In some
+cases, this behavior is undesirable. A phase with the **extend**
+keyword will not reduce the user-input pressure range.
 
 Set options
 -----------
