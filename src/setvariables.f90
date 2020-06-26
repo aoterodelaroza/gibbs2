@@ -103,6 +103,8 @@ subroutine setvariables (line, lp)
      ok = isreal(ignore_neg_cutoff,line,lp)
      if (.not.ok) &
         call error('setvariables','Wrong IGNORE_NEG_CUTOFF',faterr)
+  elseif (equal(word,'norenormalize'//null)) then
+     renormalize = .false.
   else
      call error ('setvariables','Unknown set option or keyword',faterr)
   endif
