@@ -142,6 +142,7 @@ module varbas
   real*8, parameter :: fnegcrit = -1d-2 !< negative freq. criterion (cm_1)
   real*8 :: ignore_neg_cutoff = 20d0 !< negative freqs below this trigger deactivation
   real*8 :: fgrid_step = -1d0
+  logical :: renormalize = .true. !< renormalize the phDOS in QHA?
 
   ! temperature models
   integer, parameter :: tm_static = 1
@@ -2187,12 +2188,19 @@ contains
     do iv = 1, p%nv
        if (.not.p%dyn_active(iv)) cycle
        sumn = quad1(p%phdos_f,p%phdos_d(:,1,iv),p%phstep)
-       if (abs(sumn - real(3*vfree*p%z,8)) > 1d-2) then
-          write (msg,'(" Volume num. ",I3,1p," [",E12.4,"] phDOS renormalized from ",E20.10," to ",E20.10)') &
-             iv, p%v(iv), sumn, 3*vfree*p%z
-          call error('phase_phdos',msg,warning)
+       if (renormalize) then
+          if (abs(sumn - real(3*vfree*p%z,8)) > 1d-2) then
+             write (msg,'(" Volume num. ",I3,1p," [",E12.4,"] phDOS renormalized from ",E20.10," to ",E20.10)') &
+                iv, p%v(iv), sumn, 3*vfree*p%z
+             call error('phase_phdos',msg,warning)
+          end if
+          p%phdos_d(:,1,iv) = p%phdos_d(:,1,iv) / sumn * (3d0 * vfree)
+       else
+          if (abs(sumn - real(3*vfree*p%z,8)) > 1d-2) then
+             write (msg,'(" Volume num. ",I3,1p," [",E12.4,"] phDOS norm. = ",E20.10," instead of ",E20.10)') &
+                iv, p%v(iv), sumn, 3*vfree*p%z
+          end if
        end if
-       p%phdos_d(:,1,iv) = p%phdos_d(:,1,iv) / sumn * (3d0 * vfree)
     end do
 
     ! spline fit to phdos(V)

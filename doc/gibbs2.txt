@@ -2262,6 +2262,12 @@ Set options
 
   Default: 20 cm-1.
 
+* **set norenormalize**
+
+  In the qha tmodel, eliminate the negative frequencies from the
+  phonon density of states but do not renormalize. For testing
+  purposes only.
+
 Test cases
 ==========
 
