@@ -266,7 +266,7 @@ contains
     real*8, intent(in) :: ga(nps,nph)
 
     integer :: i, j, idmin, iold
-    real*8 :: ptrans(mtrans), gmin, pnew, pold
+    real*8 :: ptrans(mtrans), gmin, pnew, pold, lastp
     integer :: i1trans(mtrans), i2trans(mtrans)
     integer :: ntrans
 
@@ -295,8 +295,13 @@ contains
        end do
 
        if (j == 1) then
+          ! first point, save the first stable phase
           iold = idmin
           pold = 0d0
+       elseif (idmin == -1) then
+          ! there are no phases left, so exit
+          lastp = plist(j-1)
+          exit
        else
           if (idmin /= iold) then
              pnew = plist(j-1) - (ga(j-1,idmin)-ga(j-1,iold)) * (plist(j) - plist(j-1)) /&
@@ -318,7 +323,7 @@ contains
        end if
     end do
     write (uout,'(2X,F12.4," --> ",F12.4,2X,A10)')&
-       pold, plist(nps), trim(adjustl(ph(iold)%name(1:leng(ph(iold)%name))))
+       pold, lastp, trim(adjustl(ph(iold)%name(1:leng(ph(iold)%name))))
     write (uout,*)
 
   end subroutine static_transp
