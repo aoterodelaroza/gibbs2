@@ -16,9 +16,6 @@
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module eos
-  use param
-  use tools
-  use varbas
   implicit none
   private
 
@@ -29,8 +26,12 @@ contains
 
   !> Fit by weighed polynomials to static data. Output results.
   subroutine eosfit_ev_fitt(p)
-    use evfunc
-
+    use fit, only: fit_pshift
+    use evfunc, only: fv0, fv1, fv2, fv3, fv4
+    use varbas, only: phase, doerrorbar, nvs, vlist, nps, plist, writelevel
+    use tools, only: fopen, leng, fclose
+    use param, only: mline_fmt, au2gpa, fileroot, ifmt_p, ifmt_eprec, ifmt_v, ifmt_x, ifmt_b, &
+       ifmt_bp, ifmt_bpp, ioappend, iowrite, null, uout, format_string_header, format_string
     type(phase), intent(inout) :: p
 
     integer :: i, j, ierr

@@ -16,8 +16,6 @@
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module evfunc
-  use tools
-  use param
   implicit none
   private
 
@@ -164,7 +162,7 @@ contains
   end subroutine evfunc_init
 
   subroutine punch_params(lu, fmode, npar, apar)
-    
+    use param, only: au2gpa
     integer, intent(in) :: lu, fmode, npar
     real*8, intent(in) :: apar(0:npar)
 
@@ -274,7 +272,7 @@ contains
   end subroutine punch_params
 
   function v2strs(strain,v,v0)
-
+    use param, only: third, twothird
     integer, intent(in) :: strain
     real*8, intent(in) :: v, v0
     real*8 :: v2strs
@@ -301,7 +299,7 @@ contains
   end function v2strs
 
   function v2strv(strain,v,v0)
-
+    use param, only: third, twothird
     integer, intent(in) :: strain
     real*8, intent(in) :: v(:), v0
     real*8 :: v2strv(size(v))
@@ -382,7 +380,7 @@ contains
   end function str2vv
 
   subroutine derivstrains(strain,f,v,v0,deg,f1v,f2v,f3v,f4v)
-    
+    use param, only: half, third, twothird
     integer, intent(in) :: strain
     real*8, intent(in) :: f, v, v0
     integer, intent(in) :: deg
@@ -471,7 +469,7 @@ contains
   end subroutine derivstrains
 
   subroutine derivstrainv(strain,f,v,v0,deg,f1v,f2v,f3v,f4v)
-    
+    use param, only: half, third, twothird
     integer, intent(in) :: strain
     real*8, intent(in) :: f(:), v(:), v0
     integer, intent(in) :: deg
@@ -560,7 +558,8 @@ contains
   end subroutine derivstrainv
 
   function fv0s (mode, x, npar, apar) result(y)
-    
+    use param, only: faterr
+    use tools, only: error
     integer, intent(in) :: mode
     real*8 :: y
     integer, intent(in) :: npar
@@ -600,7 +599,8 @@ contains
   end function fv0s
 
   function fv0v (mode, x, npar, apar) result(y)
-    
+    use param, only: faterr
+    use tools, only: error
     integer, intent(in) :: mode
     integer, intent(in) :: npar
     real*8, intent(in) :: x(:), apar(0:npar)
@@ -641,7 +641,8 @@ contains
   end function fv0v
 
   function fv1s (mode, x, npar, apar) result(y)
-    
+    use param, only: faterr
+    use tools, only: error
     integer, intent(in) :: mode
     real*8 :: y
     integer, intent(in) :: npar
@@ -681,7 +682,8 @@ contains
   end function fv1s
 
   function fv1v (mode, x, npar, apar) result(y)
-    
+    use param, only: faterr
+    use tools, only: error
     integer, intent(in) :: mode
     integer, intent(in) :: npar
     real*8, intent(in) :: x(:), apar(0:npar)
@@ -721,7 +723,8 @@ contains
   end function fv1v
 
   function fv2s (mode, x, npar, apar) result(y)
-    
+    use param, only: faterr
+    use tools, only: error
     integer, intent(in) :: mode
     real*8 :: y
     integer, intent(in) :: npar
@@ -758,7 +761,8 @@ contains
   end function fv2s
 
   function fv2v (mode, x, npar, apar) result(y)
-    
+    use param, only: faterr
+    use tools, only: error
     integer, intent(in) :: mode
     integer, intent(in) :: npar
     real*8, intent(in) :: x(:), apar(0:npar)
@@ -795,7 +799,8 @@ contains
   end function fv2v
 
   function fv3s (mode, x, npar, apar) result(y)
-    
+    use param, only: faterr
+    use tools, only: error
     integer, intent(in) :: mode
     real*8 :: y
     integer, intent(in) :: npar
@@ -832,7 +837,8 @@ contains
   end function fv3s
 
   function fv3v (mode, x, npar, apar) result(y)
-    
+    use param, only: faterr
+    use tools, only: error
     integer, intent(in) :: mode
     integer, intent(in) :: npar
     real*8, intent(in) :: x(:), apar(0:npar)
@@ -869,7 +875,8 @@ contains
   end function fv3v
 
   function fv4s (mode, x, npar, apar) result(y)
-    
+    use param, only: faterr
+    use tools, only: error
     integer, intent(in) :: mode
     real*8 :: y
     integer, intent(in) :: npar
@@ -906,7 +913,8 @@ contains
   end function fv4s
 
   function fv4v (mode, x, npar, apar) result(y)
-    
+    use param, only: faterr
+    use tools, only: error
     integer, intent(in) :: mode
     integer, intent(in) :: npar
     real*8, intent(in) :: x(:), apar(0:npar)
@@ -1261,8 +1269,9 @@ contains
   end function polin4v
 
   subroutine fcn_minpack(m,n,x0,fvec,iflag)
+    use param, only: faterr
+    use tools, only: error
     ! wrapper for minpack fit
-
     integer, intent(in) :: m,n,iflag
     real*8, intent(in) :: x0(n)
     real*8, intent(out) :: fvec(m)
@@ -1314,8 +1323,9 @@ contains
   end subroutine fcn_minpack
 
   subroutine fcn_minpack1(m,n,x,fvec,iflag)
+    use param, only: faterr
+    use tools, only: error
     ! wrapper for minpack fit
-
     ! x(1) E_0 ; x(2) V_0 ; x(3) B_0 ; x(4) B_0'
     integer, intent(in) :: m,n,iflag
     real*8, intent(in) :: x(n)
@@ -1353,8 +1363,8 @@ contains
   end subroutine fcn_minpack1
 
   function bm2s(V,x,ider)
+    use param, only: twothird
     ! birch-murnaghan 2, scalar, 0-4th derivative
-
     real*8, intent(in) :: V, x(3)
     integer, intent(in) :: ider
     real*8 :: bm2s
@@ -1382,8 +1392,8 @@ contains
   end function bm2s
 
   function bm2v(V,x,ider)
+    use param, only: twothird
     ! birch-murnaghan 2, vector, 0-4th derivative
-
     real*8, intent(in) :: V(:), x(3)
     integer, intent(in) :: ider
     real*8 :: bm2v(size(V))
@@ -1411,8 +1421,8 @@ contains
   end function bm2v
 
   function bm3s(V,x,ider)
+    use param, only: twothird
     ! birch-murnaghan 3, scalar, 0-4th derivative
-
     real*8, intent(in) :: V, x(4)
     integer, intent(in) :: ider
     real*8 :: bm3s
@@ -1441,8 +1451,8 @@ contains
   end function bm3s
 
   function bm3v(V,x,ider)
+    use param, only: twothird
     ! birch-murnaghan 3, vector, 0-4th derivative
-
     real*8, intent(in) :: V(:), x(4)
     integer, intent(in) :: ider
     real*8 :: bm3v(size(V))
@@ -1471,8 +1481,8 @@ contains
   end function bm3v
 
   function bm4s(V,x,ider)
+    use param, only: twothird
     ! birch-murnaghan 4, scalar, 0-4th derivative
-
     real*8, intent(in) :: V, x(5)
     integer, intent(in) :: ider
     real*8 :: bm4s
@@ -1503,8 +1513,8 @@ contains
   end function bm4s
   
   function bm4v(V,x,ider)
+    use param, only: twothird
     ! birch-murnaghan 4, vector, 0-4th derivative
-
     real*8, intent(in) :: V(:), x(5)
     integer, intent(in) :: ider
     real*8 :: bm4v(size(V))
@@ -1933,8 +1943,8 @@ contains
   end function antonsv
 
   function vinets(V,x,ider)
+    use param, only: third
     ! Vinet (3), scalar, 0-4th derivative
-
     real*8, intent(in) :: V, x(4)
     integer, intent(in) :: ider
     real*8 :: vinets
@@ -1964,8 +1974,8 @@ contains
   end function vinets
 
   function vinetv(V,x,ider)
+    use param, only: third
     ! Vinet (3), vector, 0-4th derivative
-
     real*8, intent(in) :: V(:), x(4)
     integer, intent(in) :: ider
     real*8 :: vinetv(size(V))
@@ -1995,8 +2005,9 @@ contains
   end function vinetv
 
   function ap2s(V,x,ider)
+    use param, only: faterr, pisquare, third, twothird
+    use tools, only: gammai, error
     ! AP2 (3), scalar, 0-4th derivative
-
     real*8, intent(in) :: V, x(4)
     integer, intent(in) :: ider
     real*8 :: ap2s
@@ -2070,8 +2081,9 @@ contains
   end function ap2s
 
   function ap2v(v,x,ider)
+    use param, only: faterr, pisquare, third, twothird
+    use tools, only: gammai, error
     ! ap2 (3), vector, 0-4th derivative
-
     real*8, intent(in) :: v(:), x(4)
     integer, intent(in) :: ider
     real*8 :: ap2v(size(v))

@@ -16,9 +16,6 @@
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module fit
-  use evfunc
-  use tools
-  use param
   implicit none
   private
 
@@ -46,7 +43,7 @@ module fit
 contains
 
   subroutine fit_init()
-
+    use evfunc, only: pfit_mode, pfit_slatec, pweigh_mode, pweigh_gibbs2
     pfit_mode = pfit_slatec
     pweigh_mode = pweigh_gibbs2
     !
@@ -63,7 +60,9 @@ contains
   ! enthalpy (hx, Ha) at that point. Return ierr /= 0 if the fit
   ! fails.
   subroutine fit_pshift(mode,v,p_in,npol,cpol,vx,bx,ex,hx,ierr)
-
+    use param, only: au2gpa, faterr
+    use tools, only: error
+    use evfunc, only: fv0, fv1, fv2
     integer, intent(in) :: mode
     real*8, intent(in) :: v(:)
     real*8, intent(in) :: p_in
@@ -156,9 +155,11 @@ contains
   end subroutine fit_pshift
 
   ! wrapper routine for different E(V) fit equations.
-  subroutine fit_ev (fmode, rmode, var, func, nparpro, aparpro, ierrout, ispv,&
+  subroutine fit_ev(fmode, rmode, var, func, nparpro, aparpro, ierrout, ispv,&
      nfix, idfix, obelix, pfit)
-
+    use param, only: au2gpa, warning
+    use tools, only: error
+    use evfunc, only: fit_polygibbs
     integer, intent(in) :: fmode, rmode
     real*8, intent(in) :: var(:), func(:)
     integer, intent(out) :: nparpro
@@ -227,6 +228,10 @@ contains
   end subroutine fit_ev
 
   subroutine fitt_polygibbs (mode, var, func, nparpro, aparpro, ierrout, ispv, pfit)
+    use param, only: warning
+    use tools, only: error
+    use evfunc, only: fit_strain, pweigh_gibbs1, pweigh_gibbs2, pweigh_mode, pweigh_slatec,&
+       v2str, fv1
     !
     !.fitt - fits polynomials to (var,function) data and averages
     ! them, weighted by its chi-square test probabilities. It returns
@@ -464,7 +469,11 @@ contains
   end subroutine fitt_polygibbs
 
   subroutine fitt_eos(fmode,rmode,var,func,nparpro,aparpro,ierrout,ispv,nfix,idfix,obelix)
-
+    use evfunc, only: evfunc_xm, evfunc_ym, evfunc_mask, evfunc_fixval, evfunc_domask,&
+       evfunc_minpack_mode, evfunc_npar, evfunc_reg_mode, fcn_minpack, fcn_minpack1,&
+       fit_antons, fit_order
+    use tools, only: error
+    use param, only: faterr
     integer, intent(in) :: fmode, rmode
     real*8, intent(in) :: var(:), func(:)
     integer, intent(out) :: nparpro
@@ -581,8 +590,9 @@ contains
   end subroutine fitt_eos
 
   subroutine polfit (ndata, iinf, isup, x, y, w, rms, npar, apar)
-    use evfunc
-
+    use param, only: warning
+    use tools, only: error, gauss
+    use evfunc, only: fit_polygibbs, pfit_gauss, pfit_mode, fv0
     !.polfit - fitting the (x,y) ndata pairs to a polynomial. Only the
     ! points from iinf to isup will be used.
     !

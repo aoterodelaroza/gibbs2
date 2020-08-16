@@ -16,15 +16,13 @@
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module gnuplot_templates
-  use tools
-  use param
   implicit none
 
 contains
 
   function opengnu(root,noout)
-    use varbas
-
+    use tools, only: fopen
+    use param, only: mline, iowrite, mcols, null, gplt_rgb, gplt_sym
     integer :: opengnu
     character*(*), intent(in) :: root
     logical, intent(in), optional :: noout
@@ -55,7 +53,7 @@ contains
   end function opengnu
 
   subroutine closegnu(root,lu,noout)
-
+    use tools, only: fclose
     character*(*), intent(in) :: root
     integer, intent(in) :: lu
     logical, intent(in), optional :: noout
@@ -77,8 +75,9 @@ contains
   end subroutine closegnu
 
   subroutine gen_allgnu_t(root)
-    use varbas
-
+    use varbas, only: ph, nph, mpropout, nts, tlist, tm_static, writelevel, propname
+    use tools, only: leng
+    use param, only: mline, fileroot, uout
     character*(*), intent(in) :: root
 
     integer :: lu
@@ -137,8 +136,9 @@ contains
   end subroutine gen_allgnu_t
 
   subroutine gen_allgnu_p(root)
-    use varbas
-
+    use param, only: mline, fileroot, uout
+    use tools, only: leng
+    use varbas, only: ph, nph, mpropout, nps, plist, nts, tm_static, writelevel, propname, tlist
     character*(*), intent(in) :: root
 
     integer, parameter :: ntemp = 5 

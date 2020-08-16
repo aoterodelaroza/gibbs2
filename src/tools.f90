@@ -16,7 +16,7 @@
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module tools
-  use param
+  use param, only: mline
   implicit none
   private
 
@@ -86,7 +86,7 @@ contains
 
   !> Initialize file system and connect standard units
   subroutine ioinit ()
-
+    use param, only: ioread, iowrite, stderr, stdin, stdout
     !.initialize i/o buffers:
     bp = 0
     length = 0
@@ -107,7 +107,7 @@ contains
   !> on return, argc will contain the number of arguments and
   !> argv will be a character array containing the arguments.
   subroutine getargs (argc, argv)
-
+    use param, only: null
     integer, intent(out) :: argc
     character*(*), intent(out) :: argv(*)
     
@@ -137,7 +137,7 @@ contains
   !>   4. optv provides user options
   !>   5. More than two file names will be ignored.
   subroutine stdargs (argc, argv, optv, local_uin, local_uout)
-
+    use param, only: ioread, iowrite, stdin, stdout
     character*(*), intent(in) :: argv(*)
     character*(*), intent(out) :: optv
     integer, intent(in) :: argc
@@ -183,7 +183,8 @@ contains
   !>  ioappend ....... write access with append to existing file
   !>  iofortran ...... write access with fortran carriage control
   integer function fopen (u, filename, mode)
-
+    use param, only: eol, faterr, ioappend, ioerror, iofortran, ioread, iowrite, null, stderr, &
+       uout
     character*(*), intent(in) :: filename
     integer, intent(in) :: mode
     integer, intent(out) :: u
@@ -241,7 +242,7 @@ contains
 
   !> Close and deallocate a file unit.
   subroutine fclose (u)
-
+    use param, only: eol, ioread, null, stderr
     integer, intent(in) :: u
     integer :: ios
 
@@ -263,7 +264,7 @@ contains
   !> Allocate a unique unit number for i/o unit number is returned
   !> trhu falloc and u simultaneously.
   integer function falloc (u)
-
+    use param, only: eol, ioerror, stderr
     integer, intent(out) :: u
 
     u = min(stderr,1)
@@ -284,7 +285,7 @@ contains
 
   !> Deallocate a unit
   subroutine fdealloc (u)
-
+    use param, only: eol, stderr
     integer, intent(in) :: u
 
     if (u.le.min(0,stderr-1) .or. u.gt.mopen) then
@@ -308,7 +309,7 @@ contains
 
   !> Get line from file with unit u. Returns true if read was successful.
   logical function fgetline (u,oline)
-
+    use param, only: backsl, eof, newline, null, tab
     character*(mline), intent(out) :: oline
     integer, intent(in) :: u
 
@@ -374,7 +375,7 @@ contains
   !>   - a word is defined as any sequence on nonblanks
   !>   - word and getword will return the same
   function getword (word, line, lp)
-
+    use param, only: blank, newline, null, tab
     character*(*), intent(out) :: word
     character*(*), intent(in) :: line
     integer, intent(inout) :: lp
@@ -413,7 +414,7 @@ contains
   !> line, if any. Only fortran style logical constants are recognized,
   !> i.e. .TRUE. or .FALSE.
   logical function islogical (lval, line, lp)
-
+    use param, only: blank, null
     logical, intent(out) :: lval
     integer, intent(inout) :: lp
     character*(*), intent(in) :: line
@@ -459,7 +460,7 @@ contains
   !> Get integer value from input text. If a valid integer is not
   !> found, then return .false.
   logical function isinteger (ival,line,lp)
-
+    use param, only: blank, newline, null
     integer, intent(out) :: ival
     character*(mline), intent(in) :: line
     integer, intent(inout) :: lp
@@ -494,7 +495,7 @@ contains
   !> Get a real number from line and sets rval to it.
   !> If a valid real number is not found, isreal returns .false.
   logical function isreal (rval, line, lp)
-
+    use param, only: blank, newline, null
     real*8, intent(out) :: rval
     character*(*), intent(in) :: line
     integer, intent(inout) :: lp
@@ -588,7 +589,7 @@ contains
 
   !> Convert ascii string to integer (private).
   integer function atoi (string)
-
+    use param, only: blank
     character*(*), intent(in) :: string
 
     integer           i, sign
@@ -616,8 +617,8 @@ contains
   end function atoi
 
   !> Convert ascii string to real (private).
-  real*8 function atof (str)
-
+  real*8 function atof(str)
+    use param, only: blank
     character*(*),intent(in) :: str
 
     real*8, parameter :: ten=10d0
@@ -676,7 +677,7 @@ contains
 
   !> Output string to the u file unit (private).
   subroutine fputstr (u, string)
-    
+    use param, only: newline, null
     character*(*), intent(in) :: string
     integer, intent(in) :: u
     integer i
@@ -727,7 +728,7 @@ contains
   !>     3,4      input     ignored   input
   !>     5,6      ignored   ignored   input
   subroutine timer (key,pid,name,lw)
-
+    use param, only: warning
     integer, intent(in) :: key, lw
     integer, intent(inout) :: pid
     character*(*), intent(in) :: name
@@ -865,7 +866,7 @@ contains
   !> Send an error message 'message' to stdout, coming from routine
   !> 'routine'. errortype is the error code (see mod_param.f90).
   subroutine error (routine,message,errortype)
-
+    use param, only: faterr, ncomms, nwarns, noerr, stderr, uout, warning
     character*(*), intent(in) :: routine !< routine calling the error
     character*(*), intent(in) :: message !< the message
     integer, intent(in) :: errortype !< fatal, warning or info
@@ -902,7 +903,7 @@ contains
 
   !> Compare two null-terminated strings for equality.
   logical function equal (s,t)
-
+    use param, only: null
     character*(*), intent(in) :: s, t
 
     integer           i
@@ -927,7 +928,7 @@ contains
 
   !> Concatenates null-terminated strings
   function cat (str1, str2)
-
+    use param, only: null, eol, stderr
     character*(*), intent(in) :: str1 !< First string
     character*(*), intent(in) :: str2 !< Second string
     integer           i1, i2
@@ -945,7 +946,7 @@ contains
   !> Obtains the leng of the string, assuming that the blanks at
   !> the end are dummy.
   integer function leng (string)
-    
+    use param, only: blank, null
     character*(*), intent(in) :: string
 
     integer :: i
@@ -963,7 +964,7 @@ contains
   !> Convert string to lowercase except where quoted
   !> string and lower will return the same
   function lower (string)
-
+    use param, only: null, quote
     character*(*), intent(inout) :: string
     character*(len(string)) :: lower
 
@@ -989,7 +990,7 @@ contains
 
   !> Adapt the size of an allocatable 1D real*8 array
   subroutine realloc1r(a,nnew)
-
+    use param, only: faterr
     real*8, intent(inout), allocatable :: a(:)
     integer, intent(in) :: nnew
     
@@ -1008,7 +1009,7 @@ contains
 
   !> Adapt the size of an allocatable 1D integer array
   subroutine realloc1i(a,nnew)
-
+    use param, only: faterr
     integer, intent(inout), allocatable :: a(:)
     integer, intent(in) :: nnew
     
@@ -1027,7 +1028,7 @@ contains
 
   !> Adapt the size of an allocatable 1D integer array
   subroutine realloc1l(a,nnew)
-
+    use param, only: faterr
     logical, intent(inout), allocatable :: a(:)
     integer, intent(in) :: nnew
     
@@ -1046,7 +1047,7 @@ contains
 
   !> Adapt the size of an allocatable 2D real*8 array
   subroutine realloc2r(a,n1,n2)
-
+    use param, only: faterr
     real*8, intent(inout), allocatable :: a(:,:)
     integer, intent(in) :: n1,n2
     
@@ -1065,7 +1066,7 @@ contains
 
   !> Adapt the size of an allocatable 3D real*8 array
   subroutine realloc3r(a,n1,n2,n3)
-
+    use param, only: faterr
     real*8, intent(inout), allocatable :: a(:,:,:)
     integer, intent(in) :: n1,n2,n3
     
@@ -1088,7 +1089,7 @@ contains
   !> first and last the intervals for elements to be analyzed. In the output,
   !> iord contains the final order in the array arr.
   subroutine qcksort (arr, iord, first, last)
-
+    use param, only: faterr, zero
     !.....Maximum number of elements to be sorted depends on nstack value:
     !     nstack...... ~2log2(last-first+1)
     real*8, dimension(:), intent(in) :: arr !< array to be sorted
@@ -1176,7 +1177,7 @@ contains
 
   !> Find the Gauss-Legendre nodes and weights for an interval.
   subroutine gauleg (x1,x2,x,w,n)
-
+    use param, only: pi
     real*8, intent(in) :: x1 !< Left limit of the interval
     real*8, intent(in) :: x2 !< Right limit of the interval
     real*8, dimension(n), intent(out) :: x !< Position of the nodes
@@ -1387,7 +1388,7 @@ contains
   end function simpson
 
   function gammais(a,x)
-
+    use param, only: faterr
     real*8, intent(in) :: a, x
     real*8 :: gammais
 
@@ -1406,7 +1407,7 @@ contains
   end function gammais
 
   function gammaiv(a,x)
-
+    use param, only: faterr
     real*8, intent(in) :: a, x(:)
     real*8 :: gammaiv(size(x))
 
@@ -1446,6 +1447,7 @@ contains
   end subroutine spawn
 
   subroutine laue(strin,nrot,rot)
+    use param, only: faterr, null, uout
 
     character*(*), intent(in) :: strin
     integer, intent(out) :: nrot

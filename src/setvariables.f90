@@ -16,12 +16,13 @@
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 subroutine setvariables (line, lp)
-  use topcalc
-  use varbas
-  use evfunc
-  use fit
-  use tools
-  use param
+  use evfunc, only: pfit_mode, pfit_gauss, pfit_slatec, pweigh_mode, pweigh_gibbs1, &
+     pweigh_gibbs2, pweigh_slatec
+  use fit, only: mpar, mmpar, mparmin, ndel
+  use varbas, only: doefit, doerrorbar, doplotdh, dotrans, facexpand, ignore_neg_cutoff, &
+     newpts, renormalize, phonsplin, writelevel
+  use tools, only: getword, lower, equal, leng, isinteger, isreal, error
+  use param, only: mline, fileroot, faterr, null, uout
   implicit none
   character*(*), intent(inout) :: line
   integer, intent(inout) :: lp

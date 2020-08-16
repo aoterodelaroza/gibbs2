@@ -16,10 +16,6 @@
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module debye
-  use param
-  use tools
-  use varbas
-  use eos
   implicit none
   private
 
@@ -36,8 +32,13 @@ contains
   ! Fill Debye-related information: %td(:), %td0 and ntpol/tpol fit.
   ! Optionally, verbose output.
   subroutine fill_thetad(p,verbose)
-    use evfunc
-
+    use evfunc, only: fv0, fv2, fv3
+    use fit, only: fitt_polygibbs
+    use tools, only: leng, realloc, error
+    use varbas, only: phase, tm_debye_input, tm_debye_poisson_input, mm, vfree, &
+       phase_realloc_volume
+    use param, only: mline, mline_fmt, faterr, ifmt_v, ifmt_t, pckbau, pi, third, uout, warning,&
+       format_string, format_string_header
     type(phase), intent(inout) :: p
     logical, intent(in) :: verbose
 
@@ -124,7 +125,11 @@ contains
   end subroutine fill_thetad
 
   subroutine get_thetad(p,v,f2o,f3,td,gamma)
-    
+    use evfunc, only: fv0, fv1
+    use varbas, only: phase, tm_debyegrun, tm_debye, tm_debye_einstein, tm_debye_input,&
+       tm_debye_poisson_input, mm, vfree
+    use tools, only: error
+    use param, only: au2gpa, pckbau, pi, third, warning
     type(phase), intent(in) :: p
     real*8, intent(in) :: v, f2o, f3
     real*8, intent(out) :: td, gamma
@@ -162,6 +167,9 @@ contains
   end subroutine get_thetad
 
   subroutine thermal (ThetaD,T,debye,xabs,en,cv,he,ent)
+    use param, only: faterr, pckbau, pi, zero
+    use tools, only: error, gauleg
+    use varbas, only: vfree
     !-------------------------------------------------------------------
     !
     !.thermal - compute Debye model vibrational properties.
@@ -253,7 +261,10 @@ contains
   end subroutine thermal
 
   subroutine debeins(p,ThetaDinp,T,vol,debye,xabs,en,cv,he,ent,cv_ac,cv_op,ifit)
-    use evfunc
+    use evfunc, only: fv1, fv2
+    use varbas, only: phase, vfree
+    use tools, only: error, gauleg
+    use param, only: au2gpa, faterr, half, pckbau, pi, third, twothird, uout, zero
     !-------------------------------------------------------------------------- 
     ! Calcularemos las propiedades tratando la rama de frecuencias
     ! acusticas por el modelo cuasiarmonico de Debye y la rama de 
@@ -406,6 +417,9 @@ contains
   ! contribution to the free energy, ent = entropy, cv_lowt = 
   ! low-temeprature cv (for the calculation of gamma).
   subroutine thermalphon (p,T,v,uvib,cv,fvib,ent,cv_lowt)
+    use varbas, only: phase
+    use tools, only: quad1
+    use param, only: pckbau
     type(phase), intent(in) :: p
     real*8, intent(in) :: T, v
     real*8, intent(out) :: uvib, cv, fvib, ent, cv_lowt
@@ -487,7 +501,9 @@ contains
   end subroutine thermalphon
 
   function phdos_interpolate(p,v) result(d)
-
+    use varbas, only: phase, phonsplin, vbracket
+    use tools, only: leng, error
+    use param, only: faterr, uout
     type(phase), intent(in) :: p
     real*8, intent(in) :: v
     real*8 :: d(size(p%phdos_f))
@@ -527,7 +543,9 @@ contains
   end function phdos_interpolate
   
   subroutine thermalomega (p,T,v,uvib,cv,he,ent,cv_lowt,gamma)
-
+    use param, only: mline, pckbau, warning
+    use tools, only: error
+    use varbas, only: phase
     type(phase), intent(in) :: p
     real*8, intent(in) :: T, v
     real*8, intent(out) :: uvib, cv, he, ent, cv_lowt
@@ -594,7 +612,10 @@ contains
   end subroutine thermalomega
 
   subroutine omega_interpolate(p,v,omega,gamma)
-
+    use evfunc, only: fv0, fv1
+    use varbas, only: phase, omega_fitmode, vbracket
+    use tools, only: leng, error
+    use param, only: faterr, uout
     type(phase), intent(in) :: p
     real*8, intent(in) :: v
     real*8, dimension(size(p%omega,1)) :: omega, gamma

@@ -16,9 +16,7 @@
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module topcalc
-  use varbas
-  use tools
-  use param
+  use fit, only: mmpar
   implicit none
 
   public
@@ -60,10 +58,12 @@ contains
   end subroutine topcalc_init
 
   subroutine popinput(fileout)
-    use debye
-    use eos
-    use evfunc
-
+    use evfunc, only: pfit_gauss, pfit_slatec, pfit_mode, pweigh_mode, pweigh_slatec, &
+       pweigh_gibbs1, pweigh_gibbs2
+    use varbas, only: nph, ph, einf, mm, vfree
+    use fit, only: mpar
+    use tools, only: leng
+    use param, only: mline, uout, title, amu2au
     character*(mline), intent(in) :: fileout
 
     integer :: i
@@ -101,11 +101,12 @@ contains
   end subroutine popinput
 
   subroutine popenergyfit()
-    use gnuplot_templates
-    use evfunc
-
-    integer, parameter :: igrid = 1001
-
+    use evfunc, only: fv0, fv1
+    use gnuplot_templates, only: opengnu, closegnu
+    use varbas, only: nph, ph, writelevel, doefit
+    use tools, only: leng, fopen, fclose
+    use param, only: mline_fmt, uout, format_string, format_string_header, fileroot, iowrite,&
+       null, au2gpa, ifmt_eprec, ifmt_v, ifmt_p
     integer :: lu
     integer :: i, j
     real*8 :: xdum, f0, f1, fac
@@ -114,6 +115,8 @@ contains
     integer :: iact
     character*(mline_fmt) :: fm
     real*8 :: vmin, vmax, emin, emax
+
+    integer, parameter :: igrid = 1001
 
     if (.not.doefit .or. writelevel < 2) return
 
@@ -197,8 +200,10 @@ contains
   end subroutine popenergyfit
 
   subroutine plotdh(ga)
-    use gnuplot_templates
-
+    use gnuplot_templates, only: opengnu, closegnu
+    use varbas, only: nph, ph, nps, plist, writelevel, doplotdh, n_not_pv_min
+    use tools, only: error, leng, fopen, fclose
+    use param, only: uout, fileroot, iowrite, warning, null
     real*8, intent(in) :: ga(:,:)
 
     integer :: i, j, k
@@ -262,7 +267,9 @@ contains
   end subroutine plotdh
 
   subroutine static_transp(ga)
-
+    use varbas, only: nph, ph, nps, nph, plist, dotrans, n_not_pv_min
+    use tools, only: error, leng
+    use param, only: uout, warning, faterr
     real*8, intent(in) :: ga(nps,nph)
 
     integer :: i, j, idmin, iold
@@ -329,8 +336,10 @@ contains
   end subroutine static_transp
 
   subroutine dyn_transp()
-    use gnuplot_templates
-
+    use gnuplot_templates, only: opengnu, closegnu
+    use varbas, only: nph, ph, nps, plist, nts, tlist
+    use tools, only: error, leng, fopen, fclose
+    use param, only: uout, fileroot, iowrite, faterr, null
     real*8 :: gmin
     real*8 :: ptrans(mtrans)
     integer :: i1trans(0:mtrans), i2trans(0:mtrans)
@@ -444,12 +453,13 @@ contains
   end subroutine dyn_transp
 
   subroutine dyneos()
-    use gnuplot_templates
-    use debye
-    use eos
-    use fit
-    use evfunc
-
+    use gnuplot_templates, only: gen_allgnu_t, gen_allgnu_p
+    use fit, only: fit_pshift, fitinfo
+    use varbas, only: nph, ph, mpropout, propfmt, tm_static, nps, plist, nts, tlist, &
+       writelevel, nvs, vlist, doerrorbar, propname, vbracket
+    use tools, only: error, leng, fopen, fclose
+    use param, only: mline, mline_fmt, uout, format_string, format_string_header, fileroot,&
+       iowrite, warning, faterr, null, undef
     integer :: lu
     integer :: i, j, k, ierr, id
     real*8 :: v, b, e, g
@@ -585,8 +595,10 @@ contains
   ! Helper routine for dyneos. Calculates the output properties at a given
   ! volume/temperature/pressure
   subroutine dyneos_outprop(p,v,t,pres,ft,pfit,proplist,errlist)
-    use fit
-
+    use varbas, only: mpropout, phase, doerrorbar, vbracket
+    use fit, only: fit_pshift, fitinfo
+    use tools, only: error
+    use param, only: uout, warning, undef
     type(phase), intent(in) :: p
     type(fitpack), intent(in) :: ft
     real*8, intent(in) :: v, t, pres
@@ -649,10 +661,13 @@ contains
 
   ! Calculate peroperties at a given volume and temperature.
   subroutine dyneos_calc(p,v,t,ft,proplist)
-    use debye
-    use eos
-    use evfunc
-
+    use evfunc, only: fv0, fv1, fv2, fv3, fv4
+    use debye, only: tlim_gamma, cvlim, debeins, thermalphon, thermalomega, thermal, get_thetad
+    use varbas, only: mpropout, phase, tm_qhafull, tm_debye_input, tm_debye, tm_debyegrun,&
+       tm_debye_poisson_input, tm_debye_einstein, tm_qhafull_espresso, tm_static, em_pol4,&
+       em_sommerfeld, em_no, ftsel_fitmode, vbracket
+    use tools, only: error
+    use param, only: faterr, au2gpa, ha2kjmol, pi, pckbau, pisquare, twothird
     type(phase), intent(in) :: p
     type(fitpack), intent(in) :: ft
     real*8, intent(in) :: v, t
@@ -886,7 +901,9 @@ contains
   end subroutine dyneos_calc
 
   subroutine deltag()
-
+    use varbas, only: nph, ph, nps, plist, nts, tlist
+    use tools, only: leng, fopen, fclose
+    use param, only: mline, uout, fileroot, iowrite, null
     integer :: lu, ll
     integer :: i, j, k
     character*(1000) :: blin
@@ -930,7 +947,9 @@ contains
   end subroutine deltag
 
   subroutine stablevbg()
-
+    use varbas, only: nph, ph, nps, plist, nts, tlist
+    use tools, only: leng, fopen, fclose
+    use param, only: uout, fileroot, iowrite, null
     real*8 :: gmin
     integer :: lu, idmin
     integer :: i, j, k
@@ -966,9 +985,12 @@ contains
   end subroutine stablevbg
 
   subroutine interpolate()
-    use debye
-    use evfunc
-
+    use evfunc, only: fv1
+    use fit, only: fit_pshift
+    use varbas, only: nph, ph, nps, plist, nts, tlist, writelevel, tm_static
+    use tools, only: error, leng, fopen, fclose, realloc
+    use param, only: mline_fmt, uout, format_string, format_string_header, fileroot, iowrite, &
+       warning, null, au2gpa, ifmt_v, ifmt_p, ifmt_t, ifmt_interp
     integer :: i, j, k
     integer :: mint, n, lu
     real*8 :: v, p, t, e, b, g, fac, f1
@@ -1101,9 +1123,13 @@ contains
   end subroutine interpolate
 
   subroutine eshift_vexp()
-    use debye
-    use evfunc
-    
+    use evfunc, only: fv0, fv1, fv2
+    use debye, only: fill_thetad
+    use fit, only: fit_ev, fit_pshift
+    use varbas, only: nph, ph, scal_bpscal, scal_apbaf, scal_pshift, scal_use, scal_noscal, &
+       tm_debyegrun, tm_debye, tm_debye_einstein, phase_checkfiterr
+    use tools, only: error, leng
+    use param, only: mline, uout, warning, faterr, au2gpa
     real*8, parameter :: facprec = 1d-10
 
     integer :: i, ierr
@@ -1302,7 +1328,6 @@ contains
 
   contains
     function qfac(ff)
-
       real*8, intent(in) :: ff
       real*8 :: qfac
       
@@ -1319,8 +1344,12 @@ contains
 
   !< Returns fitting parameters of F(V,T).
   subroutine fit_agrid_t(p,T,napol,apol,mode,ierr,dostatic,dovib,doel,pfit)
-    use debye
-
+    use debye, only: thermalomega, thermalphon, debeins, thermal
+    use evfunc, only: fv0
+    use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_qhafull_espresso, em_pol4, &
+       em_sommerfeld, ftsel_fitmode
+    use fit, only: fit_ev, fitinfo
+    use param, only: pi, pckbau, pisquare, twothird
     type(phase), intent(in) :: p 
     real*8, intent(in) :: T
     integer, intent(out) :: napol
@@ -1390,8 +1419,12 @@ contains
 
   !< Returns fitting parameters of F(V,T).
   subroutine fit_sgrid_t(p,T,nspol,spol,mode,ierrs,dovib,doel)
-    use debye
-
+    use debye, only: tlim_gamma, thermalphon, thermalomega, debeins, thermal
+    use fit, only: fitt_polygibbs
+    use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_qhafull_espresso, em_pol4,&
+       em_sommerfeld, ftsel_fitmode
+    use evfunc, only: fv0
+    use param, only: pi, pckbau, pisquare, twothird
     type(phase), intent(in) :: p
     real*8, intent(in) :: T
     integer, intent(out) :: nspol
@@ -1466,8 +1499,9 @@ contains
 
   !< Returns fitting parameters of Cv_el(V,T).
   subroutine fit_cvelgrid_t(p,T,ncvpol,cvpol,mode,ierr)
-    use debye
-
+    use evfunc, only: fv1
+    use varbas, only: phase, em_pol4, ftsel_fitmode
+    use fit, only: fit_ev
     type(phase), intent(in) :: p 
     real*8, intent(in) :: T
     integer, intent(out) :: ncvpol
@@ -1504,7 +1538,7 @@ contains
   end subroutine fit_cvelgrid_t
 
   function is_dyn_v_in(p,v)
-
+    use varbas, only: phase
     type(phase), intent(in) :: p
     real*8, intent(in) :: v
     logical :: is_dyn_v_in
@@ -1524,7 +1558,12 @@ contains
   end function is_dyn_v_in
 
   subroutine drhouse(nsamples)
-
+    use evfunc, only: fit_strain, fit_strain_bm, v2str, fv0, fv1, fv2, fv3, fv4
+    use fit, only: mpar, mparmin, fit_pshift, polfit
+    use varbas, only: nph, ph
+    use tools, only: error, leng
+    use param, only: mline, uout, format_string, format_string_header, warning, faterr, au2gpa,&
+       ifmt_order, ifmt_bp, ifmt_v, ifmt_e, ifmt_b, ifmt_bpp
     integer, intent(in) :: nsamples
 
     type polyfit
@@ -1730,7 +1769,7 @@ contains
   end subroutine drhouse
 
   subroutine mask_trans(n,imask)
-    
+    use varbas, only: nph, ph, tm_static, dotrans, writelevel
     integer, intent(out) :: n
     integer, intent(out) :: imask(nph)
 
@@ -1750,7 +1789,10 @@ contains
   end subroutine mask_trans
 
   subroutine printfreqs()
-
+    use evfunc, only: fv1, fv2
+    use varbas, only: nph, ph, tm_debye_einstein
+    use tools, only: leng, fopen, fclose
+    use param, only: uout, fileroot, iowrite, null, au2gpa, ha2cm_1, half, twothird
     integer :: i, j
     real*8 :: vol, pstat, bstat, veq, beq
     real*8 :: tmpvol, tmpb, tmppb, tmptot
@@ -1804,7 +1846,11 @@ contains
   end subroutine printfreqs
 
   subroutine write_energy(ini,step,end)
-
+    use evfunc, only: fv0
+    use varbas, only: nph, ph
+    use tools, only: leng, fopen, fclose
+    use param, only: mline, uout, bohr2angstrom, fileroot, ha2ev, iowrite, null, &
+       units_e_ev, units_e_ry, units_v_ang3
     real*8, intent(in) :: ini, step, end
 
     integer :: i, j, lu, nstep

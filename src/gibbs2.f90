@@ -17,14 +17,24 @@
 
 !.gibbs2 - (P,T) thermodynamics on crystals.
 program gibbs2
-  use topcalc
-  use debye
-  use eos
-  use varbas
-  use fit
-  use evfunc
-  use tools
-  use param
+  use evfunc, only: nelectrons, evfunc_init, punch_params
+  use topcalc, only: fint, iint, interp_input, mxint, nxint, printfreqs, drhouse, write_energy,&
+     dyn_transp, stablevbg, deltag, dyneos, topcalc_init, popinput, eshift_vexp, popenergyfit,&
+     plotdh, interpolate, static_transp
+  use debye, only: fill_thetad
+  use fit, only: fit_init, fit_pshift
+  use param, only: mline, marg, title, fileroot, param_init
+  use eos, only: eosfit_ev_fitt
+  use varbas, only: nps, plist, nvs, vlist, nts, tlist, nph, ph, einf, mm, pdefault, &
+     phase_freqmax, phase_max, pstep, tstep, vstep, tdefault, vdefault, temp_pmax, temp_tmax, &
+     vfree, temp_vmax, tm_debye, &
+     tm_debye_input, tm_debye_einstein, tm_debye_poisson_input, tm_debyegrun, tm_static, &
+     phase_init, help_me_and_exit, inplace_sort, varbas_init, process_argv, setup_phases, &
+     props_staticeq, phase_punch_pfit, phase_popinfo
+  use tools, only: lower, equal, fopen, fclose, isinteger, ffdate, getword, isreal, fgetline, &
+     leng, error, realloc, timer, ioinit, getargs, stdargs
+  use param, only: amu2au, faterr, ioerror, ioread, ncomms, nwarns, null, pct0, uin, uout, &
+     units_f_cm1, warning, header
   implicit none
   
   interface

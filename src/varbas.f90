@@ -16,10 +16,12 @@
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module varbas
-  use fit
-  use evfunc
-  use tools
-  use param
+  use fit, only: fitinfo, mmpar
+  use evfunc, only: fit_strain_x1, fit_strain_v, fit_strain
+  use param, only: mline, half, &
+     ifmt_p, ifmt_v, ifmt_x, ifmt_g, ifmt_b, ifmt_bp, ifmt_bpp, ifmt_e, ifmt_bm, ifmt_t,&
+     ifmt_cv, ifmt_s, ifmt_dpdt, ifmt_alpha, ifmt_interp, ifmt_eprec, ifmt_aic, ifmt_order,&
+     ifmt_ef, ifmt_nef
   implicit none
   public
 
@@ -286,7 +288,8 @@ contains
   end subroutine varbas_init
 
   subroutine process_argv(argc,argv)
-    
+    use param, only: mline, marg, null
+    use tools, only: equal
     integer, intent(inout) :: argc
     character*(mline), intent(inout) :: argv(marg)
 
@@ -325,6 +328,7 @@ contains
   end subroutine process_argv
 
   subroutine help_me_and_exit()
+    use param, only: uout, header
 
     call header()
     write (uout,'("")')
@@ -391,7 +395,8 @@ contains
   end function n_not_pv_min
 
   subroutine read_edos(file,i1,i2,e,n,nread)
-
+    use param, only: mline, uout, faterr, ioread
+    use tools, only: fopen, leng, isreal, getword, fgetline, error, fclose
     character*(mline), intent(in) :: file
     integer, intent(in) :: i1, i2
     real*8, intent(out) :: e(:), n(:)
@@ -441,7 +446,8 @@ contains
   end subroutine read_edos
 
   subroutine read_phdos(file,i1,i2,units,f,d,fstep,nread,didinterp)
-
+    use param, only: mline, uout, faterr, ha2cm_1, ioread, thz2cm_1, units_f_ha, units_f_thz
+    use tools, only: fopen, leng, isreal, leng, getword, fgetline, error, fclose
     character*(mline), intent(in) :: file
     integer, intent(in) :: i1, i2
     integer, intent(in) :: units
@@ -565,7 +571,8 @@ contains
   end subroutine read_phdos
 
   subroutine read_phespresso(file,units,zz,omega,wei,slaue,nqout)
-
+    use param, only: mline, uout, faterr, ha2cm_1, ioread, thz2cm_1, units_f_ha, units_f_thz
+    use tools, only: fopen, leng, error, laue, fclose
     character*(mline), intent(in) :: file
     integer, intent(in) :: units
     real*8, intent(in) :: zz
@@ -675,7 +682,14 @@ contains
 
   ! Initialize a phase structure parsing input line. 
   subroutine phase_init(p,line_in)
-
+    use param, only: uout, mline, faterr, ioread, noerr, null, pct0, uin, units_e_ev, units_e_ha, &
+       units_e_ry, units_f_cm1, units_f_ha, units_f_thz, units_p_au, units_p_gpa, units_v_ang3, &
+       units_v_bohr3
+    use tools, only: getword, lower, isreal, isinteger, leng, equal, fopen, fgetline, cat, error,&
+       fclose
+    use evfunc, only: fit_antons, fit_ap2, fit_bm2, fit_bm3, fit_bm4, fit_murn, fit_polygibbs, &
+       fit_pt2, fit_pt3, fit_pt4, fit_pt5, fit_strain_bm, fit_strain_inf, fit_strain_lagr,&
+       fit_strain_pt, fit_strain_x3, fit_strain_xinv3, fit_vinet, reg_lad, reg_lsq
     type(phase), intent(out) :: p
     character*(mline), intent(in) :: line_in
     
@@ -1334,7 +1348,11 @@ contains
   end subroutine phase_init
 
   subroutine setup_phases()
-
+    use param, only: uout, warning, mline_fmt, au2gpa, faterr, ha2cm_1, ha2thz, units_f_cm1,&
+       units_f_thz, format_string, format_string_header
+    use tools, only: leng, error, realloc
+    use evfunc, only: fit_polygibbs, fv0, fv1, fv2, fv3, fv4, punch_params
+    use fit, only: fit_ev
     integer :: i, j, k
     character*(mline) :: msg
     character*(mline_fmt) :: fm
@@ -1576,7 +1594,9 @@ contains
   end subroutine setup_phases
 
   subroutine props_staticeq()
-
+    use fit, only: fit_pshift
+    use tools, only: leng, error, realloc
+    use param, only: uout, warning
     integer :: i, j
     character*(mline) :: msg
     real*8 :: vk, bk, ek, gk
@@ -1615,7 +1635,7 @@ contains
   end subroutine props_staticeq
 
   subroutine inplace_sort(a)
-
+    use tools, only: qcksort
     real*8, intent(inout) :: a(:)
 
     integer :: i, idx(size(a))
@@ -1634,7 +1654,7 @@ contains
 
   ! volume-related quantities -> see also phase_realloc_volume
   subroutine phase_sort(p)
-
+    use tools, only: qcksort
     type(phase), intent(inout) :: p
 
     integer :: i, idx(p%nv)
@@ -1657,11 +1677,12 @@ contains
     if (allocated(p%nefermi)) p%nefermi = p%nefermi(idx)
     if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol(:,idx)
     if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol(:,idx)
+
   end subroutine phase_sort
 
   ! volume-related quantities -> see also phase_sort
   subroutine phase_realloc_volume(p,n,numax,lshift)
-
+    use tools, only: realloc
     type(phase), intent(inout) :: p
     integer, intent(in) :: n
     integer, intent(in), optional :: numax
@@ -1741,7 +1762,10 @@ contains
   end subroutine phase_realloc_volume
 
   subroutine phase_popinfo(p,i)
-
+    use param, only: uout, units_v_bohr3, units_v_ang3, units_e_ha, units_e_ev, units_e_ry,&
+       units_p_au, units_p_gpa, units_f_ha, units_f_cm1, units_f_thz, units_e_ha, &
+       units_e_ev, units_e_ry, ha2cm_1, ha2kjmol, warning, faterr
+    use tools, only: leng, error
     type(phase), intent(in) :: p
     integer, intent(in) :: i
 
@@ -1935,7 +1959,9 @@ contains
   end subroutine phase_popinfo
 
   subroutine phase_checkconvex(p,usecpol,ierr)
-
+    use param, only: uout, noerr, warning
+    use tools, only: leng, error
+    use evfunc, only: fv2
     type(phase), intent(inout) :: p
     logical, intent(in) :: usecpol
     integer, intent(out) :: ierr
@@ -2006,7 +2032,8 @@ contains
   end subroutine phase_checkconvex
 
   subroutine phase_inputdata(p,zz)
-
+    use param, only: au2gpa, bohr2angstrom, ha2ev, units_e_ev, units_e_ry, units_p_gpa,&
+       units_v_ang3
     type(phase), intent(inout) :: p
     real*8, intent(in) :: zz
 
@@ -2050,7 +2077,7 @@ contains
   end subroutine phase_inputdata
 
   subroutine phase_checkfiterr(p,ispv)
-
+    use evfunc, only: fv0, fv1
     type(phase), intent(inout) :: p
     logical, intent(in) :: ispv
 
@@ -2088,7 +2115,9 @@ contains
   end subroutine phase_checkfiterr
 
   subroutine phase_phespresso(p)
-
+    use fit, only: fitt_polygibbs
+    use tools, only: error
+    use param, only: ha2cm_1, ha2thz, units_f_cm1, units_f_thz, warning
     type(phase), intent(inout) :: p
 
     integer :: iq, mode, npar, ierr
@@ -2118,7 +2147,8 @@ contains
   end subroutine phase_phespresso
   
   subroutine phase_phdos(p)
-
+    use param, only: ha2cm_1, ha2thz, units_f_cm1, units_f_thz, warning
+    use tools, only: quad1, error, realloc
     type(phase), intent(inout) :: p
 
     integer :: iv
@@ -2212,7 +2242,10 @@ contains
   end subroutine phase_phdos
   
   subroutine phase_punch_pfit(p)
-
+    use fit, only: fit_pshift
+    use evfunc, only: fv1, fv2, fv3, fv4
+    use tools, only: error
+    use param, only: mline_fmt, au2gpa, uout, warning, format_string, format_string_header
     type(phase), intent(inout) :: p
     
     integer :: i
