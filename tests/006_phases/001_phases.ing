@@ -1,0 +1,29 @@
+## check: 001_phases.outg -a1e-10
+## check: 001_phases_all_p.gnu -a1e-10
+## check: 001_phases_all_t.gnu -a1e-10
+## check: 001_phases.dgtp -a1e-10
+## check: 001_phases_dH.aux -a1e-10
+## check: 001_phases_dH.gnu -a1e-10
+## check: 001_phases.efit -a1e-10
+## check: 001_phases_efit.aux -a1e-10
+## check: 001_phases_efit.gnu -a1e-10
+## check: 001_phases.eos -a1e-10
+## check: 001_phases.eos_static -a1e-10
+## check: 001_phases.ptrans -a1e-10
+## check: 001_phases_ptrans.gnu -a1e-10
+## check: 001_phases.tpstab -a1e-10
+
+mm 40.3044
+vfree 2
+pressure 0 25 600
+temperature 0 20 1000
+
+phase B1 file ../dat/mgo_pbe/mgo.res tmodel qha \
+                 units energy ry freq cm-1 \
+                 prefix ../dat/mgo_pbe/ \
+                 eec bpscal 126.025 161.3
+phase B2 file ../dat/mgob2_pbe/mgob2.res tmodel qha \
+                 units energy ry freq cm-1 \
+                 prefix ../dat/mgob2_pbe/ \
+                 eec use 1
+end

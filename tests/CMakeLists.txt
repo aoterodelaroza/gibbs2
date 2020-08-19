@@ -3,6 +3,11 @@
 ## list of test bundles
 set(TESTDIRS 
   001_simple        ## simple inputs and outputs
+  002_fits          ## fits using different equations of state
+  003_tmodels       ## temperature models
+  004_eec           ## empirical energy corrections
+  005_elec          ## electronicc contributions to the free energy
+  006_phases        ## phase stability
   )
 
 ## define the macro that will run the tests
@@ -109,7 +114,7 @@ endmacro()
 ## create symlink for the test data (build)
 if (NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/dat/")
   message(STATUS "Creating symlink for tests in ${CMAKE_CURRENT_BINARY_DIR}/")
-  execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_SOURCE_DIR}/dat" "${CMAKE_CURRENT_BINARY_DIR}/dat")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/dat" "${CMAKE_CURRENT_BINARY_DIR}/dat")
 endif()
 
 ## process all subdirectories

@@ -9,9 +9,11 @@
 ## labels: regression quick
 
 # comment
+title A simple test (MgO)
 mm 40.3044
 vfree 2
 phase mgo
+# some E(V) data
  81.8883583665837   -73.5171659350000
  86.0358791612784   -73.5360133400000
  90.1833999559730   -73.5508544000000

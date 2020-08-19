@@ -20,7 +20,7 @@ Empirical energy corrections:
 Dedicated to the memory of Miguel Alvarez Blanco (1969--2010).
 
 * Input 
-  Title: 
+  Title: A simple test (MgO)
   Output file (lu= 2): stdout
   Units: output is in atomic units, except where noted.
   Number of atoms per primitive cell:   2

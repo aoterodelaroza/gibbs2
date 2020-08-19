@@ -1,0 +1,505 @@
+                                                        
+                 _ _     _         ____                 
+            __ _(_) |__ | |__  ___|___ \                
+           / _` | | '_ \| '_ \/ __| __) |               
+          | (_| | | |_) | |_) \__ \/ __/                
+           \__, |_|_.__/|_.__/|___/_____|               
+           |___/                                        
+      GIBBS2: (p,t) thermodynamics of solids.           
+                                                        
+by A. Otero-de-la-Roza, V. Lua~na and D. Abbasi. 
+
+If you find this software useful, please cite:
+  * Comput. Phys. Commun. 182 (2011) 1708--1720 
+These articles describe the strain polynomial fits:
+  * Comput. Phys. Commun. 182 (2011) 2232--2248.
+  * Comput. Theor. Chem. doi:10.1016/j.comptc.2011.03.050 
+Empirical energy corrections: 
+  * Phys. Rev. B 84 (2011) 024109 
+
+Dedicated to the memory of Miguel Alvarez Blanco (1969--2010).
+
+* Input 
+  Title: Diamond
+  Output file (lu= 2): stdout
+  Units: output is in atomic units, except where noted.
+  Number of atoms per primitive cell:   2
+  Molecular mass (amu):       24.02140000
+  Infinite V energy (ha):   0.000000000000E+00
+  Number of phases:   5
+  Phase   1: bm3
+  Phase   2: bm4
+  Phase   3: pt3
+  Phase   4: pt4
+  Phase   5: vinet
+  Polynomial fit mode: slatec
+  Polynomial weight mode: gibbs2
+  Max. polynomial degree: 12
+
+* Pressure range examined
+  Min_phases{p_max} (GPa):      793.305
+  Pressure range (GPa):        0.000 ->        0.000
+  Number of p points:      1
+
+* Phase information after initial setup
++ Phase  1 (bm3)
+  Number of volume points:   31
+  Number of vfree units (Z):        1.000
+  p(V) input data? F
+  Pressure range (GPa):      -51.583 ->      798.952
+  Number of interpolated fields :    0
+  Input units: 
+    Volume : bohr^3
+    Energy : Ry
+    Pressure : GPa
+    Frequency : Hartree
+    DOS energy : Hartree
+  Output units are atomic units (Ha), except where noted.
+  First/last volume (bohr^3):   4.000000000000E+01    9.000000000000E+01
+  First/last energy (Ha):  -1.105354397000E+01   -1.138603069500E+01
+  Poisson ratio from input (sigma):       0.250000
+  Poisson function, f(sigma):       0.859949
+  Correction of static energy: no correction
+  Energy fit mode:   130103
+  S(V) fit mode:   130510
+  ThetaD(V) fit mode:   130510
+  omega(V) fit mode:   130506
+  Number of fixed fit parameters:   0
+  Static equilibrium volume (bohr^3):        76.7759894206
+  Static equilibrium energy (Ha):       -11.3991226951
+  Static equilibrium energy (kJ/mol):    -29928.3920762661
+  Static bulk modulus (GPa):      435.253350
+  Static EOS fit, error RMS (Ha):   1.2752958E-05
+  Static EOS fit, max|error| (Ha):   2.1038967E-05
+  r2 of the fit:   9.999994462337E-01
+  Akaike information criterion:  -5.822707317846E+02
+  Bayesian information (Schwarz) criterion:  -5.751007957622E+02
+  Temperature model: Debye-Gruneisen with gamma = a + b*B' .
+  Gamma a coefficient:       -0.500
+  Gamma b coefficient:        0.500
+  All data points are ACTIVE for dynamic calculations
+WARNING(phase_popinfo): Max. pressure (     798.952) exceeds      500.000
+
+  Fit to static E(V) data:
+# Copy in file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.eos_static
+ #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
+      0.0000  -1.139912270E+01  -1.139912270E+01    76.7760  1.0000000     0.0000   435.2533    3.6778583  -8.4331E-03
+# Polynomial fit to strain: 
+# Degree :  3
+#      p(x) = a_0 + a_1 * f(V) + ... + a_n * f(V)^n
+# a_00 =  -1.139912154105E+01
+# a_01 =   4.861215141148E-03
+# a_02 =   5.118563326528E+00
+# a_03 =  -1.651228083599E+00
+# V_scal (bohr^3) =   7.666666666667E+01
+# p_scal (GPa) =       0.000000000000
+
++ Phase  2 (bm4)
+  Number of volume points:   31
+  Number of vfree units (Z):        1.000
+  p(V) input data? F
+  Pressure range (GPa):      -51.583 ->      798.952
+  Number of interpolated fields :    0
+  Input units: 
+    Volume : bohr^3
+    Energy : Ry
+    Pressure : GPa
+    Frequency : Hartree
+    DOS energy : Hartree
+  Output units are atomic units (Ha), except where noted.
+  First/last volume (bohr^3):   4.000000000000E+01    9.000000000000E+01
+  First/last energy (Ha):  -1.105354397000E+01   -1.138603069500E+01
+  Poisson ratio from input (sigma):       0.250000
+  Poisson function, f(sigma):       0.859949
+  Correction of static energy: no correction
+  Energy fit mode:   130103
+  S(V) fit mode:   130510
+  ThetaD(V) fit mode:   130510
+  omega(V) fit mode:   130506
+  Number of fixed fit parameters:   0
+  Static equilibrium volume (bohr^3):        76.7759894206
+  Static equilibrium energy (Ha):       -11.3991226951
+  Static equilibrium energy (kJ/mol):    -29928.3920762661
+  Static bulk modulus (GPa):      435.253350
+  Static EOS fit, error RMS (Ha):   1.2752958E-05
+  Static EOS fit, max|error| (Ha):   2.1038967E-05
+  r2 of the fit:   9.999994462337E-01
+  Akaike information criterion:  -5.822707317846E+02
+  Bayesian information (Schwarz) criterion:  -5.751007957622E+02
+  Temperature model: Debye-Gruneisen with gamma = a + b*B' .
+  Gamma a coefficient:       -0.500
+  Gamma b coefficient:        0.500
+  All data points are ACTIVE for dynamic calculations
+WARNING(phase_popinfo): Max. pressure (     798.952) exceeds      500.000
+
+  Fit to static E(V) data:
+# Copy in file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.eos_static
+ #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
+      0.0000  -1.139912270E+01  -1.139912270E+01    76.7760  1.0000000     0.0000   435.2533    3.6778583  -8.4331E-03
+# Polynomial fit to strain: 
+# Degree :  3
+#      p(x) = a_0 + a_1 * f(V) + ... + a_n * f(V)^n
+# a_00 =  -1.139912154105E+01
+# a_01 =   4.861215141148E-03
+# a_02 =   5.118563326528E+00
+# a_03 =  -1.651228083599E+00
+# V_scal (bohr^3) =   7.666666666667E+01
+# p_scal (GPa) =       0.000000000000
+
++ Phase  3 (pt3)
+  Number of volume points:   31
+  Number of vfree units (Z):        1.000
+  p(V) input data? F
+  Pressure range (GPa):      -47.626 ->      793.305
+  Number of interpolated fields :    0
+  Input units: 
+    Volume : bohr^3
+    Energy : Ry
+    Pressure : GPa
+    Frequency : Hartree
+    DOS energy : Hartree
+  Output units are atomic units (Ha), except where noted.
+  First/last volume (bohr^3):   4.000000000000E+01    9.000000000000E+01
+  First/last energy (Ha):  -1.105354397000E+01   -1.138603069500E+01
+  Poisson ratio from input (sigma):       0.250000
+  Poisson function, f(sigma):       0.859949
+  Correction of static energy: no correction
+  Energy fit mode:   130203
+  S(V) fit mode:   130510
+  ThetaD(V) fit mode:   130510
+  omega(V) fit mode:   130506
+  Number of fixed fit parameters:   0
+  Static equilibrium volume (bohr^3):        76.6805434833
+  Static equilibrium energy (Ha):       -11.3989080128
+  Static equilibrium energy (kJ/mol):    -29927.8284280149
+  Static bulk modulus (GPa):      423.410667
+  Static EOS fit, error RMS (Ha):   1.9890004E-04
+  Static EOS fit, max|error| (Ha):   4.7310707E-04
+  r2 of the fit:   9.998652978824E-01
+  Akaike information criterion:  -4.119543032124E+02
+  Bayesian information (Schwarz) criterion:  -4.047843671899E+02
+  Temperature model: Debye-Gruneisen with gamma = a + b*B' .
+  Gamma a coefficient:       -0.500
+  Gamma b coefficient:        0.500
+  All data points are ACTIVE for dynamic calculations
+WARNING(phase_popinfo): Max. pressure (     793.305) exceeds      500.000
+
+  Fit to static E(V) data:
+# Copy in file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.eos_static
+ #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
+      0.0000  -1.139890801E+01  -1.139890801E+01    76.6805  1.0000000     0.0000   423.4107    4.1940611  -1.8913E-02
+# Polynomial fit to strain: 
+# Degree :  3
+#      p(x) = a_0 + a_1 * f(V) + ... + a_n * f(V)^n
+# a_00 =  -1.139890799471E+01
+# a_01 =  -5.992952212219E-04
+# a_02 =   4.967916744654E+00
+# a_03 =  -1.089558624774E+01
+# V_scal (bohr^3) =   7.666666666667E+01
+# p_scal (GPa) =       0.000000000000
+
++ Phase  4 (pt4)
+  Number of volume points:   31
+  Number of vfree units (Z):        1.000
+  p(V) input data? F
+  Pressure range (GPa):      -51.458 ->      798.862
+  Number of interpolated fields :    0
+  Input units: 
+    Volume : bohr^3
+    Energy : Ry
+    Pressure : GPa
+    Frequency : Hartree
+    DOS energy : Hartree
+  Output units are atomic units (Ha), except where noted.
+  First/last volume (bohr^3):   4.000000000000E+01    9.000000000000E+01
+  First/last energy (Ha):  -1.105354397000E+01   -1.138603069500E+01
+  Poisson ratio from input (sigma):       0.250000
+  Poisson function, f(sigma):       0.859949
+  Correction of static energy: no correction
+  Energy fit mode:   130204
+  S(V) fit mode:   130510
+  ThetaD(V) fit mode:   130510
+  omega(V) fit mode:   130506
+  Number of fixed fit parameters:   0
+  Static equilibrium volume (bohr^3):        76.7733091233
+  Static equilibrium energy (Ha):       -11.3991145970
+  Static equilibrium energy (kJ/mol):    -29928.3708146786
+  Static bulk modulus (GPa):      434.741980
+  Static EOS fit, error RMS (Ha):   1.0079520E-05
+  Static EOS fit, max|error| (Ha):   1.6475746E-05
+  r2 of the fit:   9.999996540730E-01
+  Akaike information criterion:  -5.948566997251E+02
+  Bayesian information (Schwarz) criterion:  -5.862527764982E+02
+  Temperature model: Debye-Gruneisen with gamma = a + b*B' .
+  Gamma a coefficient:       -0.500
+  Gamma b coefficient:        0.500
+  All data points are ACTIVE for dynamic calculations
+WARNING(phase_popinfo): Max. pressure (     798.862) exceeds      500.000
+
+  Fit to static E(V) data:
+# Copy in file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.eos_static
+ #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
+      0.0000  -1.139911460E+01  -1.139911460E+01    76.7733  1.0000000     0.0000   434.7420    3.6954231  -8.6101E-03
+# Polynomial fit to strain: 
+# Degree :  4
+#      p(x) = a_0 + a_1 * f(V) + ... + a_n * f(V)^n
+# a_00 =  -1.139911350013E+01
+# a_01 =  -4.736296426484E-03
+# a_02 =   5.117051658939E+00
+# a_03 =  -8.668117125541E+00
+# a_04 =   6.993978195101E+00
+# V_scal (bohr^3) =   7.666666666667E+01
+# p_scal (GPa) =       0.000000000000
+
++ Phase  5 (vinet)
+  Number of volume points:   31
+  Number of vfree units (Z):        1.000
+  p(V) input data? F
+  Pressure range (GPa):      -49.640 ->      796.021
+  Number of interpolated fields :    0
+  Input units: 
+    Volume : bohr^3
+    Energy : Ry
+    Pressure : GPa
+    Frequency : Hartree
+    DOS energy : Hartree
+  Output units are atomic units (Ha), except where noted.
+  First/last volume (bohr^3):   4.000000000000E+01    9.000000000000E+01
+  First/last energy (Ha):  -1.105354397000E+01   -1.138603069500E+01
+  Poisson ratio from input (sigma):       0.250000
+  Poisson function, f(sigma):       0.859949
+  Correction of static energy: no correction
+  Energy fit mode:       11
+  S(V) fit mode:   130510
+  ThetaD(V) fit mode:   130510
+  omega(V) fit mode:   130506
+  Number of fixed fit parameters:   0
+  Static equilibrium volume (bohr^3):        76.7423116805
+  Static equilibrium energy (Ha):       -11.3990021889
+  Static equilibrium energy (kJ/mol):    -29928.0756873258
+  Static bulk modulus (GPa):      428.233642
+  Static EOS fit, error RMS (Ha):   1.0237108E-04
+  Static EOS fit, max|error| (Ha):   2.3993627E-04
+  r2 of the fit:   9.999643171738E-01
+  Akaike information criterion:  -4.531345882036E+02
+  Bayesian information (Schwarz) criterion:  -4.459646521811E+02
+  Temperature model: Debye-Gruneisen with gamma = a + b*B' .
+  Gamma a coefficient:       -0.500
+  Gamma b coefficient:        0.500
+  All data points are ACTIVE for dynamic calculations
+WARNING(phase_popinfo): Max. pressure (     796.021) exceeds      500.000
+
+  Fit to static E(V) data:
+# Copy in file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.eos_static
+ #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
+      0.0000  -1.139900219E+01  -1.139900219E+01    76.7423  1.0000000     0.0000   428.2336    3.9168536  -1.2297E-02
+# Vinet, 3th order EOS parameters: 
+# E_0 (Ha) =  -1.139900219E+01
+# V_0 (bohr^3) =    76.74231168
+# B_0 (GPa) =   428.233642
+# B_0' =    3.9168536
+# p_scal (GPa) =       0.000000000000
+
+* Input and fitted static energy
+  Writing file: /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.efit
+
+  Writing file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_efit.aux
+
+  Writing file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_efit.gnu
+
+* Plotting static DeltaH
+
+  Writing file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.aux
+
+  Writing file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.gnu
+
+* Computed Debye temperatures from static data
++ Phase bm3
+# ThetaD at static eq. volume:    1598.00
+# V(bohr^3)  Tdebye(K)   Tdebye_slater(K)
+    40.0000    3025.04    3759.41
+    41.6667    2933.66    3596.57
+    43.3333    2845.91    3443.67
+    45.0000    2761.60    3299.88
+    46.6667    2680.54    3164.42
+    48.3333    2602.52    3036.60
+    50.0000    2527.38    2915.79
+    51.6667    2454.94    2801.42
+    53.3333    2385.02    2692.99
+    55.0000    2317.49    2590.04
+    56.6667    2252.20    2492.14
+    58.3333    2189.00    2398.92
+    60.0000    2127.78    2310.03
+    61.6667    2068.41    2225.16
+    63.3333    2010.79    2144.03
+    65.0000    1954.80    2066.36
+    66.6667    1900.34    1991.92
+    68.3333    1847.34    1920.48
+    70.0000    1795.69    1851.85
+    71.6667    1745.31    1785.84
+    73.3333    1696.13    1722.26
+    75.0000    1648.07    1660.97
+    76.6667    1601.05    1601.81
+    78.3333    1555.02    1544.65
+    80.0000    1509.90    1489.34
+    81.6667    1465.64    1435.78
+    83.3333    1422.17    1383.84
+    85.0000    1379.43    1333.42
+    86.6667    1337.36    1284.42
+    88.3333    1295.92    1236.74
+    90.0000    1255.03    1190.28
++ Phase bm4
+# ThetaD at static eq. volume:    1598.00
+# V(bohr^3)  Tdebye(K)   Tdebye_slater(K)
+    40.0000    3025.04    3759.41
+    41.6667    2933.66    3596.57
+    43.3333    2845.91    3443.67
+    45.0000    2761.60    3299.88
+    46.6667    2680.54    3164.42
+    48.3333    2602.52    3036.60
+    50.0000    2527.38    2915.79
+    51.6667    2454.94    2801.42
+    53.3333    2385.02    2692.99
+    55.0000    2317.49    2590.04
+    56.6667    2252.20    2492.14
+    58.3333    2189.00    2398.92
+    60.0000    2127.78    2310.03
+    61.6667    2068.41    2225.16
+    63.3333    2010.79    2144.03
+    65.0000    1954.80    2066.36
+    66.6667    1900.34    1991.92
+    68.3333    1847.34    1920.48
+    70.0000    1795.69    1851.85
+    71.6667    1745.31    1785.84
+    73.3333    1696.13    1722.26
+    75.0000    1648.07    1660.97
+    76.6667    1601.05    1601.81
+    78.3333    1555.02    1544.65
+    80.0000    1509.90    1489.34
+    81.6667    1465.64    1435.78
+    83.3333    1422.17    1383.84
+    85.0000    1379.43    1333.42
+    86.6667    1337.36    1284.42
+    88.3333    1295.92    1236.74
+    90.0000    1255.03    1190.28
++ Phase pt3
+# ThetaD at static eq. volume:    1575.79
+# V(bohr^3)  Tdebye(K)   Tdebye_slater(K)
+    40.0000    2966.16    3684.71
+    41.6667    2886.89    3537.77
+    43.3333    2810.15    3398.99
+    45.0000    2735.72    3267.60
+    46.6667    2663.40    3142.89
+    48.3333    2593.03    3024.27
+    50.0000    2524.44    2911.19
+    51.6667    2457.49    2803.18
+    53.3333    2392.06    2699.81
+    55.0000    2328.00    2600.70
+    56.6667    2265.21    2505.50
+    58.3333    2203.59    2413.91
+    60.0000    2143.03    2325.62
+    61.6667    2083.43    2240.39
+    63.3333    2024.71    2157.98
+    65.0000    1966.78    2078.16
+    66.6667    1909.55    2000.73
+    68.3333    1852.93    1925.50
+    70.0000    1796.86    1852.29
+    71.6667    1741.23    1780.93
+    73.3333    1685.98    1711.25
+    75.0000    1631.01    1643.10
+    76.6667    1576.24    1576.34
+    78.3333    1521.58    1510.80
+    80.0000    1466.93    1446.35
+    81.6667    1412.19    1382.84
+    83.3333    1357.23    1320.11
+    85.0000    1301.95    1258.00
+    86.6667    1246.19    1196.36
+    88.3333    1189.79    1134.99
+    90.0000    1132.57    1073.69
++ Phase pt4
+# ThetaD at static eq. volume:    1597.06
+# V(bohr^3)  Tdebye(K)   Tdebye_slater(K)
+    40.0000    3026.12    3760.71
+    41.6667    2933.80    3596.70
+    43.3333    2845.55    3443.20
+    45.0000    2761.03    3299.16
+    46.6667    2679.94    3163.69
+    48.3333    2602.03    3035.99
+    50.0000    2527.06    2915.39
+    51.6667    2454.82    2801.25
+    53.3333    2385.11    2693.05
+    55.0000    2317.76    2590.30
+    56.6667    2252.61    2492.57
+    58.3333    2189.52    2399.46
+    60.0000    2128.36    2310.64
+    61.6667    2069.01    2225.78
+    63.3333    2011.35    2144.60
+    65.0000    1955.28    2066.84
+    66.6667    1900.70    1992.27
+    68.3333    1847.53    1920.66
+    70.0000    1795.69    1851.83
+    71.6667    1745.09    1785.59
+    73.3333    1695.66    1721.77
+    75.0000    1647.33    1660.22
+    76.6667    1600.05    1600.79
+    78.3333    1553.74    1543.35
+    80.0000    1508.35    1487.79
+    81.6667    1463.82    1433.98
+    83.3333    1420.09    1381.81
+    85.0000    1377.13    1331.18
+    86.6667    1334.87    1282.01
+    88.3333    1293.26    1234.19
+    90.0000    1252.27    1187.64
++ Phase vinet
+# ThetaD at static eq. volume:    1584.95
+# V(bohr^3)  Tdebye(K)   Tdebye_slater(K)
+    40.0000    2990.29    3715.68
+    41.6667    2906.81    3563.13
+    43.3333    2826.04    3419.13
+    45.0000    2747.81    3282.93
+    46.6667    2671.97    3153.85
+    48.3333    2598.36    3031.30
+    50.0000    2526.86    2914.76
+    51.6667    2457.33    2803.74
+    53.3333    2389.66    2697.84
+    55.0000    2323.75    2596.65
+    56.6667    2259.49    2499.84
+    58.3333    2196.78    2407.09
+    60.0000    2135.54    2318.12
+    61.6667    2075.69    2232.67
+    63.3333    2017.14    2150.49
+    65.0000    1959.82    2071.36
+    66.6667    1903.65    1995.09
+    68.3333    1848.57    1921.48
+    70.0000    1794.51    1850.37
+    71.6667    1741.41    1781.59
+    73.3333    1689.20    1714.98
+    75.0000    1637.83    1650.41
+    76.6667    1587.23    1587.75
+    78.3333    1537.34    1526.86
+    80.0000    1488.11    1467.63
+    81.6667    1439.48    1409.94
+    83.3333    1391.38    1353.69
+    85.0000    1343.77    1298.76
+    86.6667    1296.56    1245.05
+    88.3333    1249.71    1192.46
+    90.0000    1203.13    1140.89
+
+* Temperature range examined
+  Min_{DebyeT} (K):     1132.567
+  Temperature range (K):        0.000 ->     3000.000
+  Number of T points:    301
+
+* Calculated temperature effects 
+  Writing file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.eos
+
++ Phase bm3
++ Phase bm4
++ Phase pt3
++ Phase pt4
++ Phase vinet
+
+  Writing file: /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_all_t.gnu
+
+GIBBS2 ended succesfully (  5 WARNINGS,   0 COMMENTS)
+

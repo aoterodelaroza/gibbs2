@@ -1,0 +1,680 @@
+COMMENT(phase_init): There were some interpolated phDOS, with step (input units) =       1.000000000000
+                                                        
+                 _ _     _         ____                 
+            __ _(_) |__ | |__  ___|___ \                
+           / _` | | '_ \| '_ \/ __| __) |               
+          | (_| | | |_) | |_) \__ \/ __/                
+           \__, |_|_.__/|_.__/|___/_____|               
+           |___/                                        
+      GIBBS2: (p,t) thermodynamics of solids.           
+                                                        
+by A. Otero-de-la-Roza, V. Lua~na and D. Abbasi. 
+
+If you find this software useful, please cite:
+  * Comput. Phys. Commun. 182 (2011) 1708--1720 
+These articles describe the strain polynomial fits:
+  * Comput. Phys. Commun. 182 (2011) 2232--2248.
+  * Comput. Theor. Chem. doi:10.1016/j.comptc.2011.03.050 
+Empirical energy corrections: 
+  * Phys. Rev. B 84 (2011) 024109 
+
+Dedicated to the memory of Miguel Alvarez Blanco (1969--2010).
+
+* Input 
+  Title: 
+  Output file (lu= 2): stdout
+  Units: output is in atomic units, except where noted.
+  Number of atoms per primitive cell:   2
+  Molecular mass (amu):       40.30440000
+  Infinite V energy (ha):   0.000000000000E+00
+  Number of phases:   2
+  Phase   1: b1
+  Phase   2: b2
+  Polynomial fit mode: slatec
+  Polynomial weight mode: gibbs2
+  Max. polynomial degree: 12
+
+COMMENT(phase_checkconvex): Found   4 inflection points in (E,V) of phase b1
+  Near (E,V) point number ** :     153.0874653
+  Near (E,V) point number ** :     153.7787188
+  Near (E,V) point number ** :     154.4699723
+  Near (E,V) point number ** :     155.1612257
+
+WARNING(phase_phdos): Volume num.  82 [  9.6405E+01] phDOS renormalized from     5.9868045060E+00 to     6.0000000000E+00
+COMMENT(phase_checkconvex): Found  10 inflection points in (E,V) of phase b2
+  Near (E,V) point number ** :     128.2023406
+  Near (E,V) point number ** :     128.8935940
+  Near (E,V) point number ** :     143.4099168
+  Near (E,V) point number ** :     144.1011703
+  Near (E,V) point number ** :     151.7049584
+  Near (E,V) point number ** :     152.3962119
+  Near (E,V) point number ** :     155.1612257
+  Near (E,V) point number ** :     155.8524792
+  Near (E,V) point number ** :     158.6174931
+  Near (E,V) point number ** :     159.3087465
+
+WARNING(phase_phdos): Volume num.  35 [  6.3815E+01] phDOS renormalized from     6.0122033606E+00 to     6.0000000000E+00
+WARNING(phase_phdos): Volume num.  36 [  6.4515E+01] phDOS renormalized from     6.0105250374E+00 to     6.0000000000E+00
+* Pressure range examined
+  Min_phases{p_max} (GPa):     1572.598
+  Pressure range (GPa):        0.000 ->      600.000
+  Number of p points:     25
+
+* Scaling of phase  1 (b1)
+  Experimental T (K):     298.15
+  Experimental p (GPa):       0.00
+  Vexp at T and p (bohr^3):      126.025
++ Type: bpscal
+  Bexp at T and p (bohr^3):      161.300
+  - Iteration  1
+      V0 (static,bohr^3) =      130.079
+      B0 (static,bohr^3) =         150.50
+  Energy step:  -3.481142130113E-08
+  Energy step after E0 correction:  -4.263256414561E-14
+
+* Scaling of phase  2 (b2)
+  Experimental T (K):     298.15
+  Experimental p (GPa):       0.00
+  Vexp at T and p (bohr^3):        0.000
+  - Iteration  1
+      V0 (static,bohr^3) =      126.887
+      B0 (static,bohr^3) =         140.28
+  Energy step:   3.097360945503E-08
+  Energy step after E0 correction:  -2.842170943040E-14
+
+* Phase information after initial setup
++ Phase  1 (b1)
+  Number of volume points:  174
+  Number of vfree units (Z):        1.000
+  p(V) input data? F
+  Pressure range (GPa):      -25.843 ->     1787.940
+  Number of interpolated fields :    0
+  Input units: 
+    Volume : bohr^3
+    Energy : Ry
+    Pressure : GPa
+    Frequency : cm^(-1)
+    DOS energy : Hartree
+  Output units are atomic units (Ha), except where noted.
+  First/last volume (bohr^3):   4.000000000000E+01    1.600000000000E+02
+  First/last energy (Ha):  -7.260349031832E+01   -7.362029192018E+01
+  First/last Debye temp. (K):   0.000000000000E+00    0.000000000000E+00
+  Poisson ratio from input (sigma):       0.250000
+  Poisson function, f(sigma):       0.859949
+  Correction of static energy: bpscal (Vexp0=  1.2603E+02 Bexp0=  1.6130E+02)
+  Energy fit mode:   130100
+  S(V) fit mode:   130100
+  ThetaD(V) fit mode:   130100
+  omega(V) fit mode:   130506
+  Number of fixed fit parameters:   0
+  Static equilibrium volume (bohr^3):       124.0329577902
+  Static equilibrium energy (Ha):       -73.6398334038
+  Static equilibrium energy (kJ/mol):   -193341.3531456642
+  Static bulk modulus (GPa):      170.444319
+  Static EOS fit, error RMS (Ha):   5.3945415E-08
+  Static EOS fit, max|error| (Ha):   1.9779429E-07
+  r2 of the fit:   9.999999999910E-01
+  Akaike information criterion:  -4.898206389975E+03
+  Bayesian information (Schwarz) criterion:  -4.853979615786E+03
+  Temperature model: QHA (phonon DOS).
+  Frequency step:   4.5563E-06
+  All data points are ACTIVE for dynamic calculations
+WARNING(phase_popinfo): Max. pressure (    1787.940) exceeds      500.000
+
+  Fit to static E(V) data:
+# Copy in file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.eos_static
+ #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
+      0.0000  -7.363983340E+01  -7.363983340E+01   124.0330  1.0000000     0.0000   170.4443    4.1287745  -2.3600E-02
+     25.0000  -7.363462568E+01  -7.354072980E+01   110.5005  0.8908960    25.0000   268.0452    3.7298117  -1.0986E-02
+     50.0000  -7.362398647E+01  -7.345067806E+01   101.9782  0.8221861    50.0000   358.4098    3.5172697  -6.6173E-03
+     75.0000  -7.361098916E+01  -7.336676893E+01    95.8027  0.7723975    75.0000   444.5283    3.3808945  -4.5127E-03
+    100.0000  -7.359675521E+01  -7.328748245E+01    90.9912  0.7336048   100.0000   527.7801    3.2841627  -3.3277E-03
+    125.0000  -7.358181349E+01  -7.321188214E+01    87.0700  0.7019911   125.0000   608.9292    3.2108068  -2.5947E-03
+    150.0000  -7.356645074E+01  -7.313933354E+01    83.7748  0.6754237   150.0000   688.4439    3.1523752  -2.1109E-03
+    175.0000  -7.355083672E+01  -7.306937907E+01    80.9427  0.6525902   175.0000   766.6316    3.1040398  -1.7750E-03
+    200.0000  -7.353507809E+01  -7.300167370E+01    78.4665  0.6326261   200.0000   843.7052    3.0628577  -1.5318E-03
+    225.0000  -7.351924473E+01  -7.293594840E+01    76.2719  0.6149322   225.0000   919.8183    3.0269480  -1.3491E-03
+    250.0000  -7.350338384E+01  -7.287198784E+01    74.3052  0.5990765   250.0000   995.0860    2.9950620  -1.2074E-03
+    275.0000  -7.348752802E+01  -7.280961600E+01    72.5268  0.5847378   275.0000  1069.5977    2.9663446  -1.0940E-03
+    300.0000  -7.347170014E+01  -7.274868650E+01    70.9060  0.5716704   300.0000  1143.4246    2.9401935  -1.0010E-03
+    325.0000  -7.345591638E+01  -7.268907583E+01    69.4192  0.5596831   325.0000  1216.6251    2.9161732  -9.2280E-04
+    350.0000  -7.344018828E+01  -7.263067847E+01    68.0474  0.5486237   350.0000  1289.2483    2.8939603  -8.5585E-04
+    375.0000  -7.342452402E+01  -7.257340331E+01    66.7756  0.5383694   375.0000  1361.3361    2.8733090  -7.9753E-04
+    400.0000  -7.340892939E+01  -7.251717097E+01    65.5911  0.5288198   400.0000  1432.9251    2.8540270  -7.4605E-04
+    425.0000  -7.339340840E+01  -7.246191169E+01    64.4837  0.5198917   425.0000  1504.0476    2.8359602  -7.0013E-04
+    450.0000  -7.337796378E+01  -7.240756374E+01    63.4448  0.5115155   450.0000  1574.7322    2.8189819  -6.5885E-04
+    475.0000  -7.336259726E+01  -7.235407215E+01    62.4670  0.5036323   475.0000  1645.0049    2.8029851  -6.2151E-04
+    500.0000  -7.334730984E+01  -7.230138765E+01    61.5442  0.4961921   500.0000  1714.8889    2.7878780  -5.8760E-04
+    525.0000  -7.333210200E+01  -7.224946589E+01    60.6710  0.4891519   525.0000  1784.4055    2.7735796  -5.5674E-04
+    550.0000  -7.331697375E+01  -7.219826672E+01    59.8427  0.4824743   550.0000  1853.5740    2.7600179  -5.2863E-04
+    575.0000  -7.330192483E+01  -7.214775365E+01    59.0555  0.4761271   575.0000  1922.4120    2.7471276  -5.0300E-04
+    600.0000  -7.328695472E+01  -7.209789340E+01    58.3056  0.4700819   600.0000  1990.9355    2.7348489  -4.7966E-04
+# Polynomial fit to strain: 
+# Degree : 12
+#      p(x) = a_0 + a_1 * f(V) + ... + a_n * f(V)^n
+# a_00 =  -7.363983339261E+01
+# a_01 =  -3.798518100313E-04
+# a_02 =   3.232679343722E+00
+# a_03 =   4.162400779161E-01
+# a_04 =   3.094154921125E-02
+# a_05 =  -8.203690284201E+00
+# a_06 =   3.963768771496E+01
+# a_07 =  -9.141765813775E+01
+# a_08 =   5.995922930541E+01
+# a_09 =   1.889791722466E+02
+# a_10 =  -4.913932130646E+02
+# a_11 =   4.605638759062E+02
+# a_12 =  -1.602686445518E+02
+# V_scal (bohr^3) =   1.240548197793E+02
+# p_scal (GPa) =       0.000000000000
+
+# Composition of the average polynomial and equilibrium static properties: 
+# n      weight   V(bohr^3)        E(Ha)      B(GPa)         Bp      Bpp(GPa-1)
+  2    0.0000000   130.7640  -7.363998E+01   149.6773    4.0000000  -2.5982E-02
+  3    0.0000000   129.6757  -7.364018E+01   158.6996    3.9456537  -2.4181E-02
+  4    0.0521302   130.0741  -7.363986E+01   151.2307    4.1000723  -2.7852E-02
+  5    0.1191501   130.0751  -7.363984E+01   150.6883    4.1282845  -2.8805E-02
+  6    0.1185397   130.0724  -7.363983E+01   150.6543    4.1330725  -2.9051E-02
+  7    0.1171267   130.0734  -7.363983E+01   150.6532    4.1315856  -2.8928E-02
+  8    0.1171554   130.0794  -7.363983E+01   150.5842    4.1245476  -2.7835E-02
+  9    0.1179479   130.0839  -7.363983E+01   150.4368    4.1223565  -2.6152E-02
+ 10    0.1195338   130.0837  -7.363983E+01   150.2458    4.1327624  -2.4477E-02
+ 11    0.1191888   130.0814  -7.363983E+01   150.1887    4.1432638  -2.4372E-02
+ 12    0.1192274   130.0865  -7.363983E+01   150.1951    4.1237206  -2.3010E-02
+ -average pol.--   124.0330  -7.363983E+01   170.4443    4.1287745  -2.3600E-02
+ --dir. average-   130.0792  -7.363983E+01   150.4953    4.1284075  -2.6636E-02
+ ---std. dev.---     0.0050   6.743496E-06     0.2632    0.0091036   2.2082E-03
+
++ Phase  2 (b2)
+  Number of volume points:  173
+  Number of vfree units (Z):        1.000
+  p(V) input data? F
+  Pressure range (GPa):      -25.094 ->     1556.683
+  Number of interpolated fields :    0
+  Input units: 
+    Volume : bohr^3
+    Energy : Ry
+    Pressure : GPa
+    Frequency : cm^(-1)
+    DOS energy : Hartree
+  Output units are atomic units (Ha), except where noted.
+  First/last volume (bohr^3):   4.000000000000E+01    1.600000000000E+02
+  First/last energy (Ha):  -7.270063898028E+01   -7.356511630409E+01
+  First/last Debye temp. (K):   0.000000000000E+00    0.000000000000E+00
+  Poisson ratio from input (sigma):       0.250000
+  Poisson function, f(sigma):       0.859949
+  Correction of static energy: bpscal (Vexp0=  0.0000E+00 Bexp0=  6.0135-154)
+  Energy fit mode:   130100
+  S(V) fit mode:   130100
+  ThetaD(V) fit mode:   130100
+  omega(V) fit mode:   130506
+  Number of fixed fit parameters:   0
+  Static equilibrium volume (bohr^3):       120.9897934111
+  Static equilibrium energy (Ha):       -73.5861376369
+  Static equilibrium energy (kJ/mol):   -193200.3749313295
+  Static bulk modulus (GPa):      158.868406
+  Static EOS fit, error RMS (Ha):   3.3710170E-08
+  Static EOS fit, max|error| (Ha):   8.9030308E-08
+  r2 of the fit:   9.999999999951E-01
+  Akaike information criterion:  -5.033571882029E+03
+  Bayesian information (Schwarz) criterion:  -4.989425799706E+03
+  Temperature model: QHA (phonon DOS).
+  Frequency step:   4.5563E-06
+  Negative frequencies, volumes INACTIVE in dynamic calc. [id (volume)]:
+   63 (  8.3271E+01)   64 (  8.3962E+01)   65 (  8.4653E+01)
+   66 (  8.5345E+01)   67 (  8.6036E+01)   68 (  8.6727E+01)
+   69 (  8.7418E+01)   70 (  8.8110E+01)   71 (  8.8801E+01)
+   72 (  8.9492E+01)   73 (  9.0183E+01)   74 (  9.0875E+01)
+   75 (  9.1566E+01)   76 (  9.2257E+01)   77 (  9.2948E+01)
+   78 (  9.3640E+01)   79 (  9.4331E+01)   80 (  9.5022E+01)
+   81 (  9.5713E+01)   82 (  9.6405E+01)   83 (  9.7096E+01)
+   84 (  9.7787E+01)   85 (  9.8478E+01)   86 (  9.9170E+01)
+   87 (  9.9861E+01)   88 (  1.0055E+02)   89 (  1.0124E+02)
+   90 (  1.0193E+02)   91 (  1.0263E+02)   92 (  1.0332E+02)
+   93 (  1.0401E+02)   94 (  1.0539E+02)   95 (  1.0608E+02)
+   96 (  1.0677E+02)   97 (  1.0746E+02)   98 (  1.0816E+02)
+   99 (  1.0885E+02)  100 (  1.0954E+02)  101 (  1.1023E+02)
+  102 (  1.1092E+02)  103 (  1.1161E+02)  104 (  1.1230E+02)
+  105 (  1.1299E+02)  106 (  1.1369E+02)  107 (  1.1438E+02)
+  108 (  1.1507E+02)  109 (  1.1576E+02)  110 (  1.1645E+02)
+  111 (  1.1714E+02)  112 (  1.1783E+02)  113 (  1.1852E+02)
+  114 (  1.1922E+02)  115 (  1.1991E+02)  116 (  1.2060E+02)
+  117 (  1.2129E+02)  118 (  1.2198E+02)  119 (  1.2267E+02)
+  120 (  1.2336E+02)  121 (  1.2405E+02)  122 (  1.2475E+02)
+  123 (  1.2544E+02)  124 (  1.2613E+02)  125 (  1.2682E+02)
+  126 (  1.2751E+02)  127 (  1.2820E+02)  128 (  1.2889E+02)
+  129 (  1.2958E+02)  130 (  1.3028E+02)  131 (  1.3097E+02)
+  132 (  1.3166E+02)  133 (  1.3235E+02)  134 (  1.3304E+02)
+  135 (  1.3373E+02)  136 (  1.3442E+02)  137 (  1.3511E+02)
+  138 (  1.3581E+02)  139 (  1.3650E+02)  140 (  1.3719E+02)
+  141 (  1.3788E+02)  142 (  1.3857E+02)  143 (  1.3926E+02)
+  144 (  1.3995E+02)  145 (  1.4064E+02)  146 (  1.4134E+02)
+  147 (  1.4203E+02)  148 (  1.4272E+02)  149 (  1.4341E+02)
+  150 (  1.4410E+02)  151 (  1.4479E+02)  152 (  1.4548E+02)
+  153 (  1.4617E+02)  154 (  1.4687E+02)  155 (  1.4756E+02)
+  156 (  1.4825E+02)  157 (  1.4894E+02)  158 (  1.4963E+02)
+  159 (  1.5032E+02)  160 (  1.5101E+02)  161 (  1.5170E+02)
+  162 (  1.5240E+02)  163 (  1.5309E+02)  164 (  1.5378E+02)
+  165 (  1.5447E+02)  166 (  1.5516E+02)  167 (  1.5585E+02)
+  168 (  1.5654E+02)  169 (  1.5723E+02)  170 (  1.5793E+02)
+  171 (  1.5862E+02)  172 (  1.5931E+02)  173 (  1.6000E+02)
+WARNING(phase_popinfo): Negative frequencies found.
+WARNING(phase_popinfo): Max. pressure (    1556.683) exceeds      500.000
+
+  Fit to static E(V) data:
+# Copy in file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.eos_static
+ #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
+      0.0000  -7.358613764E+01  -7.358613764E+01   120.9898  1.0000000     0.0000   158.8684    4.1242764  -2.7267E-02
+     25.0000  -7.358080617E+01  -7.348983412E+01   107.0596  0.8848646    25.0000   255.7854    3.6938478  -1.0998E-02
+     50.0000  -7.357008460E+01  -7.340274669E+01    98.4650  0.8138291    50.0000   345.3179    3.4882111  -6.2283E-03
+     75.0000  -7.355711618E+01  -7.332182097E+01    92.3016  0.7628878    75.0000   430.8245    3.3605327  -4.2313E-03
+    100.0000  -7.354300885E+01  -7.324549285E+01    87.5322  0.7234678   100.0000   513.6387    3.2688707  -3.1994E-03
+    125.0000  -7.352827206E+01  -7.317280945E+01    83.6646  0.6915010   125.0000   594.4326    3.1972234  -2.5778E-03
+    150.0000  -7.351317549E+01  -7.310313048E+01    80.4263  0.6647359   150.0000   673.6053    3.1383313  -2.1574E-03
+    175.0000  -7.349787516E+01  -7.303599716E+01    77.6510  0.6417976   175.0000   751.4238    3.0884380  -1.8481E-03
+    200.0000  -7.348246708E+01  -7.297106534E+01    75.2298  0.6217862   200.0000   828.0838    3.0453658  -1.6068E-03
+    225.0000  -7.346701303E+01  -7.290806787E+01    73.0877  0.6040815   225.0000   903.7372    3.0077173  -1.4115E-03
+    250.0000  -7.345155413E+01  -7.284679163E+01    71.1709  0.5882389   250.0000   978.5066    2.9745131  -1.2497E-03
+    275.0000  -7.343611840E+01  -7.278706293E+01    69.4395  0.5739288   275.0000  1052.4937    2.9450171  -1.1139E-03
+    300.0000  -7.342072533E+01  -7.272873767E+01    67.8633  0.5609007   300.0000  1125.7835    2.9186459  -9.9902E-04
+    325.0000  -7.340538859E+01  -7.267169444E+01    66.4185  0.5489598   325.0000  1198.4480    2.8949204  -9.0168E-04
+    350.0000  -7.339011783E+01  -7.261582971E+01    65.0867  0.5379519   350.0000  1270.5482    2.8734384  -8.1915E-04
+    375.0000  -7.337491984E+01  -7.256105417E+01    63.8527  0.5277525   375.0000  1342.1358    2.8538577  -7.4926E-04
+    400.0000  -7.335979932E+01  -7.250729007E+01    62.7042  0.5182603   400.0000  1413.2545    2.8358853  -6.9020E-04
+    425.0000  -7.334475948E+01  -7.245446917E+01    61.6312  0.5093914   425.0000  1483.9413    2.8192704  -6.4042E-04
+    450.0000  -7.332980235E+01  -7.240253110E+01    60.6250  0.5010755   450.0000  1554.2275    2.8037987  -5.9853E-04
+    475.0000  -7.331492914E+01  -7.235142212E+01    59.6786  0.4932535   475.0000  1624.1393    2.7892881  -5.6333E-04
+    500.0000  -7.330014036E+01  -7.230109412E+01    58.7859  0.4858749   500.0000  1693.6986    2.7755853  -5.3374E-04
+    525.0000  -7.328543604E+01  -7.225150379E+01    57.9416  0.4788965   525.0000  1762.9242    2.7625625  -5.0879E-04
+    550.0000  -7.327081583E+01  -7.220261195E+01    57.1412  0.4722808   550.0000  1831.8315    2.7501145  -4.8762E-04
+    575.0000  -7.325627906E+01  -7.215438303E+01    56.3807  0.4659954   575.0000  1900.4340    2.7381563  -4.6948E-04
+    600.0000  -7.324182486E+01  -7.210678457E+01    55.6567  0.4600117   600.0000  1968.7429    2.7266207  -4.5371E-04
+# Polynomial fit to strain: 
+# Degree : 12
+#      p(x) = a_0 + a_1 * f(V) + ... + a_n * f(V)^n
+# a_00 =  -7.358613563688E+01
+# a_01 =  -4.841280213968E-03
+# a_02 =   2.929362508809E+00
+# a_03 =   3.657364242500E-01
+# a_04 =  -6.513846821797E-01
+# a_05 =  -3.241239118683E+00
+# a_06 =   4.758741774445E+01
+# a_07 =  -2.840197600401E+02
+# a_08 =   9.330026063750E+02
+# a_09 =  -1.808555636988E+03
+# a_10 =   2.053334156299E+03
+# a_11 =  -1.252555092649E+03
+# a_12 =   3.123719786031E+02
+# V_scal (bohr^3) =   1.212898059162E+02
+# p_scal (GPa) =       0.000000000000
+
+# Composition of the average polynomial and equilibrium static properties: 
+# n      weight   V(bohr^3)        E(Ha)      B(GPa)         Bp      Bpp(GPa-1)
+  2    0.0000000   127.3350  -7.358623E+01   140.3874    4.0000000  -2.7701E-02
+  3    0.0000000   126.6490  -7.358645E+01   146.2102    3.9587657  -2.6328E-02
+  4    0.0719222   126.8910  -7.358616E+01   140.6801    4.0970636  -2.9822E-02
+  5    0.1157985   126.8796  -7.358613E+01   140.2112    4.1292229  -3.1020E-02
+  6    0.1178196   126.8895  -7.358614E+01   140.2544    4.1168274  -3.0286E-02
+  7    0.1170527   126.8928  -7.358614E+01   140.2373    4.1133150  -2.9923E-02
+  8    0.1161396   126.8937  -7.358614E+01   140.2202    4.1125393  -2.9723E-02
+  9    0.1154359   126.8930  -7.358614E+01   140.2885    4.1108562  -3.0354E-02
+ 10    0.1145530   126.8925  -7.358614E+01   140.2729    4.1127830  -3.0274E-02
+ 11    0.1157303   126.8813  -7.358614E+01   140.2224    4.1487839  -3.1961E-02
+ 12    0.1155483   126.8751  -7.358614E+01   140.2930    4.1672823  -3.4680E-02
+ -average pol.--   120.9898  -7.358614E+01   158.8684    4.1242764  -2.7267E-02
+ --dir. average-   126.8875  -7.358614E+01   140.2809    4.1243079  -3.0938E-02
+ ---std. dev.---     0.0067   5.800974E-06     0.1148    0.0202937   1.5038E-03
+
+* Input and fitted static energy
+  Writing file: /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.efit
+
+  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_efit.aux
+
+  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_efit.gnu
+
+* Plotting static DeltaH
+
+  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_dH.aux
+
+  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_dH.gnu
+
+* Static transition pressures (linear interpolation)
+#        Pressure range (GPa)      Stable phase
+        0.0000 -->     503.1476          b1
+      503.1476 -->       0.0000          b2
+
+* Temperature range examined
+  Min_{DebyeT} (K):      198.767
+  Temperature range (K):        0.000 ->     1000.000
+  Number of T points:     51
+
+* Calculated temperature effects 
+  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.eos
+
++ Phase b1
++ Phase b2
+WARNING(dyneos): T =       0.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =       0.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =       0.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =       0.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =       0.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =       0.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =      20.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =      20.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =      20.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =      20.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =      20.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =      20.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =      40.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =      40.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =      40.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =      40.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =      40.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =      40.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =      60.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =      60.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =      60.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =      60.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =      60.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =      60.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =      80.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =      80.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =      80.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =      80.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =      80.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =      80.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     100.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     100.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     100.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     100.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     100.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     100.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     120.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     120.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     120.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     120.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     120.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     120.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     140.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     140.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     140.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     140.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     140.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     140.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     160.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     160.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     160.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     160.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     160.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     160.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     180.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     180.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     180.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     180.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     180.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     180.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     200.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     200.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     200.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     200.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     200.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     200.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     220.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     220.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     220.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     220.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     220.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     220.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     240.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     240.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     240.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     240.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     240.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     240.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     260.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     260.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     260.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     260.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     260.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     260.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     280.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     280.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     280.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     280.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     280.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     280.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     300.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     300.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     300.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     300.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     300.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     300.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     320.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     320.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     320.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     320.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     320.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     320.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     340.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     340.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     340.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     340.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     340.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     340.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     360.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     360.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     360.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     360.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     360.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     360.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     380.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     380.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     380.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     380.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     380.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     380.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     400.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     400.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     400.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     400.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     400.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     400.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     420.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     420.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     420.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     420.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     420.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     420.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     440.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     440.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     440.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     440.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     440.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     440.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     460.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     460.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     460.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     460.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     460.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     460.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     480.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     480.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     480.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     480.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     480.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     480.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     500.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     500.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     500.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     500.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     500.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     500.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     520.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     520.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     520.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     520.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     520.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     520.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     540.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     540.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     540.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     540.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     540.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     540.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     560.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     560.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     560.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     560.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     560.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     560.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     580.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     580.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     580.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     580.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     580.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     580.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     600.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     600.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     600.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     600.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     600.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     600.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     620.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     620.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     620.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     620.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     620.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     620.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     640.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     640.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     640.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     640.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     640.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     640.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     660.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     660.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     660.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     660.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     660.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     660.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     680.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     680.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     680.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     680.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     680.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     680.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     700.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     700.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     700.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     700.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     700.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     700.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     720.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     720.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     720.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     720.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     720.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     720.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     740.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     740.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     740.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     740.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     740.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     740.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     760.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     760.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     760.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     760.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     760.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     760.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     780.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     780.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     780.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     780.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     780.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     780.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     800.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     800.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     800.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     800.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     800.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     800.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     820.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     820.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     820.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     820.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     820.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     820.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     840.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     840.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     840.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     840.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     840.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     840.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     860.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     860.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     860.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     860.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     860.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     860.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     880.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     880.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     880.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     880.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     880.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     880.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     900.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     900.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     900.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     900.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     900.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     900.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     920.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     920.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     920.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     920.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     920.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     920.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     940.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     940.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     940.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     940.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     940.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     940.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     960.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     960.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     960.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     960.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     960.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     960.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =     980.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =     980.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =     980.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =     980.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =     980.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =     980.00 P =     125.00, G minimum not found, skipping.
+WARNING(dyneos): T =    1000.00 P =       0.00, G minimum not found, skipping.
+WARNING(dyneos): T =    1000.00 P =      25.00, G minimum not found, skipping.
+WARNING(dyneos): T =    1000.00 P =      50.00, G minimum not found, skipping.
+WARNING(dyneos): T =    1000.00 P =      75.00, G minimum not found, skipping.
+WARNING(dyneos): T =    1000.00 P =     100.00, G minimum not found, skipping.
+WARNING(dyneos): T =    1000.00 P =     125.00, G minimum not found, skipping.
+
+  Writing file: /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_all_t.gnu
+
+  Writing file: /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_all_p.gnu
+
+* DeltaG(T,p) = G_k(T,p) - G_1(T,p) data 
+* Reference:   1
+  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.dgtp
+
+* G(T,p), V(T,p) and B(T,p) of the stable phase
+  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.tpstab
+
+  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_ptrans.gnu
+
+* Dynamic transition pressures (linear interpolation)
+  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.ptrans
+
+GIBBS2 ended succesfully (312 WARNINGS,   3 COMMENTS)
+

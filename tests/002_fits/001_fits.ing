@@ -1,0 +1,38 @@
+## check: 001_fits.outg -a1e-10
+## check: 001_fits_all_t.gnu -a1e-10
+## check: 001_fits_dH.aux -a1e-10
+## check: 001_fits_dH.gnu -a1e-10
+## check: 001_fits.efit -a1e-10
+## check: 001_fits_efit.aux -a1e-10
+## check: 001_fits_efit.gnu -a1e-10
+## check: 001_fits.eos -a1e-10
+## check: 001_fits.eos_static -a1e-10
+## labels: regression quick
+
+# Diamond
+# Bulk modulus: 446 (Occelli2004)
+# V0 : 3.4170 cm3/mol (/ 6.02214179e23 * 2 * 1e24 / .52917720859^3) = 76.58092 (Occelli2004)
+title Diamond
+set notrans
+mm 24.0214
+nat 2
+pressure 0 
+temperature 0 10 3000
+
+phase BM3 file ../dat/c_pbe/c.res tmodel debye_gruneisen dm \
+          units energy ry \
+          fit strain bm 3
+phase BM4 file ../dat/c_pbe/c.res tmodel debye_gruneisen dm \
+          units energy ry \
+          fit strain bm 3
+phase PT3 file ../dat/c_pbe/c.res tmodel debye_gruneisen dm \
+          units energy ry \
+          fit strain pt 3
+phase PT4 file ../dat/c_pbe/c.res tmodel debye_gruneisen dm \
+          units energy ry \
+          fit strain pt 4
+phase Vinet file ../dat/c_pbe/c.res tmodel debye_gruneisen dm \
+          units energy ry \
+          fit vinet
+end
+
