@@ -1,3 +1,12 @@
+# emacs backups
+*~
+
+# cmake 
+build*/
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+
 # object, module, library files
 *.o
 *.mod
