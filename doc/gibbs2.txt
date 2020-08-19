@@ -244,6 +244,9 @@ parentheses.
          gibbs2. The only output written goes to stdout and stderr.
          (SET WRITELEVEL 0)
 
+* -q,--quiet
+	 Do not print timing information to the output.
+
 * -e,--eos
          Same as -n, but the eos (dynamic equation of state) and
          eos_static (static equation of state) files are written.
