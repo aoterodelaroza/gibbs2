@@ -30,7 +30,7 @@ program gibbs2
      vfree, temp_vmax, tm_debye, &
      tm_debye_input, tm_debye_einstein, tm_debye_poisson_input, tm_debyegrun, tm_static, &
      phase_init, help_me_and_exit, inplace_sort, varbas_init, process_argv, setup_phases, &
-     props_staticeq, phase_punch_pfit, phase_popinfo
+     props_staticeq, phase_punch_pfit, phase_popinfo, quiet
   use tools, only: lower, equal, fopen, fclose, isinteger, ffdate, getword, isreal, fgetline, &
      leng, error, realloc, timer, ioinit, getargs, stdargs
   use param, only: amu2au, faterr, ioerror, ioread, ncomms, nwarns, null, pct0, uin, uout, &
@@ -69,7 +69,7 @@ program gibbs2
   ! timer
   call timer (0,ipid,'main',uout)
   call timer (1,ipid,'main',uout)
-
+     
   ! initialization of default values for variables
   call evfunc_init()
   call fit_init()
@@ -652,7 +652,9 @@ program gibbs2
 
   ! pop header (varbas) + input (topcalc)
   call header()
-  write (uout,'("tictac -- ",A)') trim(sdate)
+  if (.not.quiet) then
+     write (uout,'("tictac -- ",A)') trim(sdate)
+  end if
   call popinput(fileout)
 
   ! check phase data, set pressure range (varbas)
@@ -806,9 +808,11 @@ program gibbs2
   ! end
   write (uout,'("GIBBS2 ended succesfully (",I3," WARNINGS, ",I3," COMMENTS)"/)')&
      nwarns, ncomms
-  sdate = ffdate()
-  write (uout,'("tictac -- ",A/)') trim(sdate)
-  
+  if (.not.quiet) then
+     sdate = ffdate()
+     write (uout,'("tictac -- ",A/)') trim(sdate)
+  end if
+
   ! deallocate
   if (allocated(vlist)) deallocate(vlist)
   if (allocated(plist)) deallocate(plist)
@@ -817,7 +821,9 @@ program gibbs2
   if (allocated(iint)) deallocate(iint)
   if (allocated(ph)) deallocate(ph)
 
-  call timer (4,ipid,'main',-1)
-  call timer (6,ipid,'main',uout)
-        
+  if (.not.quiet) then
+     call timer (4,ipid,'main',-1)
+     call timer (6,ipid,'main',uout)
+  end if
+
 end program gibbs2

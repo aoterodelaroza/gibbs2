@@ -245,6 +245,7 @@ module varbas
   logical :: doplotdh     !< write static dH plot?
   logical :: phonsplin    !< use splines to fit phonon DOS?
   integer :: writelevel   !< 0 - nothing ; 1 - eos only ; 2 - all
+  logical :: quiet        !< if true, do not print timestamps
 
   ! private functions
   private :: phase_sort, phase_checkconvex
@@ -278,6 +279,7 @@ contains
     doplotdh = .true.
     phonsplin = .false.
     writelevel = 2
+    quiet = .false.
     !
     newpts = 20
     facexpand = 0.40d0
@@ -297,7 +299,10 @@ contains
 
     nargc = 0
     do i = 1, argc
-       if (equal(argv(i)//null,"-n"//null) .or. equal(argv(i)//null,"--noplot"//null)) then
+       if (equal(argv(i)//null,"-q"//null) .or. equal(argv(i)//null,"--quiet"//null)) then
+          quiet = .true.
+
+       elseif (equal(argv(i)//null,"-n"//null) .or. equal(argv(i)//null,"--noplot"//null)) then
           writelevel = 0
 
        else if (equal(argv(i)//null,"-e"//null) .or. equal(argv(i)//null,"--eos"//null)) then
@@ -338,6 +343,9 @@ contains
     write (uout,'("         Inhibits all the auxiliary files and plots written by gibbs2.")')
     write (uout,'("         The only output written goes to stdout and stderr.")')
     write (uout,'("         (SET WRITELEVEL 0) ")')
+    write (uout,'("")')
+    write (uout,'(" -q  --quiet")')
+    write (uout,'("         Do not print timestamps to the output.")')
     write (uout,'("")')
     write (uout,'(" -e --eos")')
     write (uout,'("         Same as -n, but the .eos and .eos_static files are written.")')
