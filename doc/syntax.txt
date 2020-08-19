@@ -1,12 +1,6 @@
 ## Keywords are in CAPS, .s are strings, .i are integers,
 ## .r are real numbers,
 
-## nat.i  atom from the nonequivalent list (asymmetric unit)
-## ncp.i  critical point from the non-equivalent list
-## at.i   atom from the complete list (unit cell)
-## cp.i   critical point from the complete list (unit cell)
-## at.s   atomic symbol 
-
 # comment
 TITLE title.s
 {NAT|VFREE} nat.i
