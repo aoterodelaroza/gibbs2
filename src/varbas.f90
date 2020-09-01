@@ -101,12 +101,6 @@ module varbas
      real*8 :: phstep
      real*8, allocatable :: phdos_f(:), phdos_d(:,:,:)
 
-     ! qha (using frequencies)
-     character*(mline) :: laue = ""
-     integer :: omega_npol
-     real*8, allocatable :: omega_cpol(:,:)
-     real*8, allocatable :: omega(:,:), wei(:)
-
      ! electronic contribution to the free energy
      integer :: nelec = 0
      integer :: emodel
@@ -667,9 +661,6 @@ contains
           file = getword(file,line,lp)
        elseif (equal(word,'prefix'//null)) then
           prefix = getword(prefix,line,lp)
-       elseif (equal(word,'laue'//null)) then
-          p%laue = getword(p%laue,line,lp)
-          p%laue = p%laue(1:len(p%laue))
        elseif (equal(word,'fit'//null)) then
           word = getword(word,line,lp)
           word = lower(word)
@@ -1542,7 +1533,6 @@ contains
     if (allocated(p%dyn_active)) p%dyn_active = p%dyn_active(idx)
     if (allocated(p%interp)) p%interp = p%interp(idx,:)
     if (allocated(p%phdos_d)) p%phdos_d = p%phdos_d(:,:,idx)
-    if (allocated(p%omega)) p%omega = p%omega(:,idx)
     if (allocated(p%phdos_d)) p%phdos_d = p%phdos_d(:,:,idx)
     if (allocated(p%nefermi)) p%nefermi = p%nefermi(idx)
     if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol(:,idx)
@@ -1589,8 +1579,6 @@ contains
 
     if (allocated(p%phdos_d)) then
        n2 = size(p%phdos_d,1)
-    else if (allocated(p%omega)) then
-       n2 = size(p%omega,1)
     else
        n2 = 0
     end if
@@ -1598,7 +1586,6 @@ contains
        if (numax > 0) then
           n2 = numax
           if (allocated(p%phdos_f)) call realloc(p%phdos_f,numax)
-          if (allocated(p%wei)) call realloc(p%wei,numax)
        end if
     end if
 
@@ -1607,11 +1594,6 @@ contains
           p%phdos_d(:,:,1:n) = p%phdos_d(:,:,nv-n+1:nv)
        end if
        call realloc(p%phdos_d,n2,size(p%phdos_d,2),n)
-    end if
-
-    if (allocated(p%omega)) then
-       if (doshift) p%omega(:,1:n) = p%omega(:,nv-n+1:nv)
-       call realloc(p%omega,n2,n)
     end if
 
     if (allocated(p%nefermi)) then

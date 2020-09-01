@@ -542,35 +542,4 @@ contains
 
   end function phdos_interpolate
   
-  subroutine omega_interpolate(p,v,omega,gamma)
-    use evfunc, only: fv0, fv1
-    use varbas, only: phase, omega_fitmode, vbracket
-    use tools, only: leng, error
-    use param, only: faterr, uout
-    type(phase), intent(in) :: p
-    real*8, intent(in) :: v
-    real*8, dimension(size(p%omega,1)) :: omega, gamma
-
-    integer :: i, j, id
-
-    call vbracket(p,v,id,.true.)
-    if (id == 0) then
-       write (uout,'("Phase = ",A)') trim(adjustl(p%name(1:leng(p%name))))
-       write (uout,'("Volume = ",F17.7)') v
-       call error('omega_interpolate','Requested volume out of grid bounds',faterr)
-    elseif (id < 0) then
-       omega = p%omega(:,-id)
-       do j = 1, size(p%omega,1)
-          gamma(j) = -p%v(-id)/omega(j)*fv1(omega_fitmode,p%v(-id),p%omega_npol,p%omega_cpol(:,j))
-       end do
-    end if
-
-    ! polynomial interpolation
-    do i = 1, size(p%omega,1)
-       omega(i) = fv0(omega_fitmode,v,p%omega_npol,p%omega_cpol(:,i))
-       gamma(i) = -v/omega(i)*fv1(omega_fitmode,v,p%omega_npol,p%omega_cpol(:,i))
-    end do
-
-  end subroutine omega_interpolate
-
 end module debye
