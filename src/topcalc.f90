@@ -662,9 +662,9 @@ contains
   ! Calculate peroperties at a given volume and temperature.
   subroutine dyneos_calc(p,v,t,ft,proplist)
     use evfunc, only: fv0, fv1, fv2, fv3, fv4
-    use debye, only: tlim_gamma, cvlim, debeins, thermalphon, thermalomega, thermal, get_thetad
+    use debye, only: tlim_gamma, cvlim, debeins, thermalphon, thermal, get_thetad
     use varbas, only: mpropout, phase, tm_qhafull, tm_debye_input, tm_debye, tm_debyegrun,&
-       tm_debye_poisson_input, tm_debye_einstein, tm_qhafull_espresso, tm_static, em_pol4,&
+       tm_debye_poisson_input, tm_debye_einstein, tm_static, em_pol4,&
        em_sommerfeld, em_no, ftsel_fitmode, vbracket
     use tools, only: error
     use param, only: faterr, au2gpa, ha2kjmol, pi, pckbau, pisquare, twothird
@@ -743,10 +743,6 @@ contains
        ! then, gamma = V / Cv * (ds/dV)_T
        ! the region below tlim_gamma is avoided
        call thermalphon(p,t,v,uvib,cv_vib,fvib,svib,cv_lowt)
-
-    case(tm_qhafull_espresso) 
-       ! use full set of phonons at given V by linear interpolation
-       call thermalomega(p,t,v,uvib,cv_vib,fvib,svib,cv_lowt,gamma)
 
     end select
 
@@ -1344,9 +1340,9 @@ contains
 
   !< Returns fitting parameters of F(V,T).
   subroutine fit_agrid_t(p,T,napol,apol,mode,ierr,dostatic,dovib,doel,pfit)
-    use debye, only: thermalomega, thermalphon, debeins, thermal
+    use debye, only: thermalphon, debeins, thermal
     use evfunc, only: fv0
-    use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_qhafull_espresso, em_pol4, &
+    use varbas, only: phase, tm_qhafull, tm_debye_einstein, em_pol4, &
        em_sommerfeld, ftsel_fitmode
     use fit, only: fit_ev, fitinfo
     use param, only: pi, pckbau, pisquare, twothird
@@ -1376,8 +1372,6 @@ contains
              call thermalphon(p,T,p%v(i),uvib,cv,aux(i),dum,cv2)
           else if (p%tmodel == tm_debye_einstein) then
              call debeins (p,p%td(i),T,p%v(i),D,Derr,uvib,cv,aux(i),dum,cv_ac,cv_op)
-          else if (p%tmodel == tm_qhafull_espresso) then
-             call thermalomega(p,T,p%v(i),uvib,cv,aux(i),dum,cv2)
           else 
              call thermal(p%td(i),T,D,Derr,uvib,cv,aux(i),dum)
           end if
@@ -1419,9 +1413,9 @@ contains
 
   !< Returns fitting parameters of F(V,T).
   subroutine fit_sgrid_t(p,T,nspol,spol,mode,ierrs,dovib,doel)
-    use debye, only: tlim_gamma, thermalphon, thermalomega, debeins, thermal
+    use debye, only: tlim_gamma, thermalphon, debeins, thermal
     use fit, only: fitt_polygibbs
-    use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_qhafull_espresso, em_pol4,&
+    use varbas, only: phase, tm_qhafull, tm_debye_einstein, em_pol4,&
        em_sommerfeld, ftsel_fitmode
     use evfunc, only: fv0
     use param, only: pi, pckbau, pisquare, twothird
@@ -1456,8 +1450,6 @@ contains
              call thermalphon(p,t0,p%v(i),uvib,cv,dum,aux(i),cv2)
           else if (p%tmodel == tm_debye_einstein) then
              call debeins (p,p%td(i),t0,p%v(i),D,Derr,uvib,cv,dum,aux(i),cv_ac,cv_op)
-          else if (p%tmodel == tm_qhafull_espresso) then
-             call thermalomega(p,t0,p%v(i),uvib,cv,dum,cv2,aux(i),cv3)
           else 
              call thermal (p%td(i),t0,D,Derr,uvib,cv,dum,aux(i))
           end if

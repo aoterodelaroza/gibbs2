@@ -21,7 +21,7 @@ module debye
 
   ! public
   public :: fill_thetad, get_thetad
-  public :: thermal, debeins, thermalphon, thermalomega
+  public :: thermal, debeins, thermalphon
 
   ! if temperature is lower, then gamma(t) = gamma(tlim) 
   real*8, parameter, public :: tlim_gamma = 50d0 + 1d-6
@@ -542,75 +542,6 @@ contains
 
   end function phdos_interpolate
   
-  subroutine thermalomega (p,T,v,uvib,cv,he,ent,cv_lowt,gamma)
-    use param, only: mline, pckbau, warning
-    use tools, only: error
-    use varbas, only: phase
-    type(phase), intent(in) :: p
-    real*8, intent(in) :: T, v
-    real*8, intent(out) :: uvib, cv, he, ent, cv_lowt
-    real*8, intent(out), optional :: gamma
-
-    integer :: nq
-    real*8, dimension(size(p%omega,1)) :: omega, gammaj, aux, aux2
-    character*(mline) :: msg
-
-    nq = size(p%omega,1)
-
-    call omega_interpolate(p,v,omega,gammaj)
-
-    if (abs(T) < 1d-5) then
-       he = 0.5d0 * dot_product(p%wei,omega)
-       cv = 0d0
-       ent = 0d0
-    else
-       ! careful with Infs and NaNs
-       !   4400 cm^-1 ---> tmin = 17.84 K
-       aux = exp(-omega / pckbau / T)
-       where (omega > log(huge(cv))/2*pckbau*T)
-          aux2 = aux
-       elsewhere
-          aux2 = 1d0 / (1d0-1d0/aux)
-       end where
-       he  = dot_product(p%wei,0.5d0*omega+pckbau*T*log(1-aux))
-       ent = dot_product(p%wei,-pckbau*log(1-aux)-omega/T*aux2)
-       aux2 = pckbau*(omega/pckbau/T)**2 / (aux-1) * aux2
-       cv  = dot_product(p%wei,aux2)
-    end if
-    uvib = he + T * ent
-
-    ! use linear extrapolation for 0 K gamma.
-    if (present(gamma)) then
-       if (T > tlim_gamma) then
-          gamma = dot_product(p%wei,gammaj*aux2) / cv
-       else
-          write (msg,'(" T = ",F10.2,", gamma extrapolation (low temperature).")') T
-          call error('thermalomega',msg,warning)
-          aux = exp(-omega / pckbau / tlim_gamma)
-          where (omega > log(huge(cv))/2*pckbau*tlim_gamma)
-             aux2 = aux
-          elsewhere
-             aux2 = 1d0 / (1d0-1d0/aux)
-          end where
-          aux2 = pckbau*(omega/pckbau/tlim_gamma)**2 / (aux-1) * aux2
-          gamma = dot_product(p%wei,gammaj*aux2) / dot_product(p%wei,aux2)
-       end if
-    end if
-
-    ! low temperature cv
-    if (T < tlim_gamma) then
-       aux = exp(-omega / pckbau / tlim_gamma)
-       where (omega > log(huge(cv))/2*pckbau*tlim_gamma)
-          aux2 = aux
-       elsewhere
-          aux2 = 1d0 / (1d0-1d0/aux)
-       end where
-       aux2 = pckbau*(omega/pckbau/tlim_gamma)**2 / (aux-1) * aux2
-       cv_lowt  = dot_product(p%wei,aux2)
-    end if
-
-  end subroutine thermalomega
-
   subroutine omega_interpolate(p,v,omega,gamma)
     use evfunc, only: fv0, fv1
     use varbas, only: phase, omega_fitmode, vbracket

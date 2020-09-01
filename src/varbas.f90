@@ -152,9 +152,8 @@ module varbas
   integer, parameter :: tm_debye = 3
   integer, parameter :: tm_debye_einstein = 6
   integer, parameter :: tm_qhafull = 8
-  integer, parameter :: tm_qhafull_espresso = 9
-  integer, parameter :: tm_debyegrun = 10
-  integer, parameter :: tm_debye_poisson_input = 11
+  integer, parameter :: tm_debyegrun = 9
+  integer, parameter :: tm_debye_poisson_input = 10
 
   ! scaling modes
   integer, parameter :: scal_noscal = 1
@@ -578,116 +577,6 @@ contains
 
   end subroutine read_phdos
 
-  subroutine read_phespresso(file,units,zz,omega,wei,slaue,nqout)
-    use param, only: mline, uout, faterr, ha2cm_1, ioread, thz2cm_1, units_f_ha, units_f_thz
-    use tools, only: fopen, leng, error, laue, fclose
-    character*(mline), intent(in) :: file
-    integer, intent(in) :: units
-    real*8, intent(in) :: zz
-    real*8, intent(inout) :: wei(:)
-    real*8, intent(out) :: omega(:)
-    character*(mline), intent(in) :: slaue
-    integer, intent(out) :: nqout
-
-    integer :: i, idum, j, nq
-    integer :: lu, msize, mfreq
-    real*8 :: q(3)
-    integer :: nrot, mult
-    real*8 :: rot(3,3,48), thiswei
-    real*8 :: omegain(nint(3*vfree*zz)), wei_in(size(wei))
-    real*8 :: ffnegcrit, fignore
-
-    real*8, parameter :: eps = 1d-6
-    
-    ! cutoffs with units
-    ffnegcrit = fnegcrit
-    fignore = abs(ignore_neg_cutoff)
-    if (units == units_f_ha) then
-       ffnegcrit = ffnegcrit / ha2cm_1
-       fignore = fignore / ha2cm_1
-    elseif (units == units_f_thz) then
-       ffnegcrit = ffnegcrit / thz2cm_1
-       fignore = fignore / thz2cm_1
-    end if
-
-    ! open the file
-    wei_in = wei
-    msize = size(wei)
-    wei = 0d0
-    mfreq = nint(3 * vfree * zz)
-    lu = fopen(lu,file,ioread)
-
-    ! Laue group operations
-    if (slaue == "") then
-       call error('read_phespresso','qha_espresso requires Laue group',faterr)
-    end if
-    call laue(slaue,nrot,rot)
-
-    ! read matdyn.freq
-    ! adapted from espresso-4.2.1
-    read(lu,'(12X,i4,6X,i4,2X)') idum, nq
-    if (idum /= mfreq) then
-       write (uout,'("The number of frequencies in GIBBS input and espresso matdyn.freq ")')
-       write (uout,'("is inconsistent, resp.: ",I6,X,I6)') mfreq, idum
-       write (uout,'("File: ",A)') file(1:leng(file))
-       call error('read_phespresso','Inconsistent nfreq / vfree*Z',faterr)
-    end if
-    if (nq > msize) then
-       write (uout,'("File: ",A)') file(1:leng(file))
-       call error('read_phespresso','Too many frequencies. Increase phase_qmax',faterr)
-    end if
-
-    nqout = 0
-    do i = 1, nq
-       ! read q-vector and calculate weight
-       read(lu,'(10x,3f10.6)')  q(1), q(2), q(3)
-       mult = 0
-       do j = 1, nrot
-          if (sum(abs(matmul(rot(:,:,j),q) - q)) < eps) then
-             mult = mult + 1
-          end if
-       end do
-       thiswei = nrot / mult
-       if (abs(thiswei - nint(thiswei)) > eps) then
-          write (uout,'("File: ",A)') file(1:leng(file))
-          call error('read_phespresso','non-integer weitghts (wrong laue? non-std setup?)',faterr)
-       end if
-
-       ! read frequencies
-       read(lu,'(6f10.4)') (omegain(j), j=1,mfreq)
-
-       ! skip acoustic at gamma
-       if (all(omegain > -ffnegcrit)) then
-          omega(nqout+1:nqout+mfreq) = omegain
-          wei(nqout+1:nqout+mfreq) = thiswei
-          nqout = nqout + mfreq
-       else
-          ! zero-frequencies case, deactivate
-          if (any(omegain < -fignore)) then
-             nqout = -1
-             omega(:) = 0d0
-             wei = wei_in
-             call fclose(lu)
-             return
-          end if
-          ! eliminate zero-frequencies from the sum
-          do j = 1, mfreq
-             if (omegain(j) > -ffnegcrit) then
-                nqout = nqout + 1
-                omega(nqout) = omegain(j)
-                wei(nqout) = thiswei
-            end if
-          end do
-       end if
-    end do
-
-    ! normalize
-    ! sum(g_j) = 3n ---> w_j = 3n / sum(w_j)
-    wei = 3 * vfree * wei / sum(wei)
-    call fclose(lu)
-
-  end subroutine read_phespresso
-
   ! Initialize a phase structure parsing input line. 
   subroutine phase_init(p,line_in)
     use param, only: uout, mline, faterr, ioread, noerr, null, pct0, uin, units_e_ev, units_e_ha, &
@@ -895,19 +784,6 @@ contains
                    exit
                 end if
              end do
-          elseif (equal(word,'qha_espresso'//null)) then
-             p%tmodel = tm_qhafull_espresso
-             icol_ph = 0
-
-             lp2 = lp
-             word = getword(word,line,lp)
-             word = lower(word)
-             if (equal(word,'phfield'//null)) then
-                ok = isinteger(icol_ph,line,lp)
-                if (.not.ok) call error('phase_init','wrong PHFIELD number',faterr)
-             else
-                lp = lp2
-             end if
           else
              call error('phase_init','unknown TMODEL in PHASE keyword',faterr)
           end if
@@ -1187,14 +1063,6 @@ contains
           allocate(p%phdos_d(phdos_fmax,4,phase_vmax))
           p%phdos_f = -1d0
           p%phdos_d = 0d0
-       else if (p%tmodel == tm_qhafull_espresso) then
-          if (vfree < 0) then
-             call error('phase_init','VFREE must be set before PHASE',faterr)
-          end if
-          allocate(p%omega(nint(3*vfree*zz)*phdos_qmax,phase_vmax))
-          allocate(p%wei(nint(3*vfree*zz)*phdos_qmax))
-          p%omega = -1d0
-          p%wei = 0d0
        end if
        numax = -1
     end if
@@ -1266,10 +1134,6 @@ contains
                 call read_phdos(word,iphdos_1,iphdos_2,p%units_f,&
                    p%phdos_f(:),p%phdos_d(:,1,nn),p%phstep,nq,d0)
                 didinterp = didinterp .or. d0
-                
-             else if (p%tmodel == tm_qhafull_espresso) then
-                call read_phespresso(word,p%units_f,p%z,p%omega(:,nn),&
-                   p%wei(:),p%laue,nq)
              end if
              if (nq < 0) then
                 ! negative freqs. -> deactivate for thermal
@@ -1326,7 +1190,7 @@ contains
           call error('phase_init','Error reading file: volume or energy missing.',faterr)
        end if
 
-       if ((p%tmodel == tm_qhafull .or. p%tmodel == tm_qhafull_espresso) .and..not.haveph) then
+       if (p%tmodel == tm_qhafull .and..not.haveph) then
           if (uuin /= uin) then
              write (uout,'("In file: ",A)') trim(file(1:leng(file)))
           end if
@@ -1486,8 +1350,6 @@ contains
            call error('setup_phases','Eins/Debeins requires freqg0',faterr)
        if (ph(i)%tmodel == tm_qhafull) then
           call phase_phdos(ph(i))
-       else if (ph(i)%tmodel == tm_qhafull_espresso) then
-          call phase_phespresso(ph(i))
        end if
 
        ! entropy and ThetaD ratio fit modes
@@ -1902,9 +1764,6 @@ contains
     case(tm_qhafull)
        write (uout,'("  Temperature model: QHA (phonon DOS).")')
        write (uout,'("  Frequency step: ",1p,E12.4)') p%phstep
-    case(tm_qhafull_espresso)
-       write (uout,'("  Temperature model: QHA (Quantum ESPRESSO frequency files).")')
-       write (uout,'("  Laue group: ",A)') trim(p%laue)
     case(tm_debyegrun)
        write (uout,'("  Temperature model: Debye-Gruneisen with gamma = a + b*B'' .")')
        write (uout,'("  Gamma a coefficient: ",F12.3)') p%a_grun
@@ -2122,38 +1981,6 @@ contains
     
   end subroutine phase_checkfiterr
 
-  subroutine phase_phespresso(p)
-    use fit, only: fitt_polygibbs
-    use tools, only: error
-    use param, only: ha2cm_1, ha2thz, units_f_cm1, units_f_thz, warning
-    type(phase), intent(inout) :: p
-
-    integer :: iq, mode, npar, ierr
-
-    if (p%tmodel /= tm_qhafull_espresso) return
-
-    ! convert input units
-    if (p%units_f == units_f_cm1) then
-       p%omega = p%omega / ha2cm_1
-    else if (p%units_f == units_f_thz) then
-       p%omega = p%omega / ha2thz
-    else
-       call error('phase_phespresso',&
-          'Espresso -> isnt the matdyn.freq in cm_1? (UNITS keyword)',warning)
-    end if
-
-    ! polynomial fit to omega(V)
-    allocate(p%omega_cpol(0:mmpar,size(p%omega,1)))
-    mode = omega_fitmode
-    do iq = 1, size(p%omega,1)
-       npar = omega_fitorder
-       call fitt_polygibbs(mode,p%v,p%omega(iq,:),npar,p%omega_cpol(:,iq),ierr,.false.)
-    end do
-    p%omega_npol = npar + 1
-    p%omega_cpol(npar+1,:) = 0d0
-
-  end subroutine phase_phespresso
-  
   subroutine phase_phdos(p)
     use param, only: ha2cm_1, ha2thz, units_f_cm1, units_f_thz, warning
     use tools, only: quad1, error, realloc
