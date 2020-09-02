@@ -74,6 +74,11 @@ set(CMAKE_Fortran_FLAGS_${BT} "${FFLAGS_${BT}}")
 ## numdiff
 find_package(Numdiff)
 
+## the syntax.txt target
+add_custom_target(syntax 
+  COMMAND wget -qO - 'raw.githubusercontent.com/aoterodelaroza/aoterodelaroza.github.io/master/_gibbs2/12_syntax.md' | awk '/~~~/{a=!a\;next}a{print}' > syntax.txt
+  )
+
 ## process subdirectories
 add_subdirectory(src)
 if (BUILD_TESTING AND NUMDIFF_FOUND)
