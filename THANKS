@@ -1,0 +1,27 @@
+Gibbs2 contains code from the following sources:
+
+SLATEC library
+--------------
+
+The files in src/slatec are part of the SLATEC SLATEC Common
+Mathematical Library, Version 4.1, July 1993: 
+a comprehensive software library containing over
+1400 general purpose mathematical and statistical routines
+written in Fortran 77. See the src/slatec/ directory for more
+information.
+
+Minpack library
+---------------
+
+This product includes software developed by the
+University of Chicago, as Operator of Argonne National
+Laboratory.
+
+See src/minpack/disclaimer for the copyright notice.
+
+PPPack library
+--------------
+
+A library for the fitting of piecewise polynomials. Downloaded from
+netlib.org.
+
