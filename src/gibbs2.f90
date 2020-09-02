@@ -25,7 +25,7 @@ program gibbs2
   use fit, only: fit_init, fit_pshift
   use param, only: mline, marg, title, fileroot, param_init
   use eos, only: eosfit_ev_fitt
-  use varbas, only: nps, plist, nvs, vlist, nts, tlist, nph, ph, einf, mm, pdefault, &
+  use varbas, only: nps, plist, nvs, vlist, nts, tlist, nph, ph, mm, pdefault, &
      phase_freqmax, phase_max, pstep, tstep, vstep, tdefault, vdefault, temp_pmax, temp_tmax, &
      vfree, temp_vmax, tm_debye, &
      tm_debye_input, tm_debye_einstein, tm_debye_poisson_input, tm_debyegrun, tm_static, &
@@ -122,11 +122,6 @@ program gibbs2
      elseif (equal(word,'nelectrons'//null).or.equal(word,'nelec'//null)) then
         ok = isinteger(nelectrons,line,lp)
         if (.not.ok) call error('gibbs2','Error input, NELECTRONS/NELEC keyword',faterr)
-
-     ! einf einf.r
-     elseif (equal(word,'einf'//null)) then
-        ok = isreal(einf,line,lp)
-        if (.not.ok) call error('gibbs2','Error input, EINF keyword',faterr)
 
      ! pressure 0
      ! pressure npres.i

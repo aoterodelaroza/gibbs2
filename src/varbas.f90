@@ -27,7 +27,6 @@ module varbas
 
   integer :: vfree   !< number of atoms per primitive cell
   real*8 :: mm       !< molecular mass (atomic units)
-  real*8 :: einf     !< energy zero (ha)
 
   ! phases
   integer, parameter :: phase_max = 50
@@ -254,7 +253,6 @@ contains
     mm = -1d0
     vfree = -1
     !
-    einf = 0d0
     nps = -1
     nts = -1
     nvs = -1
@@ -1296,7 +1294,6 @@ contains
              ph(i)%v(j+1) = v
              ph(i)%e(j+1) = fv0(ph(i)%fit_mode,v,ph(i)%npol,ph(i)%cpol)
           end do
-          ph(i)%e = ph(i)%e + einf
        end if
 
        ! check convexity (warnings)
@@ -1681,7 +1678,7 @@ contains
     write (uout,'("  First/last volume (bohr^3): ",1p,2(E20.12,2X))') &
        p%v(1), p%v(p%nv)
     write (uout,'("  First/last energy (Ha): ",1p,2(E20.12,2X))') &
-       p%e(1)+einf, p%e(p%nv)+einf
+       p%e(1), p%e(p%nv)
     if (allocated(p%td)) then
        write (uout,'("  First/last Debye temp. (K): ",1p,2(E20.12,2X))') &
           p%td(1), p%td(p%nv)
@@ -1894,10 +1891,9 @@ contains
        p%vscal = p%vscal / bohr2angstrom**3
     end if
 
-    ! energy, einf has the same units as p%e
     ! pressure is stored in p%e until fit.
     if (.not.p%pvdata) then
-       p%e = p%e / zz - einf
+       p%e = p%e / zz
        if (p%units_e == units_e_ev) then
           p%e = p%e / ha2ev
        else if (p%units_e == units_e_ry) then

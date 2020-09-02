@@ -60,7 +60,7 @@ contains
   subroutine popinput(fileout)
     use evfunc, only: pfit_gauss, pfit_slatec, pfit_mode, pweigh_mode, pweigh_slatec, &
        pweigh_gibbs1, pweigh_gibbs2
-    use varbas, only: nph, ph, einf, mm, vfree
+    use varbas, only: nph, ph, mm, vfree
     use fit, only: mpar
     use tools, only: leng
     use param, only: mline, uout, title, amu2au
@@ -75,7 +75,6 @@ contains
     write (uout,'("  Units: output is in atomic units, except where noted.")')
     write (uout,'("  Number of atoms per primitive cell: ",I3)') vfree
     write (uout,'("  Molecular mass (amu): ",F17.8)') mm/amu2au
-    write (uout,'("  Infinite V energy (ha): ",1p,E20.12)') einf
     write (uout,'("  Number of phases: ",I3)') nph
     do i = 1, nph
        write (uout,'("  Phase ",I3,": ",A)') i, ph(i)%name(1:leng(ph(i)%name))
