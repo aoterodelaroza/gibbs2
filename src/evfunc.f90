@@ -92,7 +92,6 @@ module evfunc
   !   apar(3) = B_0
   !   apar(4) = B_0'
   !
-
   integer, parameter, public :: mfit = 12
   integer, parameter, public :: fit_polygibbs = 1
   integer, parameter, public :: fit_bm2 = 2
@@ -155,12 +154,15 @@ module evfunc
 
 contains
 
+  ! Initialize the evfunc variables
   subroutine evfunc_init()
     
     nelectrons = 0
 
   end subroutine evfunc_init
 
+  ! Write the EOS parameters to the LU unit. The fit mode is fmode and
+  ! there are npar+1 parameters, with values apar(0:npar).
   subroutine punch_params(lu, fmode, npar, apar)
     use param, only: au2gpa
     integer, intent(in) :: lu, fmode, npar
@@ -271,6 +273,8 @@ contains
 
   end subroutine punch_params
 
+  ! Volume to strain, scalar version. v0 is the reference volume
+  ! (close to the equilibrium volume).
   function v2strs(strain,v,v0)
     use param, only: third, twothird
     integer, intent(in) :: strain
@@ -298,6 +302,8 @@ contains
 
   end function v2strs
 
+  ! Volume to strain, vector version. v0 is the reference volume
+  ! (close to the equilibrium volume).
   function v2strv(strain,v,v0)
     use param, only: third, twothird
     integer, intent(in) :: strain
@@ -325,6 +331,8 @@ contains
 
   end function v2strv
 
+  ! Strain to volume, scalar version. v0 is the reference volume
+  ! (close to the equilibrium volume).
   function str2vs(strain,f,v0)
 
     integer, intent(in) :: strain
@@ -352,6 +360,8 @@ contains
 
   end function str2vs
 
+  ! Strain to volume, vector version. v0 is the reference volume
+  ! (close to the equilibrium volume).
   function str2vv(strain,f,v0)
 
     integer, intent(in) :: strain
@@ -379,6 +389,9 @@ contains
 
   end function str2vv
 
+  ! Calculate the derivatives of the strain wrt volume up to the deg
+  ! derivative (max: fourth). Returns the derivatives in f1v, f2v,
+  ! f3v, f4v. Scalar version.
   subroutine derivstrains(strain,f,v,v0,deg,f1v,f2v,f3v,f4v)
     use param, only: half, third, twothird
     integer, intent(in) :: strain
@@ -468,6 +481,9 @@ contains
 
   end subroutine derivstrains
 
+  ! Calculate the derivatives of the strain wrt volume up to the deg
+  ! derivative (max: fourth). Returns the derivatives in f1v, f2v,
+  ! f3v, f4v. Vector version.
   subroutine derivstrainv(strain,f,v,v0,deg,f1v,f2v,f3v,f4v)
     use param, only: half, third, twothird
     integer, intent(in) :: strain
@@ -557,6 +573,8 @@ contains
 
   end subroutine derivstrainv
 
+  ! Calculate the EOS given by type mode and parameters apar(0:npar)
+  ! at x. Scalar version.
   function fv0s (mode, x, npar, apar) result(y)
     use param, only: faterr
     use tools, only: error
@@ -598,6 +616,8 @@ contains
 
   end function fv0s
 
+  ! Calculate the EOS given by type mode and parameters apar(0:npar)
+  ! at x. Vector version.
   function fv0v (mode, x, npar, apar) result(y)
     use param, only: faterr
     use tools, only: error
@@ -640,6 +660,8 @@ contains
 
   end function fv0v
 
+  ! Calculate the first derivative of the EOS given by type mode and
+  ! parameters apar(0:npar) at x. Scalar version.
   function fv1s (mode, x, npar, apar) result(y)
     use param, only: faterr
     use tools, only: error
@@ -681,6 +703,8 @@ contains
 
   end function fv1s
 
+  ! Calculate the first derivative of the EOS given by type mode and
+  ! parameters apar(0:npar) at x. Vector version.
   function fv1v (mode, x, npar, apar) result(y)
     use param, only: faterr
     use tools, only: error
@@ -722,6 +746,8 @@ contains
 
   end function fv1v
 
+  ! Calculate the second derivative of the EOS given by type mode and
+  ! parameters apar(0:npar) at x. Scalar version.
   function fv2s (mode, x, npar, apar) result(y)
     use param, only: faterr
     use tools, only: error
@@ -760,6 +786,8 @@ contains
     end select
   end function fv2s
 
+  ! Calculate the second derivative of the EOS given by type mode and
+  ! parameters apar(0:npar) at x. Vector version.
   function fv2v (mode, x, npar, apar) result(y)
     use param, only: faterr
     use tools, only: error
@@ -798,6 +826,8 @@ contains
     end select
   end function fv2v
 
+  ! Calculate the third derivative of the EOS given by type mode and
+  ! parameters apar(0:npar) at x. Scalar version.
   function fv3s (mode, x, npar, apar) result(y)
     use param, only: faterr
     use tools, only: error
@@ -836,6 +866,8 @@ contains
     end select
   end function fv3s
 
+  ! Calculate the third derivative of the EOS given by type mode and
+  ! parameters apar(0:npar) at x. Vector version.
   function fv3v (mode, x, npar, apar) result(y)
     use param, only: faterr
     use tools, only: error
@@ -874,6 +906,8 @@ contains
     end select
   end function fv3v
 
+  ! Calculate the fourth derivative of the EOS given by type mode and
+  ! parameters apar(0:npar) at x. Scalar version.
   function fv4s (mode, x, npar, apar) result(y)
     use param, only: faterr
     use tools, only: error
@@ -912,6 +946,8 @@ contains
     end select
   end function fv4s
 
+  ! Calculate the fourth derivative of the EOS given by type mode and
+  ! parameters apar(0:npar) at x. Vector version.
   function fv4v (mode, x, npar, apar) result(y)
     use param, only: faterr
     use tools, only: error
@@ -950,12 +986,9 @@ contains
     end select
   end function fv4v
 
+  ! Evaluation of a polynomial using Horner's method. The polinomial is given by:
+  ! y(x) = SUM(i=0,npar) apar(i) * x**i. Scalar version.
   function polin0s (mode, x, npar, apar) result(y)
-    !.polin0 - Horner's evaluation of a polynomial.
-    ! The polinomial is given by:
-    !   y(x) = SUM(i=0,npar) apar(i) * x**i
-    ! It is assumed that npar>=0.
-
     integer, intent(in) :: mode
     real*8 :: y
     integer, intent(in) :: npar
@@ -978,12 +1011,9 @@ contains
 
   end function polin0s
 
+  ! Evaluation of a polynomial using Horner's method. The polinomial is given by:
+  ! y(x) = SUM(i=0,npar) apar(i) * x**i. Vector version.
   function polin0v (mode, x, npar, apar) result(y)
-    !.polin0 - Horner's evaluation of a polynomial.
-    ! The polinomial is given by:
-    !   y(x) = SUM(i=0,npar) apar(i) * x**i
-    ! It is assumed that npar>=0.
-
     integer, intent(in) :: mode, npar
     real*8, intent(in) :: x(:), apar(0:npar)
     real*8 :: y(size(x))
@@ -1005,11 +1035,8 @@ contains
 
   end function polin0v
 
+  ! First derivative of a polynomial using Horner's method. Scalar version.
   function polin1s (mode, x, npar, apar) result(y)
-    !.polin1 - Horner's evaluation of the first derivative of a
-    ! polynomial.
-    ! It is assumed that npar>=1.
-
     integer, intent(in) :: mode, npar
     real*8, intent(in) :: x, apar(0:npar)
     real*8 :: y
@@ -1034,11 +1061,8 @@ contains
 
   end function polin1s
 
+  ! First derivative of a polynomial using Horner's method. Vector version.
   function polin1v (mode, x, npar, apar) result(y)
-    !.polin1 - Horner's evaluation of the first derivative of a
-    ! polynomial.
-    ! It is assumed that npar>=1.
-
     integer, intent(in) :: mode, npar
     real*8, intent(in) :: x(:), apar(0:npar)
     real*8 :: y(size(x))
@@ -1063,11 +1087,8 @@ contains
 
   end function polin1v
 
+  ! Second derivative of a polynomial using Horner's method. Scalar version.
   function polin2s (mode, x, npar, apar) result(y)
-    !.polin2 - Horner's evaluation of the second derivative of a
-    ! polynomial.
-    ! It is assumed that npar>=2.
-    
     integer, intent(in) :: npar, mode
     real*8, intent(in) :: x, apar(0:npar)
     real*8 :: y
@@ -1095,11 +1116,8 @@ contains
 
   end function polin2s
 
+  ! Second derivative of a polynomial using Horner's method. Vector version.
   function polin2v (mode, x, npar, apar) result(y)
-    !.polin2 - Horner's evaluation of the second derivative of a
-    ! polynomial.
-    ! It is assumed that npar>=2.
-    
     integer, intent(in) :: npar, mode
     real*8, intent(in) :: x(:), apar(0:npar)
     real*8 :: y(size(x))
@@ -1126,11 +1144,8 @@ contains
 
   end function polin2v
 
+  ! Third derivative of a polynomial using Horner's method. Scalar version.
   function polin3s (mode, x, npar, apar) result(y)
-    !.polin3 - Horner's evaluation of the third derivative of a
-    ! polynomial.
-    ! It is assumed that npar>=3.
-
     integer :: mode, npar
     real*8, intent(in) :: x, apar(0:npar)
     real*8 :: y
@@ -1161,11 +1176,8 @@ contains
 
   end function polin3s
 
+  ! Third derivative of a polynomial using Horner's method. Vector version.
   function polin3v (mode, x, npar, apar) result(y)
-    !.polin3 - Horner's evaluation of the third derivative of a
-    ! polynomial.
-    ! It is assumed that npar>=3.
-
     integer :: mode, npar
     real*8, intent(in) :: x(:), apar(0:npar)
     real*8 :: y(size(x))
@@ -1195,10 +1207,8 @@ contains
 
   end function polin3v
 
+  ! Fourth derivative of a polynomial using Horner's method. Scalar version.
   function polin4s (mode, x, npar, apar) result(y)
-    !.polin4 - Horner's evaluation of the fourth derivative of a
-    ! polynomial.
-    ! It is assumed that npar>=4.
     integer, intent(in) :: mode, npar
     real*8, intent(in) :: x, apar(0:npar)
     real*8 :: y
@@ -1232,10 +1242,8 @@ contains
 
   end function polin4s
 
+  ! Fourth derivative of a polynomial using Horner's method. Vector version.
   function polin4v (mode, x, npar, apar) result(y)
-    !.polin4 - Horner's evaluation of the fourth derivative of a
-    ! polynomial.
-    ! It is assumed that npar>=4.
     integer, intent(in) :: mode, npar
     real*8, intent(in) :: x(:), apar(0:npar)
     real*8 :: y(size(x))
@@ -1268,10 +1276,14 @@ contains
 
   end function polin4v
 
+  ! Wrapper routine for a minpack non-linear least-squares fit. This
+  ! routine is passed to minpack. Accepts n inputs (x0) and returns
+  ! m outputs (fvec). iflag is unused. Internally, it uses the
+  ! evfunc_* variables to control the type of EOS used.
   subroutine fcn_minpack(m,n,x0,fvec,iflag)
     use param, only: faterr
     use tools, only: error
-    ! wrapper for minpack fit
+
     integer, intent(in) :: m,n,iflag
     real*8, intent(in) :: x0(n)
     real*8, intent(out) :: fvec(m)
@@ -1322,6 +1334,7 @@ contains
 
   end subroutine fcn_minpack
 
+  ! Minpack wrapper function, first derivatives.
   subroutine fcn_minpack1(m,n,x,fvec,iflag)
     use param, only: faterr
     use tools, only: error
@@ -1362,9 +1375,9 @@ contains
 
   end subroutine fcn_minpack1
 
+  ! Birch-Murnaghan 2, scalar, 0-4th derivative
   function bm2s(V,x,ider)
     use param, only: twothird
-    ! birch-murnaghan 2, scalar, 0-4th derivative
     real*8, intent(in) :: V, x(3)
     integer, intent(in) :: ider
     real*8 :: bm2s
@@ -1391,9 +1404,9 @@ contains
 
   end function bm2s
 
+  ! Birch-Murnaghan 2, vector, 0-4th derivative
   function bm2v(V,x,ider)
     use param, only: twothird
-    ! birch-murnaghan 2, vector, 0-4th derivative
     real*8, intent(in) :: V(:), x(3)
     integer, intent(in) :: ider
     real*8 :: bm2v(size(V))
@@ -1420,9 +1433,9 @@ contains
 
   end function bm2v
 
+  ! Birch-Murnaghan 3, scalar, 0-4th derivative
   function bm3s(V,x,ider)
     use param, only: twothird
-    ! birch-murnaghan 3, scalar, 0-4th derivative
     real*8, intent(in) :: V, x(4)
     integer, intent(in) :: ider
     real*8 :: bm3s
@@ -1450,9 +1463,9 @@ contains
 
   end function bm3s
 
+  ! Birch-Murnaghan 3, vector, 0-4th derivative
   function bm3v(V,x,ider)
     use param, only: twothird
-    ! birch-murnaghan 3, vector, 0-4th derivative
     real*8, intent(in) :: V(:), x(4)
     integer, intent(in) :: ider
     real*8 :: bm3v(size(V))
@@ -1480,9 +1493,9 @@ contains
 
   end function bm3v
 
+  ! Birch-Murnaghan 4, scalar, 0-4th derivative
   function bm4s(V,x,ider)
     use param, only: twothird
-    ! birch-murnaghan 4, scalar, 0-4th derivative
     real*8, intent(in) :: V, x(5)
     integer, intent(in) :: ider
     real*8 :: bm4s
@@ -1512,9 +1525,9 @@ contains
 
   end function bm4s
   
+  ! Birch-Murnaghan 4, vector, 0-4th derivative
   function bm4v(V,x,ider)
     use param, only: twothird
-    ! birch-murnaghan 4, vector, 0-4th derivative
     real*8, intent(in) :: V(:), x(5)
     integer, intent(in) :: ider
     real*8 :: bm4v(size(V))
@@ -1544,9 +1557,8 @@ contains
 
   end function bm4v
   
+  ! Poirier-Tarantola 2, scalar, 0-4th derivative
   function pt2s(V,x,ider)
-    ! poirier-tarantola 2, scalar, 0-4th derivative
-
     real*8, intent(in) :: V, x(3)
     integer, intent(in) :: ider
     real*8 :: pt2s
@@ -1571,9 +1583,8 @@ contains
 
   end function pt2s
 
+  ! Poirier-Tarantola 2, vector, 0-4th derivative
   function pt2v(V,x,ider)
-    ! poirier-tarantola 2, vector, 0-4th derivative
-
     real*8, intent(in) :: V(:), x(3)
     integer, intent(in) :: ider
     real*8 :: pt2v(size(V))
@@ -1597,9 +1608,8 @@ contains
     end if
   end function pt2v
 
+  ! Poirier-Tarantola 3, scalar, 0-4th derivative
   function pt3s(V,x,ider)
-    ! poirier-tarantola 3, scalar, 0-4th derivative
-
     real*8, intent(in) :: V, x(4)
     integer, intent(in) :: ider
     real*8 :: pt3s
@@ -1635,9 +1645,8 @@ contains
 
   end function pt3s
 
+  ! Poirier-Tarantola 3, vector, 0-4th derivative
   function pt3v(V,x,ider)
-    ! poirier-tarantola 3, vector, 0-4th derivative
-
     real*8, intent(in) :: V(:), x(4)
     integer, intent(in) :: ider
     real*8 :: pt3v(size(V))
@@ -1672,9 +1681,8 @@ contains
 
   end function pt3v
 
+  ! Poirier-Tarantola 4, scalar, 0-4th derivative
   function pt4s(V,x,ider)
-    ! poirier-tarantola 4, scalar, 0-4th derivative
-
     real*8, intent(in) :: V, x(5)
     integer, intent(in) :: ider
     real*8 :: pt4s
@@ -1714,9 +1722,8 @@ contains
 
   end function pt4s
 
+  ! Poirier-Tarantola 4, vector, 0-4th derivative
   function pt4v(V,x,ider)
-    ! poirier-tarantola 4, vector, 0-4th derivative
-
     real*8, intent(in) :: V(:), x(5)
     integer, intent(in) :: ider
     real*8 :: pt4v(size(V))
@@ -1756,9 +1763,8 @@ contains
 
   end function pt4v
 
+  ! Poirier-Tarantola 5, scalar, 0-4th derivative
   function pt5s(V,x,ider)
-    ! poirier-tarantola 5, scalar, 0-4th derivative
-
     real*8, intent(in) :: V, x(6)
     integer, intent(in) :: ider
     real*8 :: pt5s
@@ -1802,9 +1808,8 @@ contains
 
   end function pt5s
 
+  ! Poirier-Tarantola 5, vector, 0-4th derivative
   function pt5v(V,x,ider)
-    ! poirier-tarantola 5, vector, 0-4th derivative
-
     real*8, intent(in) :: V(:), x(6)
     integer, intent(in) :: ider
     real*8 :: pt5v(size(V))
@@ -1848,9 +1853,8 @@ contains
 
   end function pt5v
 
+  ! Murnaghan (3), scalar, 0-4th derivative
   function murns(V,x,ider)
-    ! murnaghan (3), scalar, 0-4th derivative
-
     real*8, intent(in) :: V, x(4)
     integer, intent(in) :: ider
     real*8 :: murns
@@ -1869,9 +1873,8 @@ contains
 
   end function murns
 
+  ! Murnaghan (3), vector, 0-4th derivative
   function murnv(V,x,ider)
-    ! murnaghan (3), vector, 0-4th derivative
-
     real*8, intent(in) :: V(:), x(4)
     integer, intent(in) :: ider
     real*8 :: murnv(size(V))
@@ -1890,9 +1893,8 @@ contains
 
   end function murnv
 
+  ! Anton-Schmidt (3), scalar, 0-4th derivative
   function antonss(V,x,ider)
-    ! Anton-Schmidt (3), scalar, 0-4th derivative
-
     real*8, intent(in) :: V, x(4)
     integer, intent(in) :: ider
     real*8 :: antonss
@@ -1916,9 +1918,8 @@ contains
 
   end function antonss
 
+  ! Murnaghan (3), vector, 0-4th derivative
   function antonsv(V,x,ider)
-    ! murnaghan (3), vector, 0-4th derivative
-
     real*8, intent(in) :: V(:), x(4)
     integer, intent(in) :: ider
     real*8 :: antonsv(size(V))
@@ -1942,9 +1943,9 @@ contains
 
   end function antonsv
 
+  ! Vinet (3), scalar, 0-4th derivative
   function vinets(V,x,ider)
     use param, only: third
-    ! Vinet (3), scalar, 0-4th derivative
     real*8, intent(in) :: V, x(4)
     integer, intent(in) :: ider
     real*8 :: vinets
@@ -1973,9 +1974,9 @@ contains
 
   end function vinets
 
+  ! Vinet (3), vector, 0-4th derivative
   function vinetv(V,x,ider)
     use param, only: third
-    ! Vinet (3), vector, 0-4th derivative
     real*8, intent(in) :: V(:), x(4)
     integer, intent(in) :: ider
     real*8 :: vinetv(size(V))
@@ -2004,10 +2005,10 @@ contains
 
   end function vinetv
 
+  ! AP2 (3), scalar, 0-4th derivative
   function ap2s(V,x,ider)
     use param, only: faterr, pisquare, third, twothird
     use tools, only: gammai, error
-    ! AP2 (3), scalar, 0-4th derivative
     real*8, intent(in) :: V, x(4)
     integer, intent(in) :: ider
     real*8 :: ap2s
@@ -2080,10 +2081,10 @@ contains
 
   end function ap2s
 
+  ! AP2 (3), vector, 0-4th derivative
   function ap2v(v,x,ider)
     use param, only: faterr, pisquare, third, twothird
     use tools, only: gammai, error
-    ! ap2 (3), vector, 0-4th derivative
     real*8, intent(in) :: v(:), x(4)
     integer, intent(in) :: ider
     real*8 :: ap2v(size(v))

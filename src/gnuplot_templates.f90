@@ -20,6 +20,9 @@ module gnuplot_templates
 
 contains
 
+  ! Open the gnuplot script root.gnu. If doout, set the output file
+  ! in the gnuplot script. Returns the logical unit for the open
+  ! file.
   function opengnu(root,noout)
     use tools, only: fopen
     use param, only: mline, iowrite, mcols, null, gplt_rgb, gplt_sym
@@ -52,6 +55,8 @@ contains
 
   end function opengnu
 
+  ! Close the gnuplot file root.gnu in logical unit lu. If noout,
+  ! generate the pdf file from the eps file at the end.
   subroutine closegnu(root,lu,noout)
     use tools, only: fclose
     character*(*), intent(in) :: root
@@ -74,6 +79,8 @@ contains
 
   end subroutine closegnu
 
+  ! Write the gnuplot file with all thermodynamic properties as a
+  ! function of temperature in file root.gnu.
   subroutine gen_allgnu_t(root)
     use varbas, only: ph, nph, mpropout, nts, tlist, tm_static, writelevel, propname
     use tools, only: leng
@@ -135,6 +142,8 @@ contains
 
   end subroutine gen_allgnu_t
 
+  ! Write the gnuplot file with all thermodynamic properties as a
+  ! function of pressure in file root.gnu.
   subroutine gen_allgnu_p(root)
     use param, only: mline, fileroot, uout
     use tools, only: leng

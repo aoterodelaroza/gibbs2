@@ -248,6 +248,7 @@ module varbas
 
 contains
 
+  ! Initialize the variables in this module
   subroutine varbas_init()
     
     mm = -1d0
@@ -280,6 +281,7 @@ contains
 
   end subroutine varbas_init
 
+  ! Process the command-line parameters and set the approrpriate flags.
   subroutine process_argv(argc,argv)
     use param, only: mline, marg, null
     use tools, only: equal
@@ -323,6 +325,7 @@ contains
 
   end subroutine process_argv
 
+  ! Write help to the standard output and exit.
   subroutine help_me_and_exit()
     use param, only: uout, header
 
@@ -367,8 +370,8 @@ contains
 
   end subroutine help_me_and_exit
 
+  ! Returns the number of phases that are not pressure-volume.
   function n_not_pv()
-    
     integer :: n_not_pv
 
     integer :: i
@@ -380,6 +383,7 @@ contains
 
   end function n_not_pv
 
+  ! Returns the number of phases that are E(V) and have a minimum.
   function n_not_pv_min()
     
     integer :: n_not_pv_min
@@ -393,57 +397,11 @@ contains
 
   end function n_not_pv_min
 
-  subroutine read_edos(file,i1,i2,e,n,nread)
-    use param, only: mline, uout, faterr, ioread
-    use tools, only: fopen, leng, isreal, getword, fgetline, error, fclose
-    character*(mline), intent(in) :: file
-    integer, intent(in) :: i1, i2
-    real*8, intent(out) :: e(:), n(:)
-    integer, intent(out) :: nread
-
-    integer :: lu, lp, idum
-    character*(mline) :: line, word
-    logical :: ok
-    integer :: msize
-    
-    msize = size(n)
-    lu = fopen(lu,file,ioread)
-    nread = 0
-    do while (fgetline(lu,line))
-       ! skip comments and blank lines
-       lp = 1
-       nread = nread + 1
-       if (nread > msize) then
-          write (uout,'("File: ",A)') file(1:leng(file))
-          call error('read_edos','size of array exceeded -> edos_emax',faterr)
-       end if
-       idum = 0
-       do while(lp < leng(line))
-          idum = idum + 1
-          if (idum == i1) then
-             ok = isreal(e(nread),line,lp)             
-             if (.not. ok) then
-                write (uout,'("File: ",A)') file(1:leng(file))
-                call error('read_edos','could not read energy field',faterr)
-             end if
-          else if (idum == i2) then
-             ok = isreal(n(nread),line,lp)             
-             n(nread) = max(n(nread),0d0)
-             if (.not. ok) then
-                write (uout,'("File: ",A)') file(1:leng(file))
-                call error('read_edos','could not read DOS field',faterr)
-             end if
-          else if (idum > i1 .and. idum > i2) then
-             exit
-          else
-             word = getword(word,line,lp)
-          end if
-       end do
-    end do
-    call fclose(lu)
-
-  end subroutine read_edos
-
+  !> Read colums i1 and i2 from the phDOS file file. Interpret it
+  !> using units units and return the frequencies f(:) and phDOS
+  !> d(:). nread = number of read frequencies. fstep = frequency
+  !> step. didinterp = whether interpolation had to be used to satisfy
+  !> fstep.
   subroutine read_phdos(file,i1,i2,units,f,d,fstep,nread,didinterp)
     use param, only: mline, uout, faterr, ha2cm_1, ioread, thz2cm_1, units_f_ha, units_f_thz
     use tools, only: fopen, leng, isreal, leng, getword, fgetline, error, fclose
@@ -569,7 +527,8 @@ contains
 
   end subroutine read_phdos
 
-  ! Initialize a phase structure parsing input line. 
+  !> Initialize a phase structure by parsing input line (line_in).
+  !> Returns the phase.
   subroutine phase_init(p,line_in)
     use param, only: uout, mline, faterr, ioread, noerr, null, pct0, uin, units_e_ev, units_e_ha, &
        units_e_ry, units_f_cm1, units_f_ha, units_f_thz, units_p_au, units_p_gpa, units_v_ang3, &
@@ -1208,6 +1167,7 @@ contains
 
   end subroutine phase_init
 
+  !> Prepare all the phases for using.
   subroutine setup_phases()
     use param, only: uout, warning, mline_fmt, au2gpa, faterr, ha2cm_1, ha2thz, units_f_cm1,&
        units_f_thz, format_string, format_string_header
@@ -1451,6 +1411,7 @@ contains
 
   end subroutine setup_phases
 
+  !> Calculate the static properties (V0, B0, and E0) for each phase.
   subroutine props_staticeq()
     use fit, only: fit_pshift
     use tools, only: leng, error, realloc
@@ -1492,6 +1453,7 @@ contains
 
   end subroutine props_staticeq
 
+  !> In-place sort of array a using qcksort.
   subroutine inplace_sort(a)
     use tools, only: qcksort
     real*8, intent(inout) :: a(:)
@@ -1510,7 +1472,8 @@ contains
   !xx! type(phase) methods
   !!!!!!!!!!!!!!!!!!!!!!!!
 
-  ! volume-related quantities -> see also phase_realloc_volume
+  ! Sort the volume and energy arrays and re-arrange all the other
+  ! arrays.
   subroutine phase_sort(p)
     use tools, only: qcksort
     type(phase), intent(inout) :: p
@@ -1529,15 +1492,18 @@ contains
     if (allocated(p%td)) p%td = p%td(idx)
     if (allocated(p%dyn_active)) p%dyn_active = p%dyn_active(idx)
     if (allocated(p%interp)) p%interp = p%interp(idx,:)
-    if (allocated(p%phdos_d)) p%phdos_d = p%phdos_d(:,:,idx)
+    if (allocated(p%phdos_f)) p%phdos_f = p%phdos_f(:,:,idx)
     if (allocated(p%phdos_d)) p%phdos_d = p%phdos_d(:,:,idx)
     if (allocated(p%nefermi)) p%nefermi = p%nefermi(idx)
     if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol(:,idx)
     if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol(:,idx)
+    if (allocated(p%dyn_active)) p%dyn_active = p%dyn_active(:,idx)
 
   end subroutine phase_sort
 
-  ! volume-related quantities -> see also phase_sort
+  ! Realloc volume arrays in phase. If doshift, move the data to the
+  ! right and shrink. If numax, increase the number of frequencies in
+  ! the QHA arrays.
   subroutine phase_realloc_volume(p,n,numax,lshift)
     use tools, only: realloc
     type(phase), intent(inout) :: p
@@ -1610,6 +1576,7 @@ contains
 
   end subroutine phase_realloc_volume
 
+  !> Write information about phase i to the standard output.
   subroutine phase_popinfo(p,i)
     use param, only: uout, units_v_bohr3, units_v_ang3, units_e_ha, units_e_ev, units_e_ry,&
        units_p_au, units_p_gpa, units_f_ha, units_f_cm1, units_f_thz, units_e_ha, &
@@ -1804,6 +1771,8 @@ contains
 
   end subroutine phase_popinfo
 
+  !> Remove points with negative E(V) curvature from the static E(V)
+  !> curve.
   subroutine phase_checkconvex(p,usecpol,ierr)
     use param, only: uout, noerr, warning
     use tools, only: leng, error
@@ -1877,6 +1846,7 @@ contains
     
   end subroutine phase_checkconvex
 
+  !> Convert input units and apply the Z keyword (zz).
   subroutine phase_inputdata(p,zz)
     use param, only: au2gpa, bohr2angstrom, ha2ev, units_e_ev, units_e_ry, units_p_gpa,&
        units_v_ang3
@@ -1921,6 +1891,7 @@ contains
     end if
   end subroutine phase_inputdata
 
+  !> Calculate static E(V) fit errors. If ispv, assume the data is p(V).
   subroutine phase_checkfiterr(p,ispv)
     use evfunc, only: fv0, fv1
     type(phase), intent(inout) :: p
@@ -1959,6 +1930,8 @@ contains
     
   end subroutine phase_checkfiterr
 
+  !> Process the phDOS data for phase p. Convert units, renormalize,
+  !> fit spline, etc.
   subroutine phase_phdos(p)
     use param, only: ha2cm_1, ha2thz, units_f_cm1, units_f_thz, warning
     use tools, only: quad1, error, realloc
@@ -2054,6 +2027,8 @@ contains
 
   end subroutine phase_phdos
   
+  !> Write information to the standard output about the average
+  !> polynomial fit to the static data.
   subroutine phase_punch_pfit(p)
     use fit, only: fit_pshift
     use evfunc, only: fv1, fv2, fv3, fv4
@@ -2116,8 +2091,10 @@ contains
 
   end subroutine phase_punch_pfit
 
+  ! Find bracketing volumes for volume v in phase p. If dyn, only the
+  ! active volumes are valid. Returns id such that v is between v(id)
+  ! and v(id+1) or 0 if not found.
   subroutine vbracket(p,v,id,dyn)
-
     type(phase), intent(in) :: p
     real*8, intent(in) :: v
     integer, intent(out) :: id

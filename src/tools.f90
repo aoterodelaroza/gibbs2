@@ -44,8 +44,6 @@ module tools
   public :: gauss
   public :: quad1, trapezoidal, simpson
   public :: gammai
-  !xx! system
-  public :: spawn
 
   ! overloaded functions
   interface realloc
@@ -1385,6 +1383,7 @@ contains
 
   end function simpson
 
+  !> Incomplete gamma function G(a,x), scalar version.
   function gammais(a,x)
     use param, only: faterr
     real*8, intent(in) :: a, x
@@ -1404,6 +1403,7 @@ contains
 
   end function gammais
 
+  !> Incomplete gamma function G(a,x), vector version.
   function gammaiv(a,x)
     use param, only: faterr
     real*8, intent(in) :: a, x(:)
@@ -1425,24 +1425,4 @@ contains
 
   end function gammaiv
 
-  !> Call the operating system to run the command contained in
-  !> 'line' in a separate shell. 
-  subroutine spawn(line)
-
-    character*(*)     line
-
-    call system (line(1:leng(line)))
-    !mdc*else if VMS
-    !      integer           status, lib$spawn, flags
-    !c
-    !      flags = CLI$M_NOKEYPAD
-    !      if (leng(line) .gt. 0) then
-    !         status = lib$spawn(line(1:leng(line)),,,flags)
-    !         if (status .ne. 0) call lib$signal(%val(status))
-    !      endif
-    !      return
-    !mdc*endif
-  end subroutine spawn
-
 end module tools
-

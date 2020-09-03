@@ -50,6 +50,7 @@ module topcalc
 
 contains
 
+  ! Initialize variables for this module.
   subroutine topcalc_init()
 
     nxint = 0
@@ -57,6 +58,7 @@ contains
 
   end subroutine topcalc_init
 
+  ! Write basic information about the run to the standard output.
   subroutine popinput(fileout)
     use evfunc, only: pfit_gauss, pfit_slatec, pfit_mode, pweigh_mode, pweigh_slatec, &
        pweigh_gibbs1, pweigh_gibbs2
@@ -99,6 +101,7 @@ contains
 
   end subroutine popinput
 
+  ! Write information about the static fit to the standard output.
   subroutine popenergyfit()
     use evfunc, only: fv0, fv1
     use gnuplot_templates, only: opengnu, closegnu
@@ -198,6 +201,7 @@ contains
 
   end subroutine popenergyfit
 
+  ! Make the delta-H vs. p plot using the information in the ga(:) array
   subroutine plotdh(ga)
     use gnuplot_templates, only: opengnu, closegnu
     use varbas, only: nph, ph, nps, plist, writelevel, doplotdh, n_not_pv_min
@@ -265,6 +269,7 @@ contains
 
   end subroutine plotdh
 
+  ! Calculate the static transition pressures and write to output.
   subroutine static_transp(ga)
     use varbas, only: nph, ph, nps, nph, plist, dotrans, n_not_pv_min
     use tools, only: error, leng
@@ -334,6 +339,7 @@ contains
 
   end subroutine static_transp
 
+  ! Calculate the dynamic transition pressures and write to the output.
   subroutine dyn_transp()
     use gnuplot_templates, only: opengnu, closegnu
     use varbas, only: nph, ph, nps, plist, nts, tlist
@@ -451,6 +457,7 @@ contains
 
   end subroutine dyn_transp
 
+  ! Calculate and write the EOS file.
   subroutine dyneos()
     use gnuplot_templates, only: gen_allgnu_t, gen_allgnu_p
     use fit, only: fit_pshift, fitinfo
@@ -895,6 +902,7 @@ contains
     
   end subroutine dyneos_calc
 
+  ! Write the dgtp file.
   subroutine deltag()
     use varbas, only: nph, ph, nps, plist, nts, tlist
     use tools, only: leng, fopen, fclose
@@ -941,6 +949,7 @@ contains
 
   end subroutine deltag
 
+  ! Write the tpstab file.
   subroutine stablevbg()
     use varbas, only: nph, ph, nps, plist, nts, tlist
     use tools, only: leng, fopen, fclose
@@ -979,6 +988,7 @@ contains
 
   end subroutine stablevbg
 
+  ! Interpolate the input data as requested by the user.
   subroutine interpolate()
     use evfunc, only: fv1
     use fit, only: fit_pshift
@@ -1117,6 +1127,7 @@ contains
 
   end subroutine interpolate
 
+  ! Apply the empirical energy correction.
   subroutine eshift_vexp()
     use evfunc, only: fv0, fv1, fv2
     use debye, only: fill_thetad
@@ -1337,7 +1348,7 @@ contains
     end function qfac
   end subroutine eshift_vexp
 
-  !< Returns fitting parameters of F(V,T).
+  ! Returns fitting parameters of F(V,T).
   subroutine fit_agrid_t(p,T,napol,apol,mode,ierr,dostatic,dovib,doel,pfit)
     use debye, only: thermalphon, debeins, thermal
     use evfunc, only: fv0
@@ -1410,7 +1421,7 @@ contains
 
   end subroutine fit_agrid_t
 
-  !< Returns fitting parameters of F(V,T).
+  ! Returns fitting parameters of -T*S(V,T).
   subroutine fit_sgrid_t(p,T,nspol,spol,mode,ierrs,dovib,doel)
     use debye, only: tlim_gamma, thermalphon, debeins, thermal
     use fit, only: fitt_polygibbs
@@ -1528,6 +1539,7 @@ contains
 
   end subroutine fit_cvelgrid_t
 
+  ! Check wether phase p is calculable at point v.
   function is_dyn_v_in(p,v)
     use varbas, only: phase
     type(phase), intent(in) :: p
@@ -1548,6 +1560,7 @@ contains
 
   end function is_dyn_v_in
 
+  ! Run test on the static data.
   subroutine drhouse(nsamples)
     use evfunc, only: fit_strain, fit_strain_bm, v2str, fv0, fv1, fv2, fv3, fv4
     use fit, only: mpar, mparmin, fit_pshift, polfit
@@ -1759,6 +1772,7 @@ contains
 
   end subroutine drhouse
 
+  ! mask to elimiate phases for which dynamical properties cannot be calculated.
   subroutine mask_trans(n,imask)
     use varbas, only: nph, ph, tm_static, dotrans, writelevel
     integer, intent(out) :: n
@@ -1779,6 +1793,7 @@ contains
 
   end subroutine mask_trans
 
+  ! Print Debye-Einstein model frequencies to the gammafreq file.
   subroutine printfreqs()
     use evfunc, only: fv1, fv2
     use varbas, only: nph, ph, tm_debye_einstein
@@ -1836,6 +1851,7 @@ contains
 
   end subroutine printfreqs
 
+  ! Write the edat plot files.
   subroutine write_energy(ini,step,end)
     use evfunc, only: fv0
     use varbas, only: nph, ph

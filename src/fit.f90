@@ -42,6 +42,7 @@ module fit
 
 contains
 
+  ! Initialize the variables in this routine
   subroutine fit_init()
     use evfunc, only: pfit_mode, pfit_slatec, pweigh_mode, pweigh_gibbs2
     pfit_mode = pfit_slatec
@@ -154,7 +155,7 @@ contains
 
   end subroutine fit_pshift
 
-  ! wrapper routine for different E(V) fit equations.
+  ! Wrapper routine for different E(V) fit equations.
   subroutine fit_ev(fmode, rmode, var, func, nparpro, aparpro, ierrout, ispv,&
      nfix, idfix, obelix, pfit)
     use param, only: au2gpa, warning
@@ -227,22 +228,14 @@ contains
 
   end subroutine fit_ev
 
+  ! Fits polynomials to (var,function) data and averages them, weighted by its chi-square
+  ! test probabilities. It returns the averaged polynomial coefficients in aparpro, and
+  ! the coefficients of its square in a2parpro.
   subroutine fitt_polygibbs (mode, var, func, nparpro, aparpro, ierrout, ispv, pfit)
     use param, only: warning
     use tools, only: error
     use evfunc, only: fit_strain, pweigh_gibbs1, pweigh_gibbs2, pweigh_mode, pweigh_slatec,&
        v2str, fv1
-    !
-    !.fitt - fits polynomials to (var,function) data and averages
-    ! them, weighted by its chi-square test probabilities. It returns
-    ! the averaged polynomial coefficients in aparpro, and the
-    ! coefficients of its square in a2parpro.
-    !
-    !.(c) Victor Luana & Miguel Alvarez Blanco,
-    !     Departamento de Quimica Fisica y Analitica,
-    !     Universidad de Oviedo, 33006-Oviedo, Spain.
-    !
-
     integer, intent(in) :: mode
     real*8, intent(in) :: var(:), func(:)
     integer, intent(out) :: nparpro
@@ -468,6 +461,10 @@ contains
 
   end subroutine fitt_polygibbs
 
+  ! Fit equation of state of type fmode and regression mode rmode to data var (x)
+  ! and func (x). Returns the fitted parametersf aparpro(0:nparpro). ierrout = 0
+  ! if success, non-zero if failure. ispv = .true. if these are pv data. nfix,
+  ! idfix, obelix - fix some EOS parameters.
   subroutine fitt_eos(fmode,rmode,var,func,nparpro,aparpro,ierrout,ispv,nfix,idfix,obelix)
     use evfunc, only: evfunc_xm, evfunc_ym, evfunc_mask, evfunc_fixval, evfunc_domask,&
        evfunc_minpack_mode, evfunc_npar, evfunc_reg_mode, fcn_minpack, fcn_minpack1,&
@@ -589,21 +586,20 @@ contains
 
   end subroutine fitt_eos
 
+  ! Fit the (x,y) ndata pairs to a polynomial:
+  !   y(x) = SUM(i=0,npar) a(i) * x**i
+  ! Only the points from iinf to isup are used.
+  !
+  ! a(i) are linear parameters obtained by a least squares (absolute
+  ! deviation) technique, and w(i) are the weights of each point (if
+  ! the weights are the inverse of the variance at each data point,
+  ! then rms would be the square root of the "chi square" estimator
+  ! divided by the sum of errors)
+  !
   subroutine polfit (ndata, iinf, isup, x, y, w, rms, npar, apar)
     use param, only: warning
     use tools, only: error, gauss
     use evfunc, only: fit_polygibbs, pfit_gauss, pfit_mode, fv0
-    !.polfit - fitting the (x,y) ndata pairs to a polynomial. Only the
-    ! points from iinf to isup will be used.
-    !
-    ! y(x) = SUM(i=0,npar) a(i) * x**i
-    !
-    ! a(i) are linear parameters obtained by a least squares (absolute deviation) technique,
-    ! and w(i) are the weights of each point (if the weights are the
-    ! inverse of the variance at each data point, then rms would be
-    ! the square root of the "chi square" estimator divided by the
-    ! sum of errors)
-    !
     integer, intent(in) :: ndata, iinf, isup
     real*8, intent(in) :: x(ndata), y(ndata), w(ndata)
     integer, intent(in) :: npar

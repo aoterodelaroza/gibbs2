@@ -15,6 +15,8 @@
 ! You should have received a copy of the GNU General Public License
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+! Parse the input line(lp:) for set options. Set the appropriate
+! global variables.
 subroutine setvariables (line, lp)
   use evfunc, only: pfit_mode, pfit_gauss, pfit_slatec, pweigh_mode, pweigh_gibbs1, &
      pweigh_gibbs2, pweigh_slatec

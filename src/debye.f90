@@ -29,8 +29,8 @@ module debye
 
 contains
 
-  ! Fill Debye-related information: %td(:), %td0 and ntpol/tpol fit.
-  ! Optionally, verbose output.
+  ! Fill Debye-related information for phase p: %td(:), %td0 and
+  ! ntpol/tpol fit.  Optionally, verbose output.
   subroutine fill_thetad(p,verbose)
     use evfunc, only: fv0, fv2, fv3
     use fit, only: fitt_polygibbs
@@ -124,6 +124,9 @@ contains
 
   end subroutine fill_thetad
 
+  ! Calculate the debye temperature (td) and gamma for phase p at
+  ! point v. Uses as input the second and third derivatives wrt
+  ! volume.
   subroutine get_thetad(p,v,f2o,f3,td,gamma)
     use evfunc, only: fv0, fv1
     use varbas, only: phase, tm_debyegrun, tm_debye, tm_debye_einstein, tm_debye_input,&
@@ -166,13 +169,11 @@ contains
 
   end subroutine get_thetad
 
+  ! Compute Debye model vibrational properties.
   subroutine thermal (ThetaD,T,debye,xabs,en,cv,he,ent)
     use param, only: faterr, pckbau, pi, zero
     use tools, only: error, gauleg
     use varbas, only: vfree
-    !-------------------------------------------------------------------
-    !
-    !.thermal - compute Debye model vibrational properties.
     !
     ! This routine obtains the molar vibrational properties of a given
     ! crystal by means of the Debye model: internal energy (U), heat
@@ -260,6 +261,7 @@ contains
 
   end subroutine thermal
 
+  ! Compute Debye-Einstein model vibrational properties.
   subroutine debeins(p,ThetaDinp,T,vol,debye,xabs,en,cv,he,ent,cv_ac,cv_op,ifit)
     use evfunc, only: fv1, fv2
     use varbas, only: phase, vfree
@@ -277,7 +279,6 @@ contains
 
     ! NOTA: Estoy dividiendo el volumen entre Vref que es el minimo de la curva
     ! ajustada estatica=> considerar normalizarlo respecto a otro volumen.
-
     type(phase), intent(in) :: p
     real*8, intent(in) :: ThetaDinp, T, vol
     real*8, intent(out) :: debye, xabs, en, cv, he, ent, cv_ac, cv_op
@@ -500,6 +501,8 @@ contains
 
   end subroutine thermalphon
 
+  ! Interpolate the phonon density of states to volume v. Returns
+  ! the interpolated phDOS in d.
   function phdos_interpolate(p,v) result(d)
     use varbas, only: phase, phonsplin, vbracket
     use tools, only: leng, error

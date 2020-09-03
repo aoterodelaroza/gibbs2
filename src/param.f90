@@ -155,6 +155,8 @@ module param
 
 contains
 
+  !> Initialize the values of some pseudo-parameters. Initialize the
+  !> random seed.
   subroutine param_init()
 
     integer :: i, n, clock
@@ -260,6 +262,7 @@ contains
     
   end subroutine param_init
 
+  !> Print the gibbs2 header to uout
   subroutine header()
 
     write (uout,'("                                                        ")')
@@ -283,11 +286,13 @@ contains
 
   end subroutine header
 
+  !> Returns a Fortran format string with pad characters of padding
+  !> followed by any number of formats given by ifmt(:). The formats
+  !> are elements of the above ifmt parameter types.
   function format_string(ifmt,pad)
-
-    character*(mline_fmt) format_string
     integer, intent(in) :: ifmt(:)
     integer, intent(in) :: pad
+    character*(mline_fmt) :: format_string
     
     integer :: i
 
@@ -303,9 +308,11 @@ contains
 
   end function format_string
 
+  !> Returns a Fortran format string for the header corresponding to
+  !> format list ifmt(:) and string lengths iout. Adds the necessary
+  !> padding on both sides.
   function format_string_header(ifmt,iout)
-
-    character*(mline_fmt) format_string_header
+    character*(mline_fmt) :: format_string_header
     integer, intent(in) :: ifmt(:)
     integer, intent(in) :: iout(:)
 
