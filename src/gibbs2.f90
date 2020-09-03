@@ -15,7 +15,7 @@
 ! You should have received a copy of the GNU General Public License
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-!.gibbs2 - (P,T) thermodynamics on crystals.
+!.gibbs2 - (P,T) thermodynamics of crystals.
 program gibbs2
   use evfunc, only: nelectrons, evfunc_init, punch_params
   use topcalc, only: fint, iint, interp_input, mxint, nxint, printfreqs, drhouse, write_energy,&
