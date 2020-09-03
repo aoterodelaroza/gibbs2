@@ -26,7 +26,7 @@ program gibbs2
   use param, only: mline, marg, title, fileroot, param_init
   use eos, only: eosfit_ev_fitt
   use varbas, only: nps, plist, nvs, vlist, nts, tlist, nph, ph, mm, pdefault, &
-     phase_freqmax, phase_max, pstep, tstep, vstep, tdefault, vdefault, temp_pmax, temp_tmax, &
+     phase_max, pstep, tstep, vstep, tdefault, vdefault, temp_pmax, temp_tmax, &
      vfree, temp_vmax, tm_debye, &
      tm_debye_input, tm_debye_einstein, tm_debye_poisson_input, tm_debyegrun, tm_static, &
      phase_init, help_me_and_exit, inplace_sort, varbas_init, process_argv, setup_phases, &
@@ -475,90 +475,6 @@ program gibbs2
         line2 = line(lp:)
         call phase_init(ph(nph),line2)
         
-     ! freqg0 {name.s|num.i} [file file.s]
-     !   freq1 freq2 ...
-     !   ...
-     ! endfreqg0
-     elseif (equal(word,'freqg0'//null)) then
-
-        if (vfree < 0) call error('gibbs2','Set VFREE before freqg0',faterr)
-        iph = 0
-        ok = isinteger(iph,line,lp)
-        if (.not.ok) then
-           word = getword(word,line,lp)
-           word = lower(word)
-           do i = 1, nph
-              if (equal(word,lower(ph(i)%name))) then
-                 iph = i
-                 exit
-              endif
-           end do
-        end if
-        if (iph == 0) then
-           call error('gibbs2','Unknown phase in FREQG0 keyword',faterr)
-        end if
-
-        file = ""
-        word = getword(word,line,lp)
-        word = lower(word)
-        if (equal(word,'file'//null)) then
-           file = getword(file,line,lp)
-        end if
-
-        if (file /= "") then
-           uuin = fopen(uuin,file,ioread)
-        else
-           uuin = uin
-        end if
-
-        nn = 1
-        allocate(ph(iph)%freqg0(phase_freqmax))
-        do while (.true.)
-           ok = fgetline(uuin,line)
-           lp2 = 1
-           if (.not.ok) then
-              nn = nn - 1
-              ph(iph)%nfreq = nn
-              exit
-           end if
-
-           onfs = nn
-           do while(isreal(ph(iph)%freqg0(nn),line,lp2))
-              nn = nn + 1
-              if (nn == size(ph(iph)%freqg0)) then
-                 call realloc(ph(iph)%freqg0,2*nn)
-              end if
-           end do
-
-           if (nn == onfs) then
-              word = getword(word,line,lp2)
-              word = lower(word)
-              if (equal(word,'endfreqg0'//null)) then
-                 nn = nn - 1
-                 ph(iph)%nfreq = nn
-                 call realloc(ph(iph)%freqg0,nn)
-                 exit
-              else if (equal(word,'#'//null)) then
-                 cycle
-              else
-                 call error('gibbs2','Error input, FREQG0 keyword: missing ENDFREQG0',faterr)
-              end if
-           end if
-        end do
-        call realloc(ph(iph)%freqg0,ph(iph)%nfreq)
-        if (uuin /= uin) then
-           call fclose(uuin)
-        endif
-        ! check nfreq vs. vfree * Z
-        if (ph(iph)%nfreq /= 3*(vfree*ph(iph)%z)-3) then
-           write (uout,'("* No. of read frequencies: ",I6)') ph(iph)%nfreq
-           write (uout,'("* No. of expected frequencies 3*(vfree*Z)-3: ",I6)') 3*(vfree*nint(ph(iph)%z))-3
-           call error('gibbs2','nfreq /= 3*(vfree*z)-3, check input',faterr)
-        end if
-        if (any(ph(iph)%freqg0 > 0.05d0) .and. ph(iph)%units_f /= units_f_cm1) then
-           call error('gibbs2','Some frequencies are > 0.05 and units are not cm_1. Use PHASE->UNITS',warning)
-        end if
-
      ! activate {name.s|num.i} {n1 n2 ...|ALL}
      elseif (equal(word,'activate'//null)) then
 
@@ -719,9 +635,7 @@ program gibbs2
   call static_transp(ga)
 
   ! Print Debye-Eisntein frequencies (topcalc)
-  if (callpf) then
-     call printfreqs()
-  end if
+  if (callpf) call printfreqs()
 
   ! end of static run
   deallocate(va,ba,ga)

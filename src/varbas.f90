@@ -31,7 +31,6 @@ module varbas
   ! phases
   integer, parameter :: phase_max = 50
   integer, parameter :: phase_vmax = 200
-  integer, parameter :: phase_freqmax = 300
   integer, parameter :: phdos_fmax = 40000
   integer, parameter :: phdos_qmax = 10000
   integer, parameter :: edos_emax = 10000
@@ -94,7 +93,7 @@ module varbas
 
      ! debye-einstein
      integer :: nfreq = 0
-     real*8, allocatable :: freqg0(:)
+     real*8, allocatable :: freqg(:,:)
 
      ! qha (using phDOS)
      real*8 :: phstep
@@ -143,10 +142,11 @@ module varbas
   integer, parameter :: tm_static = 1
   integer, parameter :: tm_debye_input = 2
   integer, parameter :: tm_debye = 3
-  integer, parameter :: tm_debye_einstein = 6
-  integer, parameter :: tm_qhafull = 8
-  integer, parameter :: tm_debyegrun = 9
-  integer, parameter :: tm_debye_poisson_input = 10
+  integer, parameter :: tm_debye_einstein = 4
+  integer, parameter :: tm_debye_einstein_v = 5
+  integer, parameter :: tm_qhafull = 6
+  integer, parameter :: tm_debyegrun = 7
+  integer, parameter :: tm_debye_poisson_input = 8
 
   ! scaling modes
   integer, parameter :: scal_noscal = 1
@@ -527,6 +527,42 @@ contains
 
   end subroutine read_phdos
 
+  ! Read nfreq frequencies at gamma from file file. Return them in
+  ! array f.
+  subroutine read_freqg(file,f)
+    use param, only: ioread
+    use tools, only: fopen, fclose, fgetline, isreal, realloc
+    character*(mline), intent(in) :: file
+    real*8, allocatable, intent(inout) :: f(:)
+    
+    integer :: lu, nn, lp
+    logical :: ok
+    character*(mline) :: line
+    real*8 :: aux
+
+    if (allocated(f)) deallocate(f)
+    allocate(f(300))
+
+    lu = fopen(lu,file,ioread)
+
+    nn = 0
+    do while (.true.)
+       ok = fgetline(lu,line)
+       if (.not.ok) exit
+
+       lp = 1
+       do while(isreal(aux,line,lp))
+          nn = nn + 1
+          if (nn > size(f,1)) &
+             call realloc(f,2*nn)
+          f(nn) = aux
+       end do
+    end do
+    call realloc(f,nn)
+    call fclose(lu)
+
+  end subroutine read_freqg
+
   !> Initialize a phase structure by parsing input line (line_in).
   !> Returns the phase.
   subroutine phase_init(p,line_in)
@@ -550,6 +586,7 @@ contains
     integer :: idum, ifound, iphdos_1, iphdos_2, isep, isep2, nn, nq, numax, uuin
     character*(mline) :: line, word, prefix, file, linedum, msg
     real*8 :: fx, gx, hx, zz, eshift
+    real*8, allocatable :: ffreq(:)
     logical :: ok, d0, didinterp, havev, havee, haveph
 
     ! Set defaults for this phase. also, check type definition
@@ -684,7 +721,26 @@ contains
           elseif (equal(word,'debye'//null)) then
              p%tmodel = tm_debye
           elseif (equal(word,'debye_einstein'//null)) then
-             p%tmodel = tm_debye_einstein
+             lp2 = lp
+             word = getword(word,line,lp)
+             word = lower(word)
+             if (equal(word,'freqg0'//null)) then
+                p%tmodel = tm_debye_einstein
+                word = getword(word,line,lp)
+                call read_freqg(word,ffreq)
+                if (allocated(p%freqg)) deallocate(p%freqg)
+                allocate(p%freqg(size(ffreq,1),1))
+
+                p%nfreq = size(ffreq,1)
+                p%freqg(:,1) = ffreq
+                deallocate(ffreq)
+             else 
+                p%tmodel = tm_debye_einstein_v
+                lp = lp2
+                write (*,*) "write me!!"
+                stop 1
+             end if
+
           elseif (equal(word,'debye_poisson_input'//null)) then
              p%tmodel = tm_debye_poisson_input
              icol_td = 0
@@ -950,7 +1006,7 @@ contains
           end if
        end if
     end do
-
+    
     ! calculate the f(poisson)
     fx=2*(1+p%poisson)/3d0/(1-2*p%poisson)
     gx=(1+p%poisson)/3d0/(1-p%poisson)
@@ -1287,16 +1343,25 @@ contains
        vmax_setv = min(vmax_setv,ph(i)%v(ph(i)%nv))
 
        ! tmodel-dependent setup
-       if (allocated(ph(i)%freqg0)) then
+       if (ph(i)%tmodel == tm_debye_einstein) then
+          ! check freqg is allocated
+          if (.not.allocated(ph(i)%freqg)) &
+             call error('setup_phases','Debye-Einstein requires frequencies at Gamma',faterr)
+
+          ! transform units
           if (ph(i)%units_f == units_f_cm1) then
-             ph(i)%freqg0 = ph(i)%freqg0 / ha2cm_1
+             ph(i)%freqg = ph(i)%freqg / ha2cm_1
           else if (ph(i)%units_f == units_f_thz) then
-             ph(i)%freqg0 = ph(i)%freqg0 / ha2thz
+             ph(i)%freqg = ph(i)%freqg / ha2thz
           end if
-       end if
-       if ((ph(i)%tmodel == tm_debye_einstein) .and. .not.allocated(ph(i)%freqg0)) &
-           call error('setup_phases','Eins/Debeins requires freqg0',faterr)
-       if (ph(i)%tmodel == tm_qhafull) then
+
+          ! check nfreq vs. vfree * Z
+          if (ph(i)%nfreq /= 3*(vfree*ph(i)%z)-3) then
+             write (uout,'("* No. of read frequencies: ",I6)') ph(i)%nfreq
+             write (uout,'("* No. of expected frequencies 3*(vfree*Z)-3: ",I6)') 3*(vfree*nint(ph(i)%z))-3
+             call error('gibbs2','nfreq /= 3*(vfree*z)-3, check input',faterr)
+          end if
+       else if (ph(i)%tmodel == tm_qhafull) then
           call phase_phdos(ph(i))
        end if
 
@@ -1650,10 +1715,8 @@ contains
     end if
     write (uout,'("  Poisson ratio from input (sigma): ",F14.6)') p%poisson
     write (uout,'("  Poisson function, f(sigma): ",F14.6)') p%pofunc
-    if (allocated(p%freqg0)) then
+    if (allocated(p%freqg)) then
        write (uout,'("  Number of freq. at G (p=0) : ",I4)') p%nfreq
-       write (uout,'("  First/last frequency (cm^-1) : ",1p,2(E20.12,2X))') &
-          p%freqg0(1)*ha2cm_1, p%freqg0(p%nfreq)*ha2cm_1
     end if
     if (.not.p%staticmin) then
        write (uout,'("  Beware!! Static properties are EXTRAPOLATED ")')

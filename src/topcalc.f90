@@ -737,7 +737,7 @@ contains
        call debeins (p,theta,t,v,D,Derr,uvib,cv_vib,fvib,svib,cv_ac,cv_op)
 
        ! calculate gamma, handle low-temperature case
-       if (cv_op > cvlim) then
+       if (cv_vib > cvlim) then
           gam_ac = gamma
           b0s = v*f2s
           b1s = -(1+v*f3s/f2s)
@@ -1381,7 +1381,7 @@ contains
           if (p%tmodel == tm_qhafull) then
              call thermalphon(p,T,p%v(i),uvib,cv,aux(i),dum,cv2)
           else if (p%tmodel == tm_debye_einstein) then
-             call debeins (p,p%td(i),T,p%v(i),D,Derr,uvib,cv,aux(i),dum,cv_ac,cv_op)
+             call debeins(p,p%td(i),T,p%v(i),D,Derr,uvib,cv,aux(i),dum,cv_ac,cv_op)
           else 
              call thermal(p%td(i),T,D,Derr,uvib,cv,aux(i),dum)
           end if
@@ -1838,7 +1838,7 @@ contains
              tmpPB = (1d0 - twothird*pstat/bstat)**(half)
              tmpTot = tmpVol*tmpB*tmpPB
 
-             freq(1:n) = ph(i)%freqg0 * tmpTot * ha2cm_1
+             freq(1:n) = ph(i)%freqg(:,1) * tmpTot * ha2cm_1
              
              write (lu,'(F10.4,9999(F16.8))') ph(i)%v(j), freq(1:n) 
           end do

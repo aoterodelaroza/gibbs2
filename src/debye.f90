@@ -292,7 +292,8 @@ contains
     real*8 :: x(maxnl), w(maxnl), y, z, fdebye
     real*8 :: ThetaD, pstat, bstat
     real*8 :: tmpVol, tmpB, tmpPB, tmpTot
-    real*8 :: sum_F_op, freq_i(p%nfreq), x_i(p%nfreq), ex_i(p%nfreq), summ, debye0
+    real*8 :: sum_F_op, summ, debye0
+    real*8, allocatable :: freq_i(:), x_i(:), ex_i(:)
     real*8 :: sum_S_op, sum_Cv_op
     real*8 :: en_ac, ent_ac, he_ac
     real*8 :: ent_op, he_op, veq_static, beq_static
@@ -335,13 +336,11 @@ contains
     tmpPB = (1d0 - twothird*pstat/bstat)**(half)
     tmpTot = tmpVol*tmpB*tmpPB
 
-    if (size(freq_i) /= size(p%freqg0)) then
-       write (uout,'("size(freq_i) = ",I8," size(p%freqg0) = ",I8)') size(freq_i), size(p%freqg0)
-       call error('debeins','size(freq_i) /= size(p%freqg0)',faterr)
-    end if
+    ! allocate frequency arrays
+    allocate(freq_i(p%nfreq), x_i(p%nfreq), ex_i(p%nfreq))
 
     ! calcular x_i a partir de las frecuencias
-    freq_i = p%freqg0 * tmpTot 
+    freq_i = p%freqg(:,1) * tmpTot 
     if (abs(t) < 1d-5) then
        sum_F_op = sum(freq_i / pckbau / 2d0) * prefac
 
