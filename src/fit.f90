@@ -245,7 +245,8 @@ contains
     type(fitinfo), intent(out), optional :: pfit
     
     integer :: imin, iamin(1), ndata
-    real*8  :: apar(0:mmpar), rms, w(mdata)
+    real*8  :: apar(0:mmpar), rms
+    real*8, allocatable :: w(:)
     integer :: npar, nfit
     integer :: mmfit 
     integer, allocatable :: nparfit(:), ndatafit(:)
@@ -268,6 +269,7 @@ contains
     ierrout = 0
     nparpro = 0
     aparpro = 0d0
+    allocate(w(mdata))
 
     idxx = minloc(func)
     idx = idxx(1)
@@ -446,7 +448,6 @@ contains
           call dpcoef(nparpro,0d0,aparpro,a)
        end if
     end if
-
 
     nparpro = nparpro + 1
     aparpro(nparpro) = vscal

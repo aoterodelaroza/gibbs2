@@ -150,8 +150,9 @@ C***FIRST EXECUTABLE STATEMENT  DPOLFT
         IF (W(I) .LE. 0.0D0) GO TO 30
  1      CONTINUE
       GO TO 4
- 2    DO 3 I = 1,M
- 3      W(I) = 1.0D0
+ 2    DO I = 1,M
+        W(I) = 1.0D0
+      ENDDO
  4    IF (EPS .GE. 0.0D0) GO TO 8
 C
 C DETERMINE SIGNIFICANCE LEVEL INDEX TO BE USED IN STATISTICAL TEST FOR
@@ -174,24 +175,27 @@ C
       K3 = K2 + MAXDEG + 2
       K4 = K3 + M
       K5 = K4 + M
-      DO 9 I = 2,K4
- 9      A(I) = 0.0D0
+      DO I = 2,K4
+        A(I) = 0.0D0
+      ENDDO
       W11 = 0.0D0
       IF (N .LT. 0) GO TO 11
 C
 C UNCONSTRAINED CASE
 C
-      DO 10 I = 1,M
+      DO I = 1,M
         K4PI = K4 + I
         A(K4PI) = 1.0D0
- 10     W11 = W11 + W(I)
+        W11 = W11 + W(I)
+      ENDDO
       GO TO 13
 C
 C CONSTRAINED CASE
 C
- 11   DO 12 I = 1,M
+ 11   DO I = 1,M
         K4PI = K4 + I
- 12     W11 = W11 + W(I)*A(K4PI)**2
+        W11 = W11 + W(I)*A(K4PI)**2
+      ENDDO
 C
 C COMPUTE FIT OF DEGREE ZERO
 C
@@ -203,13 +207,14 @@ C
       TEMD1 = TEMD1/W11
       A(K2+1) = TEMD1
       SIGJ = 0.0D0
-      DO 15 I = 1,M
+      DO I = 1,M
         K4PI = K4 + I
         K5PI = K5 + I
         TEMD2 = TEMD1*A(K4PI)
         R(I) = TEMD2
         A(K5PI) = TEMD2 - R(I)
- 15     SIGJ = SIGJ + W(I)*((Y(I)-R(I)) - A(K5PI))**2
+        SIGJ = SIGJ + W(I)*((Y(I)-R(I)) - A(K5PI))**2
+      ENDDO
       J = 0
 C
 C SEE IF POLYNOMIAL OF DEGREE 0 SATISFIES THE DEGREE SELECTION CRITERION
@@ -242,23 +247,25 @@ C EVALUATE ORTHOGONAL POLYNOMIAL AT DATA POINTS
 C
       W1 = W11
       W11 = 0.0D0
-      DO 19 I = 1,M
+      DO I = 1,M
         K3PI = K3 + I
         K4PI = K4 + I
         TEMP = A(K3PI)
         A(K3PI) = A(K4PI)
         A(K4PI) = (X(I)-A(JP1))*A(K3PI) - A(K1PJ)*TEMP
- 19     W11 = W11 + W(I)*A(K4PI)**2
+        W11 = W11 + W(I)*A(K4PI)**2
+      ENDDO
 C
 C GET NEW ORTHOGONAL POLYNOMIAL COEFFICIENT USING PARTIAL DOUBLE
 C PRECISION
 C
       TEMD1 = 0.0D0
-      DO 20 I = 1,M
+      DO I = 1,M
         K4PI = K4 + I
         K5PI = K5 + I
         TEMD2 = W(I)*((Y(I)-R(I))-A(K5PI))*A(K4PI)
- 20     TEMD1 = TEMD1 + TEMD2
+        TEMD1 = TEMD1 + TEMD2
+      ENDDO
       TEMD1 = TEMD1/W11
       A(K2PJ+1) = TEMD1
 C
@@ -269,13 +276,14 @@ C THE MOST SIGNIFICANT BITS ARE STORED IN  R(I) , AND THE LEAST
 C SIGNIFICANT BITS ARE IN  A(K5PI) .
 C
       SIGJ = 0.0D0
-      DO 21 I = 1,M
+      DO I = 1,M
         K4PI = K4 + I
         K5PI = K5 + I
         TEMD2 = R(I) + A(K5PI) + TEMD1*A(K4PI)
         R(I) = TEMD2
         A(K5PI) = TEMD2 - R(I)
- 21     SIGJ = SIGJ + W(I)*((Y(I)-R(I)) - A(K5PI))**2
+        SIGJ = SIGJ + W(I)*((Y(I)-R(I)) - A(K5PI))**2
+      ENDDO
 C
 C SEE IF DEGREE SELECTION CRITERION HAS BEEN SATISFIED OR IF DEGREE
 C MAXDEG  HAS BEEN REACHED

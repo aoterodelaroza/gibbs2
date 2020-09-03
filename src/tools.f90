@@ -72,7 +72,7 @@ module tools
   integer, parameter :: mopen = 100  !< maximum number of open lus
   logical, private :: alloc (0:mopen) !< allocation flag array
   integer, private :: access(0:mopen) !< access type array
-  character*(mline), private :: buffer(0:mopen) !< i/o line buffer array
+  character*(mline), allocatable, private :: buffer(:) !< i/o line buffer array
   integer, private :: bp(0:mopen) !< buffer pointer array
   integer, private :: length(0:mopen) !< lengths of line buffers
   
@@ -88,6 +88,9 @@ contains
     length = 0
     alloc = .false.
     access = 0
+
+    ! allocate buffer
+    allocate(buffer(0:mopen))
 
     !.connect standard units:
     alloc(stderr) = .true.

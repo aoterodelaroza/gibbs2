@@ -29,7 +29,6 @@ subroutine setvariables (line, lp)
   character*(*), intent(inout) :: line
   integer, intent(inout) :: lp
 
-  integer           :: ipid
   character*(mline) :: word
   logical           :: ok
   

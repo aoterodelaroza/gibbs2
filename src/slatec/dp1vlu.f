@@ -72,8 +72,9 @@ C***FIRST EXECUTABLE STATEMENT  DP1VLU
       IF (L .GT. NORD) GO TO 11
       K4 = K3 + L + 1
       IF (NDER .LT. 1) GO TO 2
-      DO 1 I = 1,NDER
- 1      YP(I) = 0.0D0
+      DO I = 1,NDER
+         YP(I) = 0.0D0
+      ENDDO
  2    IF (L .GE. 2) GO TO 4
       IF (L .EQ. 1) GO TO 3
 C
@@ -98,8 +99,9 @@ C
       LM1 = L - 1
       ILO = K3 + 3
       IUP = K4 + NDP1
-      DO 5 I = ILO,IUP
- 5      A(I) = 0.0D0
+      DO I = ILO,IUP
+         A(I) = 0.0D0
+      ENDDO
       DIF = X - A(LP1)
       KC = K2 + LP1
       A(K4P1) = A(KC)
@@ -108,7 +110,7 @@ C
 C
 C EVALUATE RECURRENCE RELATIONS FOR FUNCTION VALUE AND DERIVATIVES
 C
-      DO 9 I = 1,LM1
+      DO I = 1,LM1
         IN = L - I
         INP1 = IN + 1
         K1I = K1 + INP1
@@ -116,20 +118,23 @@ C
         DIF = X - A(INP1)
         VAL = A(IC) + DIF*A(K3P1) - A(K1I)*A(K4P1)
         IF (NDO .LE. 0) GO TO 8
-        DO 6 N = 1,NDO
+        DO N = 1,NDO
           K3PN = K3P1 + N
           K4PN = K4P1 + N
- 6        YP(N) = DIF*A(K3PN) + N*A(K3PN-1) - A(K1I)*A(K4PN)
+          YP(N) = DIF*A(K3PN) + N*A(K3PN-1) - A(K1I)*A(K4PN)
+       ENDDO
 C
 C SAVE VALUES NEEDED FOR NEXT EVALUATION OF RECURRENCE RELATIONS
 C
-        DO 7 N = 1,NDO
+        DO N = 1,NDO
           K3PN = K3P1 + N
           K4PN = K4P1 + N
           A(K4PN) = A(K3PN)
- 7        A(K3PN) = YP(N)
+          A(K3PN) = YP(N)
+       ENDDO
  8      A(K4P1) = A(K3P1)
- 9      A(K3P1) = VAL
+        A(K3P1) = VAL
+      ENDDO
 C
 C NORMAL RETURN OR ABORT DUE TO ERROR
 C

@@ -425,7 +425,7 @@ contains
     real*8, intent(in) :: T, v
     real*8, intent(out) :: uvib, cv, fvib, ent, cv_lowt
 
-    integer :: i, nf
+    integer :: nf
     real*8 :: step, kt
     real*8, allocatable :: emfkt(:), aux(:), tmin(:), d(:)
     real*8, allocatable :: l1emfkt(:)

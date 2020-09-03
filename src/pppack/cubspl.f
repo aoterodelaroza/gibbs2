@@ -37,9 +37,10 @@ c     c(3,.) and c(4,.) are used initially for temporary storage.
       l = n-1
 compute first differences of tau sequence and store in c(3,.). also,
 compute first divided difference of data and store in c(4,.).
-      do 10 m=2,n
+      do m=2,n
          c(3,m) = tau(m) - tau(m-1)
-   10    c(4,m) = (c(1,m) - c(1,m-1))/c(3,m)
+         c(4,m) = (c(1,m) - c(1,m-1))/c(3,m)
+      enddo
 construct first equation from the boundary condition, of the form
 c             c(4,1)*s(1) + c(3,1)*s(2) = c(2,1)
       if (ibcbeg-1)                     11,15,16
@@ -66,10 +67,11 @@ c     second derivative prescribed at left end.
 c  if there are interior knots, generate the corresp. equations and car-
 c  ry out the forward pass of gauss elimination, after which the m-th
 c  equation reads    c(4,m)*s(m) + c(3,m)*s(m+1) = c(2,m).
-   19 do 20 m=2,l
+   19 do m=2,l
          g = -c(3,m+1)/c(4,m-1)
          c(2,m) = g*c(2,m-1) + 3.*(c(3,m)*c(4,m+1)+c(3,m+1)*c(4,m))
-   20    c(4,m) = g*c(3,m-1) + 2.*(c(3,m) + c(3,m+1))
+         c(4,m) = g*c(3,m-1) + 2.*(c(3,m) + c(3,m+1))
+      enddo
 construct last equation from the second boundary condition, of the form
 c           (-g*c(4,n-1))*s(n-1) + c(4,n)*s(n) = c(2,n)
 c     if slope is prescribed at right end, one can go directly to back-
@@ -110,11 +112,12 @@ carry out back substitution
          if (j .gt. 0)                  go to 40
 c****** generate cubic coefficients in each interval, i.e., the deriv.s
 c  at its left endpoint, from value and slope at its endpoints.
-      do 50 i=2,n
+      do i=2,n
          dtau = c(3,i)
          divdf1 = (c(1,i) - c(1,i-1))/dtau
          divdf3 = c(2,i-1) + c(2,i) - 2.*divdf1
          c(3,i-1) = 2.*(divdf1 - c(2,i-1) - divdf3)/dtau
-   50    c(4,i-1) = (divdf3/dtau)*(6./dtau)
-                                        return
+         c(4,i-1) = (divdf3/dtau)*(6./dtau)
+      enddo
+      return
       end

@@ -1492,12 +1492,10 @@ contains
     if (allocated(p%td)) p%td = p%td(idx)
     if (allocated(p%dyn_active)) p%dyn_active = p%dyn_active(idx)
     if (allocated(p%interp)) p%interp = p%interp(idx,:)
-    if (allocated(p%phdos_f)) p%phdos_f = p%phdos_f(:,:,idx)
     if (allocated(p%phdos_d)) p%phdos_d = p%phdos_d(:,:,idx)
     if (allocated(p%nefermi)) p%nefermi = p%nefermi(idx)
     if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol(:,idx)
     if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol(:,idx)
-    if (allocated(p%dyn_active)) p%dyn_active = p%dyn_active(:,idx)
 
   end subroutine phase_sort
 
@@ -1940,7 +1938,7 @@ contains
     integer :: iv
     integer :: nfreq, i, ini, numax
     real*8 :: sumn
-    character*(mline) :: msg, iref
+    character*(mline) :: msg
 
     real*8, parameter :: deps = 1d-6
     real*8, parameter :: fsmallcrit = 0.1d0 / ha2cm_1

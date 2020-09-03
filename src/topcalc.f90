@@ -670,7 +670,7 @@ contains
     use evfunc, only: fv0, fv1, fv2, fv3, fv4
     use debye, only: tlim_gamma, cvlim, debeins, thermalphon, thermal, get_thetad
     use varbas, only: mpropout, phase, tm_qhafull, tm_debye_input, tm_debye, tm_debyegrun,&
-       tm_debye_poisson_input, tm_debye_einstein, tm_static, em_pol4,&
+       tm_debye_poisson_input, tm_debye_einstein, em_pol4,&
        em_sommerfeld, em_no, ftsel_fitmode, vbracket
     use tools, only: error
     use param, only: faterr, au2gpa, ha2kjmol, pi, pckbau, pisquare, twothird
@@ -1438,7 +1438,7 @@ contains
     logical, intent(in) :: dovib, doel
 
     integer :: i, rnv
-    real*8 :: uvib, cv, cv2, cv3, D, Derr, cv_ac, cv_op
+    real*8 :: uvib, cv, cv2, D, Derr, cv_ac, cv_op
     real*8 :: realv(p%nv), reals(p%nv), aux(p%nv), dum
     real*8 :: t0, ef(p%nv)
     real*8 :: auxcpol(0:mmpar)
