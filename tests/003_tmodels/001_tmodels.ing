@@ -22,13 +22,9 @@ phase debye file ../dat/mgo_pbe/mgo.res tmodel debye \
 phase debgrun file ../dat/mgo_pbe/mgo.res tmodel debye_gruneisen dm \
                 units energy ry freq cm-1 \
                 prefix ../dat/mgo_pbe/
-phase debeins file ../dat/mgo_pbe/mgo.res tmodel debye_einstein \
+phase debeins file ../dat/mgo_pbe/mgo.res tmodel debye_einstein freqg0 ../dat/mgo_pbe/freqs.dat \
                 units energy ry freq cm-1 \
                 prefix ../dat/mgo_pbe/
-freqg0 debeins
-## the three optical frequencies for MgO
-  402.9580 402.9580 701.1656
-endfreqg0
 phase qha file ../dat/mgo_pbe/mgo.res tmodel qha \
                 units energy ry freq cm-1 \
                 prefix ../dat/mgo_pbe/

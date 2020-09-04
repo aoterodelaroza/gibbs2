@@ -737,7 +737,6 @@ WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
   Poisson ratio from input (sigma):       0.250000
   Poisson function, f(sigma):       0.859949
   Number of freq. at G (p=0) :    3
-  First/last frequency (cm^-1) :   4.029580000000E+02    7.011656000000E+02
   Correction of static energy: no correction
   Energy fit mode:   130100
   S(V) fit mode:   130100
@@ -753,7 +752,7 @@ WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
   r2 of the fit:   9.999999306874E-01
   Akaike information criterion:  -3.324032225619E+03
   Bayesian information (Schwarz) criterion:  -3.279805451430E+03
-  Temperature model: Debye-Einstein.
+  Temperature model: Debye-Einstein (one set of frequencies at Gamma).
   All data points are ACTIVE for dynamic calculations
 WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
 
