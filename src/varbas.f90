@@ -31,6 +31,7 @@ module varbas
   ! phases
   integer, parameter :: phase_max = 50
   integer, parameter :: phase_vmax = 200
+  integer, parameter :: phase_freqgmax = 100
   integer, parameter :: phdos_fmax = 40000
   integer, parameter :: phdos_qmax = 10000
   integer, parameter :: edos_emax = 10000
@@ -570,7 +571,7 @@ contains
        units_e_ry, units_f_cm1, units_f_ha, units_f_thz, units_p_au, units_p_gpa, units_v_ang3, &
        units_v_bohr3
     use tools, only: getword, lower, isreal, isinteger, leng, equal, fopen, fgetline, cat, error,&
-       fclose
+       fclose, realloc
     use evfunc, only: fit_antons, fit_ap2, fit_bm2, fit_bm3, fit_bm4, fit_murn, fit_polygibbs, &
        fit_pt2, fit_pt3, fit_pt4, fit_pt5, fit_strain_bm, fit_strain_inf, fit_strain_lagr,&
        fit_strain_pt, fit_strain_x3, fit_strain_xinv3, fit_vinet, reg_lad, reg_lsq
@@ -730,17 +731,13 @@ contains
                 call read_freqg(word,ffreq)
                 if (allocated(p%freqg)) deallocate(p%freqg)
                 allocate(p%freqg(size(ffreq,1),1))
-
-                p%nfreq = size(ffreq,1)
                 p%freqg(:,1) = ffreq
                 deallocate(ffreq)
              else 
                 p%tmodel = tm_debye_einstein_v
+                icol_ph = 0
                 lp = lp2
-                write (*,*) "write me!!"
-                stop 1
              end if
-
           elseif (equal(word,'debye_poisson_input'//null)) then
              p%tmodel = tm_debye_poisson_input
              icol_td = 0
@@ -1067,6 +1064,8 @@ contains
           allocate(p%phdos_d(phdos_fmax,4,phase_vmax))
           p%phdos_f = -1d0
           p%phdos_d = 0d0
+       elseif (p%tmodel == tm_debye_einstein_v) then
+          if (allocated(p%freqg)) deallocate(p%freqg)
        end if
        numax = -1
     end if
@@ -1138,7 +1137,28 @@ contains
                 call read_phdos(word,iphdos_1,iphdos_2,p%units_f,&
                    p%phdos_f(:),p%phdos_d(:,1,nn),p%phstep,nq,d0)
                 didinterp = didinterp .or. d0
+             elseif (p%tmodel == tm_debye_einstein_v) then
+                call read_freqg(word,ffreq)
+                if (.not.allocated(p%freqg)) then
+                   allocate(p%freqg(size(ffreq,1),phase_vmax))
+                else
+                   if (size(p%freqg,1) /= size(ffreq,1)) then
+                      write (uout,'("In file: ",A)') trim(file(1:leng(file)))
+                      write (uout,'("Line: ",A)') trim(line(1:leng(line)))
+                      write (uout,'("Line number:",I5)') nn
+                      call error('phase_init','Number of frequencies not consistent',faterr)
+                   end if
+                   if (nn > size(p%freqg,2)) &
+                      call realloc(p%freqg,size(ffreq,1),2*nn)
+                end if
+                p%freqg(:,nn) = ffreq
+                if (any(ffreq < 0d0)) then
+                   nq = -count(ffreq < 0d0)
+                else
+                   nq = 0
+                end if
              end if
+
              if (nq < 0) then
                 ! negative freqs. -> deactivate for thermal
                 p%dyn_active(nn) = .false.
@@ -1194,11 +1214,11 @@ contains
           call error('phase_init','Error reading file: volume or energy missing.',faterr)
        end if
 
-       if (p%tmodel == tm_qhafull .and..not.haveph) then
+       if ((p%tmodel == tm_qhafull.or.p%tmodel == tm_debye_einstein_v) .and..not.haveph) then
           if (uuin /= uin) then
              write (uout,'("In file: ",A)') trim(file(1:leng(file)))
           end if
-          call error('phase_init','Error reading file: phonon DOS missing.',faterr)
+          call error('phase_init','Error reading file: phonon DOS or frequencies file missing.',faterr)
        end if
     end do
 
@@ -1343,7 +1363,7 @@ contains
        vmax_setv = min(vmax_setv,ph(i)%v(ph(i)%nv))
 
        ! tmodel-dependent setup
-       if (ph(i)%tmodel == tm_debye_einstein) then
+       if (ph(i)%tmodel == tm_debye_einstein .or. ph(i)%tmodel == tm_debye_einstein_v) then
           ! check freqg is allocated
           if (.not.allocated(ph(i)%freqg)) &
              call error('setup_phases','Debye-Einstein requires frequencies at Gamma',faterr)
@@ -1356,6 +1376,7 @@ contains
           end if
 
           ! check nfreq vs. vfree * Z
+          ph(i)%nfreq = size(ph(i)%freqg,1)
           if (ph(i)%nfreq /= 3*(vfree*ph(i)%z)-3) then
              write (uout,'("* No. of read frequencies: ",I6)') ph(i)%nfreq
              write (uout,'("* No. of expected frequencies 3*(vfree*Z)-3: ",I6)') 3*(vfree*nint(ph(i)%z))-3
@@ -1643,7 +1664,7 @@ contains
   subroutine phase_popinfo(p,i)
     use param, only: uout, units_v_bohr3, units_v_ang3, units_e_ha, units_e_ev, units_e_ry,&
        units_p_au, units_p_gpa, units_f_ha, units_f_cm1, units_f_thz, units_e_ha, &
-       units_e_ev, units_e_ry, ha2cm_1, ha2kjmol, warning, faterr
+       units_e_ev, units_e_ry, ha2kjmol, warning, faterr
     use tools, only: leng, error
     type(phase), intent(in) :: p
     integer, intent(in) :: i
@@ -1765,7 +1786,9 @@ contains
     case(tm_debye)
        write (uout,'("  Temperature model: Debye, Td from static B(V).")')
     case(tm_debye_einstein)
-       write (uout,'("  Temperature model: Debye-Einstein.")')
+       write (uout,'("  Temperature model: Debye-Einstein (one set of frequencies at Gamma).")')
+    case(tm_debye_einstein_v)
+       write (uout,'("  Temperature model: Debye-Einstein (frequencies at Gamma at every volume).")')
     case(tm_debye_poisson_input)
        write (uout,'("  Temperature model: Debye with Poisson ratio in input.")')
     case(tm_qhafull)
@@ -2154,7 +2177,7 @@ contains
 
   ! Find bracketing volumes for volume v in phase p. If dyn, only the
   ! active volumes are valid. Returns id such that v is between v(id)
-  ! and v(id+1) or 0 if not found.
+  ! and v(id+1), -id if v is within 1d-6 of v(-id), or 0 if not found.
   subroutine vbracket(p,v,id,dyn)
     type(phase), intent(in) :: p
     real*8, intent(in) :: v

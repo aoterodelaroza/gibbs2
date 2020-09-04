@@ -670,7 +670,7 @@ contains
     use evfunc, only: fv0, fv1, fv2, fv3, fv4
     use debye, only: tlim_gamma, cvlim, debeins, thermalphon, thermal, get_thetad
     use varbas, only: mpropout, phase, tm_qhafull, tm_debye_input, tm_debye, tm_debyegrun,&
-       tm_debye_poisson_input, tm_debye_einstein, em_pol4,&
+       tm_debye_poisson_input, tm_debye_einstein, tm_debye_einstein_v, em_pol4,&
        em_sommerfeld, em_no, ftsel_fitmode, vbracket
     use tools, only: error
     use param, only: faterr, au2gpa, ha2kjmol, pi, pckbau, pisquare, twothird
@@ -729,12 +729,12 @@ contains
        end if
        call thermal (theta,t,D,Derr,uvib,cv_vib,fvib,svib)
 
-    case(tm_debye_einstein) 
-       ! Einstein or Debye-Einstein
+    case(tm_debye_einstein,tm_debye_einstein_v) 
+       ! Debye-Einstein
        if (gamma_from_s .and. t < tlim_gamma) then
-          call debeins (p,theta,tlim_gamma,v,D,Derr,uvib,cv_lowt,fvib,svib,cv_ac,cv_op)
+          call debeins(p,theta,tlim_gamma,v,D,Derr,uvib,cv_lowt,fvib,svib,cv_ac,cv_op)
        end if
-       call debeins (p,theta,t,v,D,Derr,uvib,cv_vib,fvib,svib,cv_ac,cv_op)
+       call debeins(p,theta,t,v,D,Derr,uvib,cv_vib,fvib,svib,cv_ac,cv_op)
 
        ! calculate gamma, handle low-temperature case
        if (cv_vib > cvlim) then
@@ -1133,7 +1133,7 @@ contains
     use debye, only: fill_thetad
     use fit, only: fit_ev, fit_pshift
     use varbas, only: nph, ph, scal_bpscal, scal_apbaf, scal_pshift, scal_use, scal_noscal, &
-       tm_debyegrun, tm_debye, tm_debye_einstein, phase_checkfiterr
+       tm_debyegrun, tm_debye, tm_debye_einstein, tm_debye_einstein_v, phase_checkfiterr
     use tools, only: error, leng
     use param, only: mline, uout, warning, faterr, au2gpa
     real*8, parameter :: facprec = 1d-10
@@ -1319,7 +1319,8 @@ contains
        ph(i)%pmin = -fv1(ph(i)%fit_mode,ph(i)%v(ph(i)%nv),ph(i)%npol,ph(i)%cpol) * au2gpa
 
        if (abs(vold-v0)/(vold+v0+1d-12) > vcycle .and. (ph(i)%tmodel == tm_debye .or.&
-          ph(i)%tmodel == tm_debye_einstein .or. ph(i)%tmodel == tm_debyegrun)) goto 1
+          ph(i)%tmodel == tm_debye_einstein .or. ph(i)%tmodel == tm_debye_einstein_v .or.&
+          ph(i)%tmodel == tm_debyegrun)) goto 1
 
        ! ! output new energy and static p
        ! fm = format_string_header((/1,ifmt_v,ifmt_e,ifmt_e,ifmt_p/),(/1,9,9,9,10/))
@@ -1352,8 +1353,8 @@ contains
   subroutine fit_agrid_t(p,T,napol,apol,mode,ierr,dostatic,dovib,doel,pfit)
     use debye, only: thermalphon, debeins, thermal
     use evfunc, only: fv0
-    use varbas, only: phase, tm_qhafull, tm_debye_einstein, em_pol4, &
-       em_sommerfeld, ftsel_fitmode
+    use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_debye_einstein_v,&
+       em_pol4, em_sommerfeld, ftsel_fitmode
     use fit, only: fit_ev, fitinfo
     use param, only: pi, pckbau, pisquare, twothird
     type(phase), intent(in) :: p 
@@ -1380,7 +1381,7 @@ contains
           if (.not.p%dyn_active(i)) cycle
           if (p%tmodel == tm_qhafull) then
              call thermalphon(p,T,p%v(i),uvib,cv,aux(i),dum,cv2)
-          else if (p%tmodel == tm_debye_einstein) then
+          else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
              call debeins(p,p%td(i),T,p%v(i),D,Derr,uvib,cv,aux(i),dum,cv_ac,cv_op)
           else 
              call thermal(p%td(i),T,D,Derr,uvib,cv,aux(i),dum)
@@ -1425,8 +1426,8 @@ contains
   subroutine fit_sgrid_t(p,T,nspol,spol,mode,ierrs,dovib,doel)
     use debye, only: tlim_gamma, thermalphon, debeins, thermal
     use fit, only: fitt_polygibbs
-    use varbas, only: phase, tm_qhafull, tm_debye_einstein, em_pol4,&
-       em_sommerfeld, ftsel_fitmode
+    use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_debye_einstein_v,&
+       em_pol4, em_sommerfeld, ftsel_fitmode
     use evfunc, only: fv0
     use param, only: pi, pckbau, pisquare, twothird
     type(phase), intent(in) :: p
@@ -1458,10 +1459,10 @@ contains
           if (.not.p%dyn_active(i)) cycle
           if (p%tmodel == tm_qhafull) then
              call thermalphon(p,t0,p%v(i),uvib,cv,dum,aux(i),cv2)
-          else if (p%tmodel == tm_debye_einstein) then
-             call debeins (p,p%td(i),t0,p%v(i),D,Derr,uvib,cv,dum,aux(i),cv_ac,cv_op)
+          else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
+             call debeins(p,p%td(i),t0,p%v(i),D,Derr,uvib,cv,dum,aux(i),cv_ac,cv_op)
           else 
-             call thermal (p%td(i),t0,D,Derr,uvib,cv,dum,aux(i))
+             call thermal(p%td(i),t0,D,Derr,uvib,cv,dum,aux(i))
           end if
        end do
        aux = aux * (-t0)

@@ -129,7 +129,8 @@ contains
   ! volume.
   subroutine get_thetad(p,v,f2o,f3,td,gamma)
     use evfunc, only: fv0, fv1
-    use varbas, only: phase, tm_debyegrun, tm_debye, tm_debye_einstein, tm_debye_input,&
+    use varbas, only: phase, tm_debyegrun, tm_debye, &
+       tm_debye_einstein, tm_debye_einstein_v, tm_debye_input, &
        tm_debye_poisson_input, mm, vfree
     use tools, only: error
     use param, only: au2gpa, pckbau, pi, third, warning
@@ -154,7 +155,7 @@ contains
        td = exp(fv0(p%tdfit_mode,log(v),p%ntpol,p%tpol))
        gamma = -fv1(p%tdfit_mode,log(v),p%ntpol,p%tpol)
        
-    case(tm_debye,tm_debye_einstein)
+    case(tm_debye,tm_debye_einstein,tm_debye_einstein_v)
        td = (6*pi*pi*vfree*v*v)**third / pckbau * p%pofunc * sqrt(f2/mm)
        gamma = -1d0/6d0 - 0.5d0 * (1+v*f3/f2)
 
@@ -264,9 +265,9 @@ contains
   ! Compute Debye-Einstein model vibrational properties.
   subroutine debeins(p,ThetaDinp,T,vol,debye,xabs,en,cv,he,ent,cv_ac,cv_op,ifit)
     use evfunc, only: fv1, fv2
-    use varbas, only: phase, vfree
+    use varbas, only: phase, vfree, vbracket
     use tools, only: error, gauleg
-    use param, only: au2gpa, faterr, half, pckbau, pi, third, twothird, uout, zero
+    use param, only: au2gpa, faterr, half, pckbau, pi, third, twothird, zero
     !-------------------------------------------------------------------------- 
     ! Calcularemos las propiedades tratando la rama de frecuencias
     ! acusticas por el modelo cuasiarmonico de Debye y la rama de 
@@ -310,7 +311,6 @@ contains
 
     ! Usamos la Theta calculada por Gibbs, pero la normalizamos a las 3 frecuencias
     ! acusticas por lo que hay que dividirla por el factor (n·Z)**(1/3)
-    ! ThetaD = ThetaDinp/((vfree*nmolec)**(third))
     ThetaD = ThetaDinp/vfree**third
     
     !.error condition controls
@@ -330,17 +330,20 @@ contains
        beq_static = p%beq_static
     end if
 
-    ! frecuencias en gamma a volume vol
-    tmpVol=(vol/p%veq_static)**(1d0/6d0)
-    tmpB = (bstat/p%beq_static)**(half)
-    tmpPB = (1d0 - twothird*pstat/bstat)**(half)
-    tmpTot = tmpVol*tmpB*tmpPB
-
     ! allocate frequency arrays
     allocate(freq_i(p%nfreq), x_i(p%nfreq), ex_i(p%nfreq))
 
-    ! calcular x_i a partir de las frecuencias
-    freq_i = p%freqg(:,1) * tmpTot 
+    ! frecuencias en gamma a volume vol
+    if (size(p%freqg,2) == 1) then
+       tmpVol=(vol/p%veq_static)**(1d0/6d0)
+       tmpB = (bstat/p%beq_static)**(half)
+       tmpPB = (1d0 - twothird*pstat/bstat)**(half)
+       tmpTot = tmpVol*tmpB*tmpPB
+       freq_i = p%freqg(:,1) * tmpTot 
+    else
+       freq_i = freqg_interpolate(p,vol)
+    end if
+
     if (abs(t) < 1d-5) then
        sum_F_op = sum(freq_i / pckbau / 2d0) * prefac
 
@@ -543,5 +546,34 @@ contains
     end if
 
   end function phdos_interpolate
+  
+  ! Interpolate the frequencies at Gamma to volume v. Returns the
+  ! interpolated frequencies in d.
+  function freqg_interpolate(p,v) result(ff)
+    use varbas, only: phase, vbracket
+    use tools, only: leng, error
+    use param, only: faterr, uout
+    type(phase), intent(in) :: p
+    real*8, intent(in) :: v
+    real*8 :: ff(p%nfreq)
+
+    integer :: id
+    real*8 :: fac
+
+    call vbracket(p,v,id,.true.)
+    if (id == 0) then
+       write (uout,'("Phase = ",A)') trim(adjustl(p%name(1:leng(p%name))))
+       write (uout,'("Volume = ",F17.7)') v
+       call error('freqg_interpolate','Requested volume out of grid bounds',faterr)
+    else if (id < 0) then
+       ff = p%freqg(:,-id)
+       return
+    end if
+
+    ! linear interpolation of frequencies to this volume
+    fac = (v-p%v(id)) / (p%v(id+1) - p%v(id))
+    ff = (1d0-fac) * p%freqg(:,id) + fac * p%freqg(:,id+1)
+
+  end function freqg_interpolate
   
 end module debye

@@ -27,7 +27,7 @@ program gibbs2
   use eos, only: eosfit_ev_fitt
   use varbas, only: nps, plist, nvs, vlist, nts, tlist, nph, ph, mm, pdefault, &
      phase_max, pstep, tstep, vstep, tdefault, vdefault, temp_pmax, temp_tmax, &
-     vfree, temp_vmax, tm_debye, &
+     vfree, temp_vmax, tm_debye, tm_debye_einstein_v, &
      tm_debye_input, tm_debye_einstein, tm_debye_poisson_input, tm_debyegrun, tm_static, &
      phase_init, help_me_and_exit, inplace_sort, varbas_init, process_argv, setup_phases, &
      props_staticeq, phase_punch_pfit, phase_popinfo, quiet
@@ -620,13 +620,13 @@ program gibbs2
   do i = 1, nph
      doit = doit .or. (ph(i)%tmodel == tm_debye_input .or. ph(i)%tmodel == tm_debye .or.&
                        ph(i)%tmodel == tm_debyegrun .or. ph(i)%tmodel == tm_debye_einstein .or.&
-                       ph(i)%tmodel == tm_debye_poisson_input)
+                       ph(i)%tmodel == tm_debye_einstein_v .or. ph(i)%tmodel == tm_debye_poisson_input)
   end do
   if (doit) write (uout,'("* Computed Debye temperatures from static data")')
   do i = 1, nph
      verbose = (ph(i)%tmodel == tm_debye_input .or. ph(i)%tmodel == tm_debye .or.&
                 ph(i)%tmodel == tm_debyegrun .or. ph(i)%tmodel == tm_debye_einstein .or.&
-                ph(i)%tmodel == tm_debye_poisson_input)
+                ph(i)%tmodel == tm_debye_einstein_v .or. ph(i)%tmodel == tm_debye_poisson_input)
      call fill_thetad(ph(i),verbose)
   end do
   if (doit) write (uout,*)
