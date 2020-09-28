@@ -102,7 +102,7 @@ WARNING(phase_phdos): Volume num.  82 [  9.6405E+01] phDOS renormalized from    
 WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/003_tmodels/001_tmodels.eos_static
+# Copy in file : 001_tmodels.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -7.363983340E+01  -7.363983340E+01   130.0792  1.0000000     0.0000   150.4953    4.1284098  -2.6643E-02
       1.0000  -7.363981904E+01  -7.363542663E+01   129.2293  0.9934660     1.0000   154.6106    4.1023602  -2.5472E-02
@@ -430,7 +430,7 @@ WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/003_tmodels/001_tmodels.eos_static
+# Copy in file : 001_tmodels.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -7.363983340E+01  -7.363983340E+01   130.0792  1.0000000     0.0000   150.4953    4.1284098  -2.6643E-02
       1.0000  -7.363981904E+01  -7.363542663E+01   129.2293  0.9934660     1.0000   154.6106    4.1023602  -2.5472E-02
@@ -757,7 +757,7 @@ WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/003_tmodels/001_tmodels.eos_static
+# Copy in file : 001_tmodels.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -7.363983340E+01  -7.363983340E+01   130.0792  1.0000000     0.0000   150.4953    4.1284098  -2.6643E-02
       1.0000  -7.363981904E+01  -7.363542663E+01   129.2293  0.9934660     1.0000   154.6106    4.1023602  -2.5472E-02
@@ -1084,7 +1084,7 @@ WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/003_tmodels/001_tmodels.eos_static
+# Copy in file : 001_tmodels.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -7.363983340E+01  -7.363983340E+01   130.0792  1.0000000     0.0000   150.4953    4.1284098  -2.6643E-02
       1.0000  -7.363981904E+01  -7.363542663E+01   129.2293  0.9934660     1.0000   154.6106    4.1023602  -2.5472E-02
@@ -1374,17 +1374,17 @@ WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
  ---std. dev.---     0.0050   6.743496E-06     0.2632    0.0091036   2.2082E-03
 
 * Input and fitted static energy
-  Writing file: /home/alberto/git/gibbs2/build/tests/003_tmodels/001_tmodels.efit
+  Writing file: 001_tmodels.efit
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/003_tmodels/001_tmodels_efit.aux
+  Writing file : 001_tmodels_efit.aux
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/003_tmodels/001_tmodels_efit.gnu
+  Writing file : 001_tmodels_efit.gnu
 
 * Plotting static DeltaH
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/003_tmodels/001_tmodels_dH.aux
+  Writing file : 001_tmodels_dH.aux
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/003_tmodels/001_tmodels_dH.gnu
+  Writing file : 001_tmodels_dH.gnu
 
 * Computed Debye temperatures from static data
 + Phase debye
@@ -1925,14 +1925,14 @@ WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
   Number of T points:      1
 
 * Calculated temperature effects 
-  Writing file : /home/alberto/git/gibbs2/build/tests/003_tmodels/001_tmodels.eos
+  Writing file : 001_tmodels.eos
 
 + Phase debye
 + Phase debgrun
 + Phase debeins
 + Phase qha
 
-  Writing file: /home/alberto/git/gibbs2/build/tests/003_tmodels/001_tmodels_all_p.gnu
+  Writing file: 001_tmodels_all_p.gnu
 
 GIBBS2 ended succesfully (  5 WARNINGS,   4 COMMENTS)
 

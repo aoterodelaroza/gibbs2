@@ -1,5 +1,5 @@
 set terminal postscript eps color enhanced "Helvetica" 14
-set output "/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.eps"
+set output "001_eec_efit.eps"
 
 set style line  1 lt 1 lc rgb "#000000" pt  4 ps 0.75
 set style line  2 lt 1 lc rgb "#0000FF" pt  6 ps 0.75
@@ -20,23 +20,23 @@ set xrange [             40.0000:             90.0000]
 set yrange [            -11.4436:            -11.0535]
 set ylabel "Energy (Ha)"
 set xlabel "Volume (bohr^3)"
-plot '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec.efit' u 1:2 index  0 w points ls  1 notitle,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.aux' u 1:2 index  0 w lines ls  1 title 'lda:uncorr' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec.efit' u 1:2 index  1 w points ls  2 notitle,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.aux' u 1:2 index  1 w lines ls  2 title 'pbe:uncorr' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec.efit' u 1:2 index  2 w points ls  3 notitle,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.aux' u 1:2 index  2 w lines ls  3 title 'lda:pshift' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec.efit' u 1:2 index  3 w points ls  4 notitle,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.aux' u 1:2 index  3 w lines ls  4 title 'pbe:pshift' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec.efit' u 1:2 index  4 w points ls  5 notitle,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.aux' u 1:2 index  4 w lines ls  5 title ' lda:apbaf' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec.efit' u 1:2 index  5 w points ls  6 notitle,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.aux' u 1:2 index  5 w lines ls  6 title ' pbe:apbaf' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec.efit' u 1:2 index  6 w points ls  7 notitle,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.aux' u 1:2 index  6 w lines ls  7 title 'lda:bpscal' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec.efit' u 1:2 index  7 w points ls  8 notitle,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.aux' u 1:2 index  7 w lines ls  8 title 'pbe:bpscal'   
-!epstopdf /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.eps
-!pdfcrop /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.pdf
-!mv /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit-crop.pdf /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.pdf
-!rm /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.eps
+plot '001_eec.efit' u 1:2 index  0 w points ls  1 notitle,\
+     '001_eec_efit.aux' u 1:2 index  0 w lines ls  1 title 'lda:uncorr' ,\
+     '001_eec.efit' u 1:2 index  1 w points ls  2 notitle,\
+     '001_eec_efit.aux' u 1:2 index  1 w lines ls  2 title 'pbe:uncorr' ,\
+     '001_eec.efit' u 1:2 index  2 w points ls  3 notitle,\
+     '001_eec_efit.aux' u 1:2 index  2 w lines ls  3 title 'lda:pshift' ,\
+     '001_eec.efit' u 1:2 index  3 w points ls  4 notitle,\
+     '001_eec_efit.aux' u 1:2 index  3 w lines ls  4 title 'pbe:pshift' ,\
+     '001_eec.efit' u 1:2 index  4 w points ls  5 notitle,\
+     '001_eec_efit.aux' u 1:2 index  4 w lines ls  5 title ' lda:apbaf' ,\
+     '001_eec.efit' u 1:2 index  5 w points ls  6 notitle,\
+     '001_eec_efit.aux' u 1:2 index  5 w lines ls  6 title ' pbe:apbaf' ,\
+     '001_eec.efit' u 1:2 index  6 w points ls  7 notitle,\
+     '001_eec_efit.aux' u 1:2 index  6 w lines ls  7 title 'lda:bpscal' ,\
+     '001_eec.efit' u 1:2 index  7 w points ls  8 notitle,\
+     '001_eec_efit.aux' u 1:2 index  7 w lines ls  8 title 'pbe:bpscal'   
+!epstopdf 001_eec_efit.eps
+!pdfcrop 001_eec_efit.pdf
+!mv 001_eec_efit-crop.pdf 001_eec_efit.pdf
+!rm 001_eec_efit.eps

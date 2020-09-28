@@ -1,5 +1,5 @@
 set terminal postscript eps color enhanced "Helvetica" 14
-set output "/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.eps"
+set output "001_eec_dH.eps"
 
 set style line  1 lt 1 lc rgb "#000000" pt  4 ps 0.75
 set style line  2 lt 1 lc rgb "#0000FF" pt  6 ps 0.75
@@ -19,14 +19,14 @@ set style increment user
 set ylabel "{/Symbol D}H (Ha)"
 set xlabel "p (GPa)"
 set xzeroaxis
-plot '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.aux' u 1:2 w points ls  2 title 'pbe:uncorr' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.aux' u 1:3 w points ls  3 title 'lda:pshift' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.aux' u 1:4 w points ls  4 title 'pbe:pshift' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.aux' u 1:5 w points ls  5 title ' lda:apbaf' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.aux' u 1:6 w points ls  6 title ' pbe:apbaf' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.aux' u 1:7 w points ls  7 title 'lda:bpscal' ,\
-     '/home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.aux' u 1:8 w points ls  8 title 'pbe:bpscal'   
-!epstopdf /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.eps
-!pdfcrop /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.pdf
-!mv /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH-crop.pdf /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.pdf
-!rm /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.eps
+plot '001_eec_dH.aux' u 1:2 w points ls  2 title 'pbe:uncorr' ,\
+     '001_eec_dH.aux' u 1:3 w points ls  3 title 'lda:pshift' ,\
+     '001_eec_dH.aux' u 1:4 w points ls  4 title 'pbe:pshift' ,\
+     '001_eec_dH.aux' u 1:5 w points ls  5 title ' lda:apbaf' ,\
+     '001_eec_dH.aux' u 1:6 w points ls  6 title ' pbe:apbaf' ,\
+     '001_eec_dH.aux' u 1:7 w points ls  7 title 'lda:bpscal' ,\
+     '001_eec_dH.aux' u 1:8 w points ls  8 title 'pbe:bpscal'   
+!epstopdf 001_eec_dH.eps
+!pdfcrop 001_eec_dH.pdf
+!mv 001_eec_dH-crop.pdf 001_eec_dH.pdf
+!rm 001_eec_dH.eps

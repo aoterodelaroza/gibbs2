@@ -10,6 +10,7 @@
 ## labels: regression quick
 
 # MgO
+root 001_tmodels
 set notrans
 mm 40.3044
 vfree 2

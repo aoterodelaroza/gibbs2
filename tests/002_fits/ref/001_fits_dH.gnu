@@ -1,5 +1,5 @@
 set terminal postscript eps color enhanced "Helvetica" 14
-set output "/home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.eps"
+set output "001_fits_dH.eps"
 
 set style line  1 lt 1 lc rgb "#000000" pt  4 ps 0.75
 set style line  2 lt 1 lc rgb "#0000FF" pt  6 ps 0.75
@@ -19,11 +19,11 @@ set style increment user
 set ylabel "{/Symbol D}H (Ha)"
 set xlabel "p (GPa)"
 set xzeroaxis
-plot '/home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.aux' u 1:2 w points ls  2 title '       bm4' ,\
-     '/home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.aux' u 1:3 w points ls  3 title '       pt3' ,\
-     '/home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.aux' u 1:4 w points ls  4 title '       pt4' ,\
-     '/home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.aux' u 1:5 w points ls  5 title '     vinet'   
-!epstopdf /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.eps
-!pdfcrop /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.pdf
-!mv /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH-crop.pdf /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.pdf
-!rm /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.eps
+plot '001_fits_dH.aux' u 1:2 w points ls  2 title '       bm4' ,\
+     '001_fits_dH.aux' u 1:3 w points ls  3 title '       pt3' ,\
+     '001_fits_dH.aux' u 1:4 w points ls  4 title '       pt4' ,\
+     '001_fits_dH.aux' u 1:5 w points ls  5 title '     vinet'   
+!epstopdf 001_fits_dH.eps
+!pdfcrop 001_fits_dH.pdf
+!mv 001_fits_dH-crop.pdf 001_fits_dH.pdf
+!rm 001_fits_dH.eps

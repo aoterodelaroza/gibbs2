@@ -8,6 +8,7 @@
 ## check: 001_elec.eos_static -a1e-10
 
 # Aluminium
+root 001_elec
 set notrans
 mm 26.981538
 vfree 1

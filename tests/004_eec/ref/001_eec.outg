@@ -150,7 +150,7 @@ Dedicated to the memory of Miguel Alvarez Blanco (1969--2010).
 WARNING(phase_popinfo): Max. pressure (     758.447) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec.eos_static
+# Copy in file : 001_eec.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.144366117E+01  -1.144366117E+01    74.2759  1.0000000     0.0000   466.5827    3.6761055  -8.8486E-03
 # Polynomial fit to strain: 
@@ -227,7 +227,7 @@ WARNING(phase_popinfo): Max. pressure (     758.447) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (     799.212) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec.eos_static
+# Copy in file : 001_eec.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.139911213E+01  -1.139911213E+01    76.7598  1.0000000     0.0000   435.0005    3.7491087  -1.1276E-02
 # Polynomial fit to strain: 
@@ -305,7 +305,7 @@ WARNING(phase_popinfo): Max. pressure (     799.212) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (     766.746) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec.eos_static
+# Copy in file : 001_eec.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.144366117E+01  -1.144366117E+01    75.6553  1.0000000     0.0000   435.7519    3.7552500  -1.0268E-02
 # Polynomial fit to strain: 
@@ -383,7 +383,7 @@ WARNING(phase_popinfo): Max. pressure (     766.746) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (     792.960) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec.eos_static
+# Copy in file : 001_eec.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.139911213E+01  -1.139911213E+01    75.6930  1.0000000     0.0000   458.2142    3.6828021  -1.0005E-02
 # Polynomial fit to strain: 
@@ -461,7 +461,7 @@ WARNING(phase_popinfo): Max. pressure (     792.960) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (     786.483) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec.eos_static
+# Copy in file : 001_eec.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.144366117E+01  -1.144366117E+01    75.6895  1.0000000     0.0000   452.0061    3.6911483  -9.2986E-03
 # Polynomial fit to strain: 
@@ -539,7 +539,7 @@ WARNING(phase_popinfo): Max. pressure (     786.483) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (     778.102) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec.eos_static
+# Copy in file : 001_eec.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.139911213E+01  -1.139911213E+01    75.6680  1.0000000     0.0000   445.9745    3.7294326  -1.0745E-02
 # Polynomial fit to strain: 
@@ -617,7 +617,7 @@ WARNING(phase_popinfo): Max. pressure (     778.102) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (     794.182) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec.eos_static
+# Copy in file : 001_eec.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.144366117E+01  -1.144366117E+01    75.7005  1.0000000     0.0000   457.5675    3.6766172  -9.0199E-03
 # Polynomial fit to strain: 
@@ -695,7 +695,7 @@ WARNING(phase_popinfo): Max. pressure (     794.182) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (     801.753) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec.eos_static
+# Copy in file : 001_eec.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.139911213E+01  -1.139911213E+01    75.6918  1.0000000     0.0000   457.7479    3.7492509  -1.0714E-02
 # Polynomial fit to strain: 
@@ -735,17 +735,17 @@ WARNING(phase_popinfo): Max. pressure (     801.753) exceeds      500.000
  ---std. dev.---     0.0034   1.469711E-06     0.3128    0.0190933   1.8808E-03
 
 * Input and fitted static energy
-  Writing file: /home/alberto/git/gibbs2/build/tests/004_eec/001_eec.efit
+  Writing file: 001_eec.efit
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.aux
+  Writing file : 001_eec_efit.aux
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_efit.gnu
+  Writing file : 001_eec_efit.gnu
 
 * Plotting static DeltaH
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.aux
+  Writing file : 001_eec_dH.aux
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_dH.gnu
+  Writing file : 001_eec_dH.gnu
 
 * Temperature range examined
   Min_{DebyeT} (K):      198.767
@@ -753,7 +753,7 @@ WARNING(phase_popinfo): Max. pressure (     801.753) exceeds      500.000
   Number of T points:    301
 
 * Calculated temperature effects 
-  Writing file : /home/alberto/git/gibbs2/build/tests/004_eec/001_eec.eos
+  Writing file : 001_eec.eos
 
 + Phase lda:uncorr
 + Phase pbe:uncorr
@@ -764,7 +764,7 @@ WARNING(phase_popinfo): Max. pressure (     801.753) exceeds      500.000
 + Phase lda:bpscal
 + Phase pbe:bpscal
 
-  Writing file: /home/alberto/git/gibbs2/build/tests/004_eec/001_eec_all_t.gnu
+  Writing file: 001_eec_all_t.gnu
 
 GIBBS2 ended succesfully (  8 WARNINGS,   0 COMMENTS)
 

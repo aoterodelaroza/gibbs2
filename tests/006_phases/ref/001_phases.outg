@@ -121,7 +121,7 @@ WARNING(phase_phdos): Volume num.  36 [  6.4515E+01] phDOS renormalized from    
 WARNING(phase_popinfo): Max. pressure (    1787.940) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.eos_static
+# Copy in file : 001_phases.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -7.363983340E+01  -7.363983340E+01   124.0330  1.0000000     0.0000   170.4443    4.1287745  -2.3600E-02
      25.0000  -7.363462568E+01  -7.354072980E+01   110.5005  0.8908960    25.0000   268.0452    3.7298117  -1.0986E-02
@@ -261,7 +261,7 @@ WARNING(phase_popinfo): Negative frequencies found.
 WARNING(phase_popinfo): Max. pressure (    1556.683) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.eos_static
+# Copy in file : 001_phases.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -7.358613764E+01  -7.358613764E+01   120.9898  1.0000000     0.0000   158.8684    4.1242764  -2.7267E-02
      25.0000  -7.358080617E+01  -7.348983412E+01   107.0596  0.8848646    25.0000   255.7854    3.6938478  -1.0998E-02
@@ -325,17 +325,17 @@ WARNING(phase_popinfo): Max. pressure (    1556.683) exceeds      500.000
  ---std. dev.---     0.0067   5.800974E-06     0.1148    0.0202937   1.5038E-03
 
 * Input and fitted static energy
-  Writing file: /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.efit
+  Writing file: 001_phases.efit
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_efit.aux
+  Writing file : 001_phases_efit.aux
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_efit.gnu
+  Writing file : 001_phases_efit.gnu
 
 * Plotting static DeltaH
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_dH.aux
+  Writing file : 001_phases_dH.aux
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_dH.gnu
+  Writing file : 001_phases_dH.gnu
 
 * Static transition pressures (linear interpolation)
 #        Pressure range (GPa)      Stable phase
@@ -348,7 +348,7 @@ WARNING(phase_popinfo): Max. pressure (    1556.683) exceeds      500.000
   Number of T points:     51
 
 * Calculated temperature effects 
-  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.eos
+  Writing file : 001_phases.eos
 
 + Phase b1
 + Phase b2
@@ -659,21 +659,21 @@ WARNING(dyneos): T =    1000.00 P =      75.00, G minimum not found, skipping.
 WARNING(dyneos): T =    1000.00 P =     100.00, G minimum not found, skipping.
 WARNING(dyneos): T =    1000.00 P =     125.00, G minimum not found, skipping.
 
-  Writing file: /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_all_t.gnu
+  Writing file: 001_phases_all_t.gnu
 
-  Writing file: /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_all_p.gnu
+  Writing file: 001_phases_all_p.gnu
 
 * DeltaG(T,p) = G_k(T,p) - G_1(T,p) data 
 * Reference:   1
-  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.dgtp
+  Writing file : 001_phases.dgtp
 
 * G(T,p), V(T,p) and B(T,p) of the stable phase
-  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.tpstab
+  Writing file : 001_phases.tpstab
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_ptrans.gnu
+  Writing file : 001_phases_ptrans.gnu
 
 * Dynamic transition pressures (linear interpolation)
-  Writing file : /home/alberto/git/gibbs2/build/tests/006_phases/001_phases.ptrans
+  Writing file : 001_phases.ptrans
 
 GIBBS2 ended succesfully (312 WARNINGS,   3 COMMENTS)
 

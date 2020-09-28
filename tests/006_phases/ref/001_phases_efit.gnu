@@ -1,5 +1,5 @@
 set terminal postscript eps color enhanced "Helvetica" 14
-set output "/home/alberto/git/gibbs2/build/tests/006_phases/001_phases_efit.eps"
+set output "001_phases_efit.eps"
 
 set style line  1 lt 1 lc rgb "#000000" pt  4 ps 0.75
 set style line  2 lt 1 lc rgb "#0000FF" pt  6 ps 0.75
@@ -20,11 +20,11 @@ set xrange [             40.0000:            160.0000]
 set yrange [            -73.6398:            -72.6035]
 set ylabel "Energy (Ha)"
 set xlabel "Volume (bohr^3)"
-plot '/home/alberto/git/gibbs2/build/tests/006_phases/001_phases.efit' u 1:2 index  0 w points ls  1 notitle,\
-     '/home/alberto/git/gibbs2/build/tests/006_phases/001_phases_efit.aux' u 1:2 index  0 w lines ls  1 title '        b1' ,\
-     '/home/alberto/git/gibbs2/build/tests/006_phases/001_phases.efit' u 1:2 index  1 w points ls  2 notitle,\
-     '/home/alberto/git/gibbs2/build/tests/006_phases/001_phases_efit.aux' u 1:2 index  1 w lines ls  2 title '        b2'   
-!epstopdf /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_efit.eps
-!pdfcrop /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_efit.pdf
-!mv /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_efit-crop.pdf /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_efit.pdf
-!rm /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_efit.eps
+plot '001_phases.efit' u 1:2 index  0 w points ls  1 notitle,\
+     '001_phases_efit.aux' u 1:2 index  0 w lines ls  1 title '        b1' ,\
+     '001_phases.efit' u 1:2 index  1 w points ls  2 notitle,\
+     '001_phases_efit.aux' u 1:2 index  1 w lines ls  2 title '        b2'   
+!epstopdf 001_phases_efit.eps
+!pdfcrop 001_phases_efit.pdf
+!mv 001_phases_efit-crop.pdf 001_phases_efit.pdf
+!rm 001_phases_efit.eps

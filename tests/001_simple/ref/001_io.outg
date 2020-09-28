@@ -77,7 +77,7 @@ WARNING(props_staticeq): Phase mgo: for pressure (     151.515), no min. in stat
   All data points are ACTIVE for dynamic calculations
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/001_simple/001_io.eos_static
+# Copy in file : 001_io.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -7.358887043E+01  -7.358887043E+01   121.1510  1.0000000     0.0000   171.8763    4.1080325  -2.3482E-02
       5.0505  -7.358859243E+01  -7.356836456E+01   117.8347  0.9726260     5.0505   192.3426    3.9999014  -1.9575E-02
@@ -140,11 +140,11 @@ WARNING(props_staticeq): Phase mgo: for pressure (     151.515), no min. in stat
  ---std. dev.---     0.0020   0.000000E+00     0.0352    0.0079563   5.3748E-04
 
 * Input and fitted static energy
-  Writing file: /home/alberto/git/gibbs2/build/tests/001_simple/001_io.efit
+  Writing file: 001_io.efit
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/001_simple/001_io_efit.aux
+  Writing file : 001_io_efit.aux
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/001_simple/001_io_efit.gnu
+  Writing file : 001_io_efit.gnu
 
 * Computed Debye temperatures from static data
 + Phase mgo
@@ -177,13 +177,13 @@ WARNING(props_staticeq): Phase mgo: for pressure (     151.515), no min. in stat
   Number of T points:    100
 
 * Calculated temperature effects 
-  Writing file : /home/alberto/git/gibbs2/build/tests/001_simple/001_io.eos
+  Writing file : 001_io.eos
 
 + Phase mgo
 
-  Writing file: /home/alberto/git/gibbs2/build/tests/001_simple/001_io_all_t.gnu
+  Writing file: 001_io_all_t.gnu
 
-  Writing file: /home/alberto/git/gibbs2/build/tests/001_simple/001_io_all_p.gnu
+  Writing file: 001_io_all_p.gnu
 
 GIBBS2 ended succesfully (  1 WARNINGS,   0 COMMENTS)
 

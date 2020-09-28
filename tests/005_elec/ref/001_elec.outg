@@ -125,7 +125,7 @@ WARNING(phase_popinfo): Negative frequencies found.
 WARNING(phase_popinfo): Max. pressure (     748.885) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/005_elec/001_elec.eos_static
+# Copy in file : 001_elec.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -6.133904968E+00  -6.133904968E+00   109.3634  1.0000000     0.0000    82.5434    4.5841164  -8.5766E-02
 # --- Volume data --- 
@@ -251,7 +251,7 @@ WARNING(phase_popinfo): Negative frequencies found.
 WARNING(phase_popinfo): Max. pressure (     748.885) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/005_elec/001_elec.eos_static
+# Copy in file : 001_elec.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -6.133904968E+00  -6.133904968E+00   109.3633  1.0000000     0.0000    82.5434    4.5841164  -8.5766E-02
 # --- Volume data --- 
@@ -376,7 +376,7 @@ WARNING(phase_popinfo): Negative frequencies found.
 WARNING(phase_popinfo): Max. pressure (     748.841) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/005_elec/001_elec.eos_static
+# Copy in file : 001_elec.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -6.133904968E+00  -6.133904968E+00   109.3590  1.0000000     0.0000    82.5480    4.5841164  -8.5762E-02
 # --- Volume data --- 
@@ -460,17 +460,17 @@ WARNING(phase_popinfo): Max. pressure (     748.841) exceeds      500.000
  ---std. dev.---     0.0083   2.998060E-06     0.1314    0.0204318   2.7598E-03
 
 * Input and fitted static energy
-  Writing file: /home/alberto/git/gibbs2/build/tests/005_elec/001_elec.efit
+  Writing file: 001_elec.efit
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/005_elec/001_elec_efit.aux
+  Writing file : 001_elec_efit.aux
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/005_elec/001_elec_efit.gnu
+  Writing file : 001_elec_efit.gnu
 
 * Plotting static DeltaH
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/005_elec/001_elec_dH.aux
+  Writing file : 001_elec_dH.aux
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/005_elec/001_elec_dH.gnu
+  Writing file : 001_elec_dH.gnu
 
 * Temperature range examined
   Min_{DebyeT} (K):      198.767
@@ -478,7 +478,7 @@ WARNING(phase_popinfo): Max. pressure (     748.841) exceeds      500.000
   Number of T points:      1
 
 * Calculated temperature effects 
-  Writing file : /home/alberto/git/gibbs2/build/tests/005_elec/001_elec.eos
+  Writing file : 001_elec.eos
 
 + Phase al:free
 WARNING(dyneos): T =     298.15 V =      35.2000, volume out of known region.

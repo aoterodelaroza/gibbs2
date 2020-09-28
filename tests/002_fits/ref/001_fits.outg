@@ -80,7 +80,7 @@ Dedicated to the memory of Miguel Alvarez Blanco (1969--2010).
 WARNING(phase_popinfo): Max. pressure (     798.952) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.eos_static
+# Copy in file : 001_fits.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.139912270E+01  -1.139912270E+01    76.7760  1.0000000     0.0000   435.2533    3.6778583  -8.4331E-03
 # Polynomial fit to strain: 
@@ -132,7 +132,7 @@ WARNING(phase_popinfo): Max. pressure (     798.952) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (     798.952) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.eos_static
+# Copy in file : 001_fits.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.139912270E+01  -1.139912270E+01    76.7760  1.0000000     0.0000   435.2533    3.6778583  -8.4331E-03
 # Polynomial fit to strain: 
@@ -184,7 +184,7 @@ WARNING(phase_popinfo): Max. pressure (     798.952) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (     793.305) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.eos_static
+# Copy in file : 001_fits.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.139890801E+01  -1.139890801E+01    76.6805  1.0000000     0.0000   423.4107    4.1940611  -1.8913E-02
 # Polynomial fit to strain: 
@@ -236,7 +236,7 @@ WARNING(phase_popinfo): Max. pressure (     793.305) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (     798.862) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.eos_static
+# Copy in file : 001_fits.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.139911460E+01  -1.139911460E+01    76.7733  1.0000000     0.0000   434.7420    3.6954231  -8.6101E-03
 # Polynomial fit to strain: 
@@ -289,7 +289,7 @@ WARNING(phase_popinfo): Max. pressure (     798.862) exceeds      500.000
 WARNING(phase_popinfo): Max. pressure (     796.021) exceeds      500.000
 
   Fit to static E(V) data:
-# Copy in file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.eos_static
+# Copy in file : 001_fits.eos_static
  #   p(GPa)           E(Ha)             H(Ha)     V(bohr^3)      V/V0   p_fit(GPa)   B(GPa)         Bp      Bpp(GPa-1)
       0.0000  -1.139900219E+01  -1.139900219E+01    76.7423  1.0000000     0.0000   428.2336    3.9168536  -1.2297E-02
 # Vinet, 3th order EOS parameters: 
@@ -300,17 +300,17 @@ WARNING(phase_popinfo): Max. pressure (     796.021) exceeds      500.000
 # p_scal (GPa) =       0.000000000000
 
 * Input and fitted static energy
-  Writing file: /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.efit
+  Writing file: 001_fits.efit
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_efit.aux
+  Writing file : 001_fits_efit.aux
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_efit.gnu
+  Writing file : 001_fits_efit.gnu
 
 * Plotting static DeltaH
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.aux
+  Writing file : 001_fits_dH.aux
 
-  Writing file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_dH.gnu
+  Writing file : 001_fits_dH.gnu
 
 * Computed Debye temperatures from static data
 + Phase bm3
@@ -490,7 +490,7 @@ WARNING(phase_popinfo): Max. pressure (     796.021) exceeds      500.000
   Number of T points:    301
 
 * Calculated temperature effects 
-  Writing file : /home/alberto/git/gibbs2/build/tests/002_fits/001_fits.eos
+  Writing file : 001_fits.eos
 
 + Phase bm3
 + Phase bm4
@@ -498,7 +498,7 @@ WARNING(phase_popinfo): Max. pressure (     796.021) exceeds      500.000
 + Phase pt4
 + Phase vinet
 
-  Writing file: /home/alberto/git/gibbs2/build/tests/002_fits/001_fits_all_t.gnu
+  Writing file: 001_fits_all_t.gnu
 
 GIBBS2 ended succesfully (  5 WARNINGS,   0 COMMENTS)
 

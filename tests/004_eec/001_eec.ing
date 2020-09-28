@@ -11,6 +11,7 @@
 # Diamond
 # Bulk modulus: 446 (Occelli2004)
 # V0 : 3.4170 cm3/mol (/ 6.02214179e23 * 2 * 1e24 / .52917720859^3) = 76.58092 (Occelli2004)
+root 001_eec
 set notrans
 mm 24.0214
 vfree 2

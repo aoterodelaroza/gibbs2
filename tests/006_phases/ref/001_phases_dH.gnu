@@ -1,5 +1,5 @@
 set terminal postscript eps color enhanced "Helvetica" 14
-set output "/home/alberto/git/gibbs2/build/tests/006_phases/001_phases_dH.eps"
+set output "001_phases_dH.eps"
 
 set style line  1 lt 1 lc rgb "#000000" pt  4 ps 0.75
 set style line  2 lt 1 lc rgb "#0000FF" pt  6 ps 0.75
@@ -19,8 +19,8 @@ set style increment user
 set ylabel "{/Symbol D}H (Ha)"
 set xlabel "p (GPa)"
 set xzeroaxis
-plot '/home/alberto/git/gibbs2/build/tests/006_phases/001_phases_dH.aux' u 1:2 w points ls  2 title '        b2'   
-!epstopdf /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_dH.eps
-!pdfcrop /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_dH.pdf
-!mv /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_dH-crop.pdf /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_dH.pdf
-!rm /home/alberto/git/gibbs2/build/tests/006_phases/001_phases_dH.eps
+plot '001_phases_dH.aux' u 1:2 w points ls  2 title '        b2'   
+!epstopdf 001_phases_dH.eps
+!pdfcrop 001_phases_dH.pdf
+!mv 001_phases_dH-crop.pdf 001_phases_dH.pdf
+!rm 001_phases_dH.eps
