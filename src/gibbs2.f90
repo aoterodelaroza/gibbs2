@@ -540,6 +540,10 @@ program gibbs2
            vout_step = -1d0
         end if
 
+     elseif (equal(word,'root'//null)) then
+        word = getword(word,line,lp)
+        fileroot = word(1:leng(word))
+
      ! set ...
      elseif (equal(word,'set'//null)) then
         call setvariables(line,lp)
