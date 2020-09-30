@@ -1451,48 +1451,37 @@ contains
 
     ! set volume range if not given in input
     if (.not.vdefault) then
-       if (.not.allocated(vlist)) then
-          if (nvs > 0) then
-             allocate(vlist(nvs))
-             vlist(1) = vmin_setv
-             vstep = (vmax_setv-vmin_setv) / real(nvs-1,8)
-             do i = 2, nvs
-                vlist(i) = vlist(i-1) + vstep
-             end do
-          else if (nvs == -1) then
-             nvs = floor((vmax_setv - vmin_setv) / vstep) + 1
-             allocate(vlist(nvs))
-             vlist(1) = vmin_setv
-             do i = 2, nvs
-                vlist(i) = vlist(i-1) + vstep
-             end do
-          else
-             allocate(vlist(temp_vmax))
-             nvs = 0
-             i1: do i = 1, nph
-                j1: do j = 1, ph(i)%nv
-                   if (ph(i)%v(j) < vmin_setv .or. ph(i)%v(j) > vmax_setv) cycle
-                   k1: do k = 1, nvs
-                      if (abs(vlist(k) - ph(i)%v(j)) < vdist) cycle j1
-                   end do k1
-
-                   nvs = nvs + 1
-                   if (nvs == size(vlist)) then
-                      call realloc(vlist,2*nvs)
-                   end if
-                   vlist(nvs) = ph(i)%v(j)
-                end do j1
-             end do i1
-             call realloc(vlist,nvs)
-          end if
+       if (allocated(vlist)) deallocate(vlist)
+       if (nvs > 0) then
+          allocate(vlist(nvs))
+          vlist(1) = vmin_setv
+          vstep = (vmax_setv-vmin_setv) / real(nvs-1,8)
+          do i = 2, nvs
+             vlist(i) = vlist(i-1) + vstep
+          end do
+       else if (nvs == -1) then
+          nvs = floor((vmax_setv - vmin_setv) / vstep) + 1
+          allocate(vlist(nvs))
+          vlist(1) = vmin_setv
+          do i = 2, nvs
+             vlist(i) = vlist(i-1) + vstep
+          end do
+       else
+          ! let each phase handle it
+          nvs = 0
        end if
-       call inplace_sort(vlist(1:nvs))
 
-       write (uout,'("* Volume range examined")')
-       write (uout,'("  Volume range (bohr^3): ",F14.5," -> ",F14.5)') &
-          vlist(1), vlist(nvs)
-       write (uout,'("  Number of V points: ",I6)') nvs
-       write (uout,*)
+       if (allocated(vlist)) then
+          call inplace_sort(vlist(1:nvs))
+
+          write (uout,'("* Volume range examined")')
+          write (uout,'("  Volume range (bohr^3): ",F14.5," -> ",F14.5)') &
+             vlist(1), vlist(nvs)
+          write (uout,'("  Number of V points: ",I6)') nvs
+          write (uout,*)
+       else
+          write (uout,'("* Input volumes used for the EOS")')
+       end if
     end if
 
   end subroutine setup_phases

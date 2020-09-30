@@ -41,10 +41,7 @@ Dedicated to the memory of Miguel Alvarez Blanco (1969--2010).
   Pressure range (GPa):        0.000 ->        0.000
   Number of p points:      1
 
-* Volume range examined
-  Volume range (bohr^3):       35.20000 ->      150.00000
-  Number of V points:     43
-
+* Input volumes used for the EOS
 * Scaling of phase  1 (al:free)
   Experimental T (K):     298.15
   Experimental p (GPa):       0.00

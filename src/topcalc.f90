@@ -462,7 +462,7 @@ contains
     use gnuplot_templates, only: gen_allgnu_t, gen_allgnu_p
     use fit, only: fit_pshift, fitinfo
     use varbas, only: nph, ph, mpropout, propfmt, tm_static, nps, plist, nts, tlist, &
-       writelevel, nvs, vlist, doerrorbar, propname, vbracket
+       writelevel, nvs, vlist, doerrorbar, propname, vbracket, vdefault
     use tools, only: error, leng, fopen, fclose
     use param, only: mline, mline_fmt, uout, format_string, format_string_header, fileroot,&
        iowrite, warning, faterr, null, undef
@@ -474,6 +474,7 @@ contains
     type(fitinfo) :: pfit
     real*8 :: proplist(mpropout), errlist(mpropout)
     type(fitpack) :: ft
+    logical :: isalloc
 
     if (writelevel < 1) return
 
@@ -563,7 +564,15 @@ contains
           end do
           write (lu,'(/)')
 
-          if (allocated(vlist)) then
+          if (.not.vdefault) then
+             ! if this was a "volume input", use the volumes for this particular phase
+             isalloc = allocated(vlist)
+             if (.not.isalloc) then
+                nvs = ph(i)%nv
+                allocate(vlist(nvs))
+                vlist = ph(i)%v(1:ph(i)%nv)
+             end if
+                
              ! (V,T) properties
              do k = 1, nvs
                 ! check volume is inside the known region
@@ -582,8 +591,13 @@ contains
                 end if
              end do
              write (lu,'(/)')
-          end if
 
+             ! clean up if this was a "volume input" command
+             if (.not.isalloc) then
+                deallocate(vlist)
+                nvs = 0
+             endif
+          end if
        end do
        write (lu,'(/)')
 

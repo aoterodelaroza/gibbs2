@@ -28,7 +28,7 @@ contains
   subroutine eosfit_ev_fitt(p)
     use fit, only: fit_pshift
     use evfunc, only: fv0, fv1, fv2, fv3, fv4
-    use varbas, only: phase, doerrorbar, nvs, vlist, nps, plist, writelevel
+    use varbas, only: phase, doerrorbar, nvs, vlist, nps, plist, writelevel, vdefault
     use tools, only: fopen, leng, fclose
     use param, only: mline_fmt, au2gpa, fileroot, ifmt_p, ifmt_eprec, ifmt_v, ifmt_x, ifmt_b, &
        ifmt_bp, ifmt_bpp, ioappend, iowrite, null, uout, format_string_header, format_string
@@ -41,6 +41,7 @@ contains
     integer :: luw
     logical, save :: luw_open = .false.
     real*8, dimension(8) :: prop, prop2
+    logical :: isalloc
 
     if (writelevel > 0) then
        if (luw_open) then
@@ -115,7 +116,16 @@ contains
        end if
     end do
     
-    if (allocated(vlist)) then
+    if (.not.vdefault) then
+       ! if this was a "volume input", use the volumes for this particular phase
+       isalloc = allocated(vlist)
+       if (.not.isalloc) then
+          nvs = p%nv
+          allocate(vlist(nvs))
+          vlist = p%v(1:p%nv)
+       end if
+
+       ! properties at the volumes
        write (uout,'("# --- Volume data --- ")')
        if (writelevel > 0) then
           write (luw,'("# --- Volume data --- ")')
@@ -139,6 +149,12 @@ contains
              write (luw,fm) pt,ek,gk,vk,vk/p%veq_static,pt,bk,b1,b2
           end if
        end do
+
+       ! clean up if this was a "volume input" command
+       if (.not.isalloc) then
+          deallocate(vlist)
+          nvs = 0
+       endif
     end if
     if (writelevel > 0) then
        write (luw,'(/)') 
