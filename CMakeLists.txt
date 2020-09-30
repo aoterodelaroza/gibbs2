@@ -72,7 +72,7 @@ string(TOUPPER ${CMAKE_BUILD_TYPE} BT)
 set(CMAKE_Fortran_FLAGS_${BT} "${FFLAGS_${BT}}")
 
 ## numdiff
-find_package(Numdiff)
+find_package(NUMDIFF)
 
 ## the syntax.txt target
 add_custom_target(syntax 
