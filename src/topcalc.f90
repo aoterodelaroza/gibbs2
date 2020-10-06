@@ -20,7 +20,6 @@ module topcalc
   implicit none
 
   public
-  integer, parameter, private :: mtrans = 50
 
   ! interpolation
   integer, parameter :: mxint = 30
@@ -272,70 +271,131 @@ contains
   ! Calculate the static transition pressures and write to output.
   subroutine static_transp(ga)
     use varbas, only: nph, ph, nps, nph, plist, dotrans, n_not_pv_min
-    use tools, only: error, leng
-    use param, only: uout, warning, faterr
-    real*8, intent(in) :: ga(nps,nph)
+    use tools, only: error, leng, realloc
+    use param, only: uout, warning, mline
+    real*8, intent(in) :: ga(:,:) ! ga(nps,nph)
 
-    integer :: i, j, idmin, iold
-    real*8 :: ptrans(mtrans), gmin, pnew, pold, lastp
-    integer :: i1trans(mtrans), i2trans(mtrans)
-    integer :: ntrans
+    integer :: i, j, nphase, idmin
+    real*8, allocatable :: ptrans(:)
+    integer, allocatable :: iphase(:), idtrans(:)
+    character(mline) :: phname
+    real*8 :: pold
 
+    integer, parameter :: idtrans_not_set = 0
+    integer, parameter :: idtrans_invalid_to_valid = 1
+    integer, parameter :: idtrans_valid_to_invalid = 2
+    integer, parameter :: idtrans_phase_appeared = 3
+    integer, parameter :: idtrans_phase_disappeared = 4
+    integer, parameter :: idtrans_normal = 5
+    integer, parameter :: idtrans_end_of_range = 6
+
+    character*45, parameter :: reason(0:6) = (/&
+       "End of pressure range                        ",&
+       "Pressure Range of invalid phase finished     ",&
+       "Minimum of G not found                       ",&
+       "Pressure range of a more stable phase started",&
+       "Pressure range of the stable phase ended     ",&
+       "                                             ",&
+       "End of pressure range                        "/)
+    
+    ! Do we need to run the calculation of the transition pressures?
     if (.not.dotrans) return
     if (n_not_pv_min() < 2) then
-       if (nph >= 2) then
+       if (nph >= 2) &
           call error('static_transp','Not enough phases with p = 0 minimum to find transition pressures.',warning)
-       end if
        return
     end if
 
-    i1trans = 0
-    i2trans = 0
-    ptrans = 0d0
-    ntrans = 0
+    ! write the header
     write (uout,'("* Static transition pressures (linear interpolation)")')
-    write (uout,'("#        Pressure range (GPa)      Stable phase")')
-    do j = 1, nps
-       idmin = -1
-       gmin = 1d30
-       do i = 1, nph
-          if (ga(j,i) < gmin .and. plist(j)>ph(i)%pmin .and. plist(j)<ph(i)%pmax) then
-             gmin = ga(j,i)
-             idmin = i
-          end if
-       end do
+    write (uout,'("#        Pressure range (GPa)      Stable phase     Reason for the transition ")')
 
-       if (j == 1) then
-          ! first point, save the first stable phase
-          iold = idmin
-          pold = 0d0
-       elseif (idmin == -1) then
-          ! there are no phases left, so exit
-          lastp = plist(j-1)
-          exit
-       else
-          if (idmin /= iold) then
-             pnew = plist(j-1) - (ga(j-1,idmin)-ga(j-1,iold)) * (plist(j) - plist(j-1)) /&
-                (ga(j,idmin)-ga(j,iold) - (ga(j-1,idmin)-ga(j-1,iold)))
-             !
-             ntrans = ntrans + 1
-             if (ntrans > mtrans) then
-                call error('gibbs2','maximum static transitions exceeded, increase mtrans',faterr)
-             end if
-             ptrans(ntrans) = pnew
-             i1trans(ntrans) = iold
-             i2trans(ntrans) = idmin
-             !
-             write (uout,'(2X,F12.4," --> ",F12.4,2X,A10)')&
-                pold, pnew, trim(adjustl(ph(iold)%name(1:leng(ph(iold)%name))))
-             iold = idmin
-             pold = pnew
+    ! allocate arrays to save the results
+    allocate(ptrans(10),idtrans(10),iphase(10))
+    ptrans = 0d0
+    idtrans = idtrans_not_set
+    iphase = 0
+    nphase = 0
+    
+    ! do the first pressure by hand
+    call find_min_phase(1,idmin)
+    nphase = 1
+    iphase(nphase) = idmin
+    
+    ! run the rest of the pressures
+    do j = 2, nps
+       ! calculate the new phase
+       call find_min_phase(j,idmin)
+
+       ! is this a new phase?
+       if (idmin /= iphase(nphase)) then
+          nphase = nphase + 1
+          if (nphase > size(ptrans,1)) then
+             call realloc(ptrans,2*nphase)
+             call realloc(idtrans,2*nphase)
+             call realloc(iphase,2*nphase)
+          end if
+          iphase(nphase) = idmin
+
+          if (iphase(nphase-1) <= 0) then
+             ! from unknown/invalid to valid
+             ptrans(nphase-1) = plist(j)
+             idtrans(nphase-1) = idtrans_invalid_to_valid
+          elseif (iphase(nphase) <= 0) then
+             ! from valid to unknown/invalid
+             ptrans(nphase-1) = plist(j-1)
+             idtrans(nphase-1) = idtrans_valid_to_invalid
+          elseif (plist(j-1) < ph(iphase(nphase))%pmin) then
+             ! a more stable phase just appeared
+             ptrans(nphase-1) = plist(j)
+             idtrans(nphase-1) = idtrans_phase_appeared
+          elseif (plist(j) > ph(iphase(nphase-1))%pmax) then
+             ! the stable phase just disappeared
+             ptrans(nphase-1) = plist(j)
+             idtrans(nphase-1) = idtrans_phase_disappeared
+          else
+             ! a usual phase to phase transition
+             ptrans(nphase-1) = plist(j-1) - (ga(j-1,iphase(nphase))-ga(j-1,iphase(nphase-1))) * (plist(j) - plist(j-1)) /&
+                (ga(j,iphase(nphase))-ga(j,iphase(nphase-1)) - (ga(j-1,iphase(nphase))-ga(j-1,iphase(nphase-1))))
+             idtrans(nphase-1) = idtrans_normal
           end if
        end if
     end do
-    write (uout,'(2X,F12.4," --> ",F12.4,2X,A10)')&
-       pold, lastp, trim(adjustl(ph(iold)%name(1:leng(ph(iold)%name))))
+    ptrans(nphase) = plist(nps)
+    idtrans(nphase) = idtrans_end_of_range
+
+    ! write the results, first phase
+    pold = plist(1)
+    do i = 1, nphase
+       if (iphase(i) <= 0) then
+          phname = "invalid"
+       else
+          phname = trim(ph(iphase(i))%name)
+       end if
+       write (uout,'(2X,F12.4," --> ",F12.4,2X,A13,7X,A)') pold, ptrans(i), trim(adjustl(phname)),&
+          trim(reason(idtrans(i)))
+       pold = ptrans(i)
+    end do
     write (uout,*)
+
+  contains
+    subroutine find_min_phase(jj,idmin_)
+      integer, intent(in) :: jj
+      integer, intent(out) :: idmin_
+
+      real*8 :: gmin
+      integer :: ii
+
+      idmin_ = 0
+      gmin = huge(1d0)
+      do ii = 1, nph
+         if (ga(jj,ii) < gmin .and. plist(jj)>ph(ii)%pmin .and. plist(jj)<ph(ii)%pmax) then
+            gmin = ga(jj,ii)
+            idmin_ = ii
+         end if
+      end do
+
+    end subroutine find_min_phase
 
   end subroutine static_transp
 
@@ -345,6 +405,9 @@ contains
     use varbas, only: nph, ph, nps, plist, nts, tlist
     use tools, only: error, leng, fopen, fclose
     use param, only: uout, fileroot, iowrite, faterr, null
+
+    integer, parameter :: mtrans = 50
+
     real*8 :: gmin
     real*8 :: ptrans(mtrans)
     integer :: i1trans(0:mtrans), i2trans(0:mtrans)

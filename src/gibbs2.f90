@@ -23,7 +23,6 @@ program gibbs2
      plotdh, interpolate, static_transp
   use debye, only: fill_thetad
   use fit, only: fit_init, fit_pshift
-  use param, only: mline, marg, title, fileroot, param_init
   use eos, only: eosfit_ev_fitt
   use varbas, only: nps, plist, nvs, vlist, nts, tlist, nph, ph, mm, pdefault, &
      phase_max, pstep, tstep, vstep, tdefault, vdefault, temp_pmax, temp_tmax, &
@@ -33,8 +32,8 @@ program gibbs2
      props_staticeq, phase_punch_pfit, phase_popinfo, quiet
   use tools, only: lower, equal, fopen, fclose, isinteger, ffdate, getword, isreal, fgetline, &
      leng, error, realloc, timer, ioinit, getargs, stdargs
-  use param, only: amu2au, faterr, ioerror, ioread, ncomms, nwarns, null, pct0, uin, uout, &
-     units_f_cm1, warning, header
+  use param, only: amu2au, faterr, ioerror, ncomms, nwarns, null, pct0, uin, uout, &
+     header, mline, marg, title, fileroot, param_init
   implicit none
   
   interface
@@ -46,9 +45,9 @@ program gibbs2
 
   integer :: argc
   character*(mline) :: argv(marg), optv, sdate, line, line2, word
-  character*(mline) :: fileout, file
-  integer :: ipid, lp, lp2, onps, onts, onvs, onfs, nn
-  integer :: i, j, uuin, iph
+  character*(mline) :: fileout
+  integer :: ipid, lp, lp2, onps, onts, onvs
+  integer :: i, j, iph
   logical :: ok, ok2, ok3, verbose, doit
   logical :: callhouse, callpf, calleout
   integer :: nhouse
