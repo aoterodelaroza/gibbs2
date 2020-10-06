@@ -338,9 +338,9 @@ WARNING(phase_popinfo): Max. pressure (    1556.683) exceeds      500.000
   Writing file : 001_phases_dH.gnu
 
 * Static transition pressures (linear interpolation)
-#        Pressure range (GPa)      Stable phase
-        0.0000 -->     503.1476          b1
-      503.1476 -->       0.0000          b2
+#        Pressure range (GPa)      Stable phase     Reason for the transition 
+        0.0000 -->     503.1476            b1        
+      503.1476 -->     600.0000            b2        End of pressure range
 
 * Temperature range examined
   Min_{DebyeT} (K):      198.767
