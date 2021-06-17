@@ -1,17 +1,17 @@
 ! Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 ! Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
-! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
-! 
+! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo.
+!
 ! gibbs2 is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or (at
 ! your option) any later version.
-! 
+!
 ! gibbs2 is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -23,7 +23,7 @@ module debye
   public :: fill_thetad, get_thetad
   public :: thermal, debeins, thermalphon
 
-  ! if temperature is lower, then gamma(t) = gamma(tlim) 
+  ! if temperature is lower, then gamma(t) = gamma(tlim)
   real*8, parameter, public :: tlim_gamma = 50d0 + 1d-6
   real*8, parameter, public :: cvlim = 1d-30
 
@@ -154,7 +154,7 @@ contains
     case(tm_debye_input, tm_debye_poisson_input)
        td = exp(fv0(p%tdfit_mode,log(v),p%ntpol,p%tpol))
        gamma = -fv1(p%tdfit_mode,log(v),p%ntpol,p%tpol)
-       
+
     case(tm_debye,tm_debye_einstein,tm_debye_einstein_v)
        td = (6*pi*pi*vfree*v*v)**third / pckbau * p%pofunc * sqrt(f2/mm)
        gamma = -1d0/6d0 - 0.5d0 * (1+v*f3/f2)
@@ -182,7 +182,7 @@ contains
     ! and vibrational entropy (S).
     !
     ! To evaluate this properties, the following integral is needed:
-    !                     
+    !
     !                                  |    x^3     |
     ! Debye (y) = 3*y^(-3) * INT (0,y) | ---------- | dx
     !                                  | exp(x) - 1 |
@@ -192,7 +192,7 @@ contains
     ! using a Gauss-Legendre quadrature.
     !
     !-INPUT-------------------------------------------------------------
-    !   ThetaD : Debye's temperature (K).     
+    !   ThetaD : Debye's temperature (K).
     !        T : Absolute temperature (K).
     !-OUTPUT-------------------------------------------------------------
     !       en : Vibrational internal energy, U (hartree/molecule).
@@ -217,9 +217,9 @@ contains
     debye=zero
     xabs=zero
     if (t<1d-5) then
-       en = vfree*9d0*pckbau*ThetaD/8d0 
+       en = vfree*9d0*pckbau*ThetaD/8d0
        cv = zero
-       he = vfree*9d0*pckbau*ThetaD/8d0 
+       he = vfree*9d0*pckbau*ThetaD/8d0
        ent = zero
        return
     endif
@@ -256,7 +256,11 @@ contains
 
     !.thermodynamic vibrational properties
 22  en  = vfree * 3d0 * pckbau * (ThetaD*3d0/8d0 + T*debye)
-    cv  = vfree * 3d0 * pckbau * (4d0*debye - 3d0*y/(exp(y)-1d0))
+    if (y > 100d0) then
+       cv  = vfree * 12d0 * pckbau * debye
+    else
+       cv  = vfree * 3d0 * pckbau * (4d0*debye - 3d0*y/(exp(y)-1d0))
+    endif
     ent = vfree * 3d0 * pckbau * (debye*4d0/3d0 - log(1d0-exp(-y)))
     he  = en - T * ent
 
@@ -268,15 +272,15 @@ contains
     use varbas, only: phase, vfree, vbracket
     use tools, only: error, gauleg
     use param, only: au2gpa, faterr, half, pckbau, pi, third, twothird, zero
-    !-------------------------------------------------------------------------- 
+    !--------------------------------------------------------------------------
     ! Calcularemos las propiedades tratando la rama de frecuencias
-    ! acusticas por el modelo cuasiarmonico de Debye y la rama de 
+    ! acusticas por el modelo cuasiarmonico de Debye y la rama de
     ! frecuencias opticas por el modelo de Einstein.
-    ! vol : volumen de entrada para el q se calcularan las propiedades 
+    ! vol : volumen de entrada para el q se calcularan las propiedades
     ! Bstat: es el Bstat.
     ! Kstat= (dBstat/dPstat): Es la Kstat.
     ! Pstat: (dEstat/dV)
-    !-------------------------------------------------------------------------- 
+    !--------------------------------------------------------------------------
 
     ! NOTA: Estoy dividiendo el volumen entre Vref que es el minimo de la curva
     ! ajustada estatica=> considerar normalizarlo respecto a otro volumen.
@@ -312,7 +316,7 @@ contains
     ! Usamos la Theta calculada por Gibbs, pero la normalizamos a las 3 frecuencias
     ! acusticas por lo que hay que dividirla por el factor (n·Z)**(1/3)
     ThetaD = ThetaDinp/vfree**third
-    
+
     !.error condition controls
     debye=zero
     xabs=zero
@@ -339,7 +343,7 @@ contains
        tmpB = (bstat/p%beq_static)**(half)
        tmpPB = (1d0 - twothird*pstat/bstat)**(half)
        tmpTot = tmpVol*tmpB*tmpPB
-       freq_i = p%freqg(:,1) * tmpTot 
+       freq_i = p%freqg(:,1) * tmpTot
     else
        freq_i = freqg_interpolate(p,vol)
     end if
@@ -392,17 +396,17 @@ contains
     end if
 
     !.thermodynamic acoustic vibrational properties
-    en_ac = 3d0*pckbau*(ThetaD*3d0/8d0 + T*debye)      
+    en_ac = 3d0*pckbau*(ThetaD*3d0/8d0 + T*debye)
     cv_ac = 3d0*pckbau*(4d0*debye - 3d0*y/(exp(y)-1d0))
     ent_ac= 3d0*pckbau*(debye*4d0/3d0-log(1d0-exp(-y)))
     he_ac = en_ac - T * ent_ac
 
-    ! calculamos el sumatorio para la F,S y Cv optica con las 
-    ! frecuencias  opticas 
+    ! calculamos el sumatorio para la F,S y Cv optica con las
+    ! frecuencias  opticas
     sum_F_op = sum(x_i/2d0 + log(1-exp(-x_i))) * prefac
     sum_S_op = sum(x_i/(exp(x_i)-1)-log(1-exp(-x_i))) * prefac
-    he_op = sum_F_op * pckbau * T 
-    ent_op= sum_S_op * pckbau     
+    he_op = sum_F_op * pckbau * T
+    ent_op= sum_S_op * pckbau
 
     ! sumamos ambas contribuciones para obtener las totales:
     !.thermodynamic vibrational properties
@@ -417,7 +421,7 @@ contains
   ! thermodynamic properties at V and T using phonon DOS QHA.
   ! Returns: uvib = vibrational contribution to the internal energy,
   ! cv = constant-volume heat capacity, fvib = vibrational
-  ! contribution to the free energy, ent = entropy, cv_lowt = 
+  ! contribution to the free energy, ent = entropy, cv_lowt =
   ! low-temeprature cv (for the calculation of gamma).
   subroutine thermalphon (p,T,v,uvib,cv,fvib,ent,cv_lowt)
     use varbas, only: phase
@@ -438,7 +442,7 @@ contains
     ! initialize
     kt = pckbau * T
 
-    ! interpolate the phonon DOS at volume v. 
+    ! interpolate the phonon DOS at volume v.
     ! f = frequencies (Hartree), d = phDOS, on the same grid.
     nf = size(p%phdos_f,1)
     allocate(d(nf))
@@ -448,7 +452,7 @@ contains
     ! calculate the minimum temperature
     allocate(tmin(nf))
     tmin = -p%phdos_f / (pckbau * logtiny)
-       
+
     ! calculate emfkt = exp(-omega / (k*T))
     allocate(emfkt(nf),l1emfkt(nf))
     where (T < tmin)
@@ -530,7 +534,7 @@ contains
 
     ! interpolate phonon DOS to this volume
     if (phonsplin) then
-       ! not-a-knot cubic spline 
+       ! not-a-knot cubic spline
        d = 0d0
        do i = 1, size(p%phdos_f)
           d(i) = ppvalu(p%v,p%phdos_d(i,:,:),p%nv-1,4,v,0)
@@ -540,13 +544,13 @@ contains
           end if
        end do
     else
-       ! linear 
+       ! linear
        fac = (v-p%v(id)) / (p%v(id+1) - p%v(id))
        d = (1d0-fac) * p%phdos_d(:,1,id) + fac * p%phdos_d(:,1,id+1)
     end if
 
   end function phdos_interpolate
-  
+
   ! Interpolate the frequencies at Gamma to volume v. Returns the
   ! interpolated frequencies in d.
   function freqg_interpolate(p,v) result(ff)
@@ -575,5 +579,5 @@ contains
     ff = (1d0-fac) * p%freqg(:,id) + fac * p%freqg(:,id+1)
 
   end function freqg_interpolate
-  
+
 end module debye

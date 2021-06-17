@@ -21,7 +21,7 @@ program gibbs2
   use topcalc, only: fint, iint, interp_input, mxint, nxint, printfreqs, drhouse, write_energy,&
      dyn_transp, stablevbg, deltag, dyneos, topcalc_init, popinput, eshift_vexp, popenergyfit,&
      plotdh, interpolate, static_transp
-  use debye, only: fill_thetad
+  use debye, only: fill_thetad, thermal
   use fit, only: fit_init, fit_pshift
   use eos, only: eosfit_ev_fitt
   use varbas, only: nps, plist, nvs, vlist, nts, tlist, nph, ph, mm, pdefault, &
@@ -55,6 +55,7 @@ program gibbs2
   real*8 :: vout_ini, vout_end, vout_step, e0
   integer :: ierr, isv, onxint, nid
   real*8, allocatable :: va(:,:), ba(:,:), ga(:,:)   ! v(p), b(p) and g(p) for all the phases.
+  real*8 :: adebye, axabs, aen, acv, ahe, aent
 
   ! initialize
   call param_init()
