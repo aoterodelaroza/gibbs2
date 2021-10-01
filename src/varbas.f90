@@ -1,17 +1,17 @@
 ! Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 ! Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
-! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
-! 
+! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo.
+!
 ! gibbs2 is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or (at
 ! your option) any later version.
-! 
+!
 ! gibbs2 is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -182,7 +182,7 @@ module varbas
      "F-Esta(kJ/mol)",&
      "S(J/molK)     ",&
      "ThetaD(K)     ",&
-     "gamma         ",& 
+     "gamma         ",&
      "alpha(10^-5/K)",&
      "dp/dT(GPa/K)  ",&
      "Bs(GPa)       ",&
@@ -251,7 +251,7 @@ contains
 
   ! Initialize the variables in this module
   subroutine varbas_init()
-    
+
     mm = -1d0
     vfree = -1
     !
@@ -312,7 +312,7 @@ contains
           doplotdh = .false.
 
        else if (equal(argv(i)//null,"-f"//null) .or. equal(argv(i)//null,"--noefit"//null)) then
-          doefit = .false.    
+          doefit = .false.
 
        else if (equal(argv(i)//null,"-h"//null) .or. equal(argv(i)//null,"-?"//null) .or. &
           equal(argv(i)//null,"--help"//null)) then
@@ -367,7 +367,7 @@ contains
     write (uout,'(" -h --help -?")')
     write (uout,'("         This help.")')
     write (uout,'("")')
-    stop 
+    stop
 
   end subroutine help_me_and_exit
 
@@ -386,7 +386,7 @@ contains
 
   ! Returns the number of phases that are E(V) and have a minimum.
   function n_not_pv_min()
-    
+
     integer :: n_not_pv_min
 
     integer :: i
@@ -424,7 +424,7 @@ contains
     real*8 :: fdum
     real*8 :: ffnegcrit, fignore, eps
     integer :: nfmax
-    
+
     ! cutoffs with units
     ffnegcrit = fnegcrit
     fignore = abs(ignore_neg_cutoff)
@@ -453,7 +453,7 @@ contains
        do while(lp < leng(line))
           idum = idum + 1
           if (idum == i1) then
-             ok = isreal(fdum,line,lp)             
+             ok = isreal(fdum,line,lp)
              if (fdum < ffnegcrit) then
                 if (fdum < -fignore) &
                    doneg = .true.
@@ -467,7 +467,7 @@ contains
              end if
              ff(nn) = fdum
           else if (idum == i2) then
-             ok = isreal(dd(nn),line,lp)             
+             ok = isreal(dd(nn),line,lp)
              dd(nn) = max(dd(nn),0d0)
              if (.not. ok) then
                 write (uout,'("File: ",A)') file(1:leng(file))
@@ -494,7 +494,7 @@ contains
     do i = 1, nfmax
        f(i) = (i-1) * fstep
     end do
-    
+
     ! linear interpolation to the fixed grid
     d(1) = 0d0
     nn2 = 1
@@ -535,7 +535,7 @@ contains
     use tools, only: fopen, fclose, fgetline, isreal, realloc
     character*(mline), intent(in) :: file
     real*8, allocatable, intent(inout) :: f(:)
-    
+
     integer :: lu, nn, lp
     logical :: ok
     character*(mline) :: line
@@ -577,7 +577,7 @@ contains
        fit_strain_pt, fit_strain_x3, fit_strain_xinv3, fit_vinet, reg_lad, reg_lsq
     type(phase), intent(out) :: p
     character*(mline), intent(in) :: line_in
-    
+
     integer, parameter :: minterp = 20
 
     integer :: lp, lp2
@@ -607,7 +607,7 @@ contains
     p%cvfit_mode = p%fit_mode
     p%tdfit_mode = p%fit_mode
     p%reg_mode = reg_lsq
-    ! scaling 
+    ! scaling
     p%scaltype = scal_noscal
     p%vscal = 0d0
     p%eec_p = 0d0
@@ -698,7 +698,7 @@ contains
              elseif (equal(word,'quotient'//null).or.equal(word,'x1'//null)) then
                 p%fit_mode = p%fit_mode + fit_strain_x1 * 100
              elseif (equal(word,'x3'//null)) then
-                p%fit_mode = p%fit_mode + fit_strain_x3 * 100 
+                p%fit_mode = p%fit_mode + fit_strain_x3 * 100
              elseif (equal(word,'xinv3'//null) .or. equal(word,'x3inv'//null)) then
                 p%fit_mode = p%fit_mode + fit_strain_xinv3 * 100
              elseif (equal(word,'v'//null)) then
@@ -733,7 +733,7 @@ contains
                 allocate(p%freqg(size(ffreq,1),1))
                 p%freqg(:,1) = ffreq
                 deallocate(ffreq)
-             else 
+             else
                 p%tmodel = tm_debye_einstein_v
                 icol_ph = 0
                 lp = lp2
@@ -758,7 +758,7 @@ contains
              elseif (equal(word,'mfv'//null)) then
                 p%a_grun = -0.95d0
                 p%b_grun = half
-             else 
+             else
                 lp = lp2
                 ok = isreal(p%a_grun,line,lp)
                 ok = ok .and. isreal(p%b_grun,line,lp)
@@ -1003,7 +1003,7 @@ contains
           end if
        end if
     end do
-    
+
     ! calculate the f(poisson)
     fx=2*(1+p%poisson)/3d0/(1-2*p%poisson)
     gx=(1+p%poisson)/3d0/(1-p%poisson)
@@ -1126,7 +1126,7 @@ contains
              ! get name
              word = getword(word,line,lp)
              if (prefix(leng(prefix):leng(prefix)) == '/') then
-                word = cat(prefix,word) 
+                word = cat(prefix,word)
              else
                 word = cat(cat(prefix,'/'//null),word)
              end if
@@ -1297,7 +1297,7 @@ contains
              (/1,6,9,4,10,6,2,10/))
           write (uout,fm) "#","p(GPa)","V(bohr^3)","V/V0","p_fit(GPa)","B(GPa)","Bp","Bpp(GPa-1)"
           fm = format_string((/ifmt_p,ifmt_v,ifmt_x,ifmt_p,ifmt_b,ifmt_bp,ifmt_bpp/),1)
-          
+
           do j = ph(i)%nv, 1, -1
              v = ph(i)%v(j)
              f1 = fv1(ph(i)%fit_mode,v,ph(i)%npol,ph(i)%cpol)
@@ -1554,7 +1554,7 @@ contains
     type(phase), intent(inout) :: p
 
     integer :: i, idx(p%nv)
-    
+
     if (.not.allocated(p%v).or..not.allocated(p%e)) return
 
     do i = 1, p%nv
@@ -1583,10 +1583,10 @@ contains
     integer, intent(in) :: n
     integer, intent(in), optional :: numax
     logical, intent(in), optional :: lshift
-    
+
     integer :: n2, nv
     logical :: doshift
-    
+
     doshift = .false.
     if (present(lshift)) doshift = lshift
 
@@ -1673,7 +1673,7 @@ contains
     write (uout,'("  Pressure range (GPa): ",F12.3," -> ",F12.3)') &
        p%pmin, p%pmax
     write (uout,'("  Number of interpolated fields : ",I4)') p%ninterp
-    
+
     ! input units
     write (uout,'("  Input units: ")')
     select case(p%units_v)
@@ -1757,7 +1757,7 @@ contains
        write (uout,'("  Val. of fixed parameters: ",1p,99(E12.4,X))') p%obelix(1:p%nfix)
     end if
     write (uout,'("  Static equilibrium volume (bohr^3): ",F20.10)') p%veq_static
-    write (uout,'("  Static equilibrium energy (Ha): ",F20.10)') p%eeq_static 
+    write (uout,'("  Static equilibrium energy (Ha): ",F20.10)') p%eeq_static
     write (uout,'("  Static equilibrium energy (kJ/mol): ",F20.10)') p%eeq_static * ha2kjmol
     write (uout,'("  Static bulk modulus (GPa): ",F15.6)') p%beq_static
     write (uout,'("  Static EOS fit, error RMS (Ha): ",1p,E15.7)') p%rms
@@ -1810,7 +1810,7 @@ contains
 
        if (count(p%dyn_active) < 5 .and. p%tmodel /= tm_static) then
           write (uout,'(/"The number of active volumes for dynamic calc. is: ", I1 )') count(p%dyn_active)
-          write (uout,'("Please, check the temperature model and source data.")') 
+          write (uout,'("Please, check the temperature model and source data.")')
           call error('phase_popinfo','Not enough active volumes for dynamic calc. fits (< 5).',faterr)
        end if
     end if
@@ -1916,7 +1916,7 @@ contains
        end do
        write (uout,*)
     end if
-    
+
   end subroutine phase_checkconvex
 
   !> Convert input units and apply the Z keyword (zz).
@@ -1926,7 +1926,7 @@ contains
     type(phase), intent(inout) :: p
     real*8, intent(in) :: zz
 
-    ! volume 
+    ! volume
     p%v = p%v / zz
     p%vscal = p%vscal / zz
     if (p%units_v == units_v_ang3) then
@@ -2000,7 +2000,7 @@ contains
     ntot = p%npol - p%nfix
     p%aic = 2 * ntot + p%nv * log(sse)
     p%bic = log(real(p%nv,8)) * ntot + p%nv * log(sse)
-    
+
   end subroutine phase_checkfiterr
 
   !> Process the phDOS data for phase p. Convert units, renormalize,
@@ -2099,7 +2099,7 @@ contains
     end do
 
   end subroutine phase_phdos
-  
+
   !> Write information to the standard output about the average
   !> polynomial fit to the static data.
   subroutine phase_punch_pfit(p)
@@ -2108,7 +2108,7 @@ contains
     use tools, only: error
     use param, only: mline_fmt, au2gpa, uout, warning, format_string, format_string_header
     type(phase), intent(inout) :: p
-    
+
     integer :: i
     character*(mline_fmt) :: fm
     real*8 :: vk, bk, ek, gk, f1, f2, f3, f4, b1, b2

@@ -1,17 +1,17 @@
 ! Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 ! Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
-! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
-! 
+! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo.
+!
 ! gibbs2 is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or (at
 ! your option) any later version.
-! 
+!
 ! gibbs2 is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -35,7 +35,7 @@ program gibbs2
   use param, only: amu2au, faterr, ioerror, ncomms, nwarns, null, pct0, uin, uout, &
      header, mline, marg, title, fileroot, param_init
   implicit none
-  
+
   interface
      subroutine setvariables (line, lp)
        character*(*), intent(in) :: line
@@ -69,7 +69,7 @@ program gibbs2
   ! timer
   call timer (0,ipid,'main',uout)
   call timer (1,ipid,'main',uout)
-     
+
   ! initialization of default values for variables
   call evfunc_init()
   call fit_init()
@@ -302,13 +302,13 @@ program gibbs2
         ! interpolate input
         ! interpolate [def: p]
         !  V
-        !  v1 v2 
+        !  v1 v2
         !  v3 ...
         !  PT
         !  p1 t1 p2 t2
         !  p3 t3 ...
         !  P
-        !  p1 p2 
+        !  p1 p2
         !  p3 ...
         ! endinterpolate
      elseif (equal(word,'interpolate'//null)) then
@@ -333,7 +333,7 @@ program gibbs2
            lp2 = 1
            if (.not.ok) &
               call error('gibbs2','Error input, INTERPOLATE..ENDINTERPOLATE: missing ENDINTERPOLATE',faterr)
-           
+
            onxint = nxint
            do while(isreal(fint(nxint),line,lp2))
               iint(nxint) = isv
@@ -474,7 +474,7 @@ program gibbs2
 
         line2 = line(lp:)
         call phase_init(ph(nph),line2)
-        
+
      ! activate {name.s|num.i} {n1 n2 ...|ALL}
      elseif (equal(word,'activate'//null)) then
 
@@ -585,10 +585,10 @@ program gibbs2
   call props_staticeq()
 
   ! Phase information
-  write (uout,'("* Phase information after initial setup")') 
+  write (uout,'("* Phase information after initial setup")')
   do i = 1, nph
      call phase_popinfo(ph(i),i)
-     write (uout,'("  Fit to static E(V) data:")') 
+     write (uout,'("  Fit to static E(V) data:")')
      if (.not.ph(i)%staticmin) then
         write (uout,'("# Static volume (V0) corresponds to a extreme of the grid, not the real eq. volume")')
      end if
@@ -598,7 +598,7 @@ program gibbs2
   end do
 
   ! print the (new) static energy
-  if (calleout) then 
+  if (calleout) then
      call write_energy(vout_ini,vout_step,vout_end)
   end if
 
@@ -648,7 +648,7 @@ program gibbs2
      ok = ok .and. (ph(i)%tmodel == tm_static)
   end do
   if (ok) goto 99
-  
+
   ! check that mm and vfree were given in input
   if (mm < 0d0) then
      call error('gibbs2','molecular mass not found',faterr)
@@ -702,11 +702,11 @@ program gibbs2
   write (uout,*)
 
   ! Properties at input temperatures (topcalc)
-  call dyneos() 
-  
+  call dyneos()
+
   ! delta_G(T,p) (topcalc)
   call deltag()
-  
+
   ! G(T,p), V(T,p) and B(T,p) for the stable phase (topcalc)
   call stablevbg()
 

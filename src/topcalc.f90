@@ -1,17 +1,17 @@
 ! Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 ! Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
-! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
-! 
+! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo.
+!
 ! gibbs2 is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or (at
 ! your option) any later version.
-! 
+!
 ! gibbs2 is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -37,9 +37,9 @@ module topcalc
      integer :: napol = 0    ! total helmholtz free energy
      integer :: nspol = 0    ! total entropy
      ! fit modes
-     integer :: emode = 0    
-     integer :: amode = 0    
-     integer :: smode = 0 
+     integer :: emode = 0
+     integer :: amode = 0
+     integer :: smode = 0
      ! coefficients
      real*8 :: epol(0:mmpar) = 0d0
      real*8 :: apol(0:mmpar) = 0d0
@@ -69,7 +69,7 @@ contains
 
     integer :: i
 
-    write (uout,'("* Input ")') 
+    write (uout,'("* Input ")')
     write (uout,'("  Title: ",A)') trim(adjustl(title(1:leng(title)-1)))
     write (uout,'("  Output file (lu=",I2,"): ",A)') uout, &
        fileout(1:leng(fileout))
@@ -151,8 +151,8 @@ contains
     ! auxiliary file
     write (uout,'("  Writing file : ",A/)') trim(fileroot)//"_efit.aux"
     lu = fopen(lu,trim(fileroot)//"_efit.aux"//null,iowrite)
-    write (lu,'("# E(V) plot, auxiliary file. ")') 
-    write (lu,'("# Contains fitted E(V) calculated on a finer grid. ")') 
+    write (lu,'("# E(V) plot, auxiliary file. ")')
+    write (lu,'("# Contains fitted E(V) calculated on a finer grid. ")')
     do i = 1, nph
        write (lu,'("# Phase ",A)') trim(adjustl(ph(i)%name(1:leng(ph(i)%name))))
        fm = format_string_header((/1,ifmt_v,ifmt_eprec/),(/1,9,9/))
@@ -225,8 +225,8 @@ contains
     write (uout,'("* Plotting static DeltaH"/)')
     write (uout,'("  Writing file : ",A/)') trim(fileroot) // "_dH.aux"
     lu = fopen(lu,trim(fileroot) // "_dH.aux"//null,iowrite)
-    write (lu,'("# H(p) plot, auxiliary file. ")') 
-    write (lu,'("# Contains dH(p) (Ha) calculated on input pressures. ")') 
+    write (lu,'("# H(p) plot, auxiliary file. ")')
+    write (lu,'("# Contains dH(p) (Ha) calculated on input pressures. ")')
     write (lu,'("# p(GPa)",999(2X,A13,4X))') &
        (trim(adjustl(ph(k)%name(1:leng(ph(k)%name)))),k=2,nph)
     do j = 1, nps
@@ -242,7 +242,7 @@ contains
     end do
     write (lu,*)
     call fclose(lu)
-    
+
     ! write the gnu file
     write (uout,'("  Writing file : ",A/)') trim(fileroot) // "_dH.gnu"
     lu = opengnu(trim(fileroot) // "_dH")
@@ -297,7 +297,7 @@ contains
        "Pressure range of the stable phase ended     ",&
        "                                             ",&
        "End of pressure range                        "/)
-    
+
     ! Do we need to run the calculation of the transition pressures?
     if (.not.dotrans) return
     if (n_not_pv_min() < 2) then
@@ -316,12 +316,12 @@ contains
     idtrans = idtrans_not_set
     iphase = 0
     nphase = 0
-    
+
     ! do the first pressure by hand
     call find_min_phase(1,idmin)
     nphase = 1
     iphase(nphase) = idmin
-    
+
     ! run the rest of the pressures
     do j = 2, nps
        ! calculate the new phase
@@ -432,7 +432,7 @@ contains
     write(lu,'("set yrange [0:",F20.4,"]")') plist(nps)
     write(lu,'("set xrange [0:",F20.4,"]")') tlist(nts)
     write(lu,'("unset key")')
-    
+
     ! transition pressures (T)
     write (uout,'("* Dynamic transition pressures (linear interpolation)")')
     lu2 = fopen(lu2,trim(fileroot)//".ptrans"//null,iowrite)
@@ -504,7 +504,7 @@ contains
           n = n + 1
           if (n == count) ends = "   "
           if (i /= 1 .or. j/= 1) starts = "     "
-          
+
           jj = 2 + 2*j
           if (jj > 9) then
              write (lu,'(A5,"''",A,"'' u 1:",I2.2," index ",I2," w linespoints ls 1 ",A2)') &
@@ -618,7 +618,7 @@ contains
              if (pfit%nfit > 0 .and. doerrorbar) then
                 write (lu,fme) "e", errlist
              end if
-             
+
              ! coordinated with preamble of varbas.f90
              ph(i)%didtp(j,k) = .true.
              ph(i)%gtp(j,k) = proplist(5) ! G(T,p)
@@ -635,7 +635,7 @@ contains
                 allocate(vlist(nvs))
                 vlist = ph(i)%v(1:ph(i)%nv)
              end if
-                
+
              ! (V,T) properties
              do k = 1, nvs
                 ! check volume is inside the known region
@@ -687,7 +687,7 @@ contains
     real*8, intent(in) :: v, t, pres
     type(fitinfo), intent(in) :: pfit
     real*8, dimension(mpropout), intent(out) :: proplist, errlist
-    
+
     real*8, dimension(mpropout) :: prop, prop2, aux
     real*8 :: vol, b0, e, g
     integer :: i, id, ierr
@@ -732,7 +732,7 @@ contains
 
           ! calculate properties for this fit
           call dyneos_calc(p,vol,t,ft_aux,aux)
-          
+
           ! add to averages
           prop = prop + aux * pfit%wei(i)
           prop2 = prop2 + aux * aux * pfit%wei(i)
@@ -787,11 +787,11 @@ contains
     f4  = fv4(ft%amode,v,ft%napol,ft%apol)
 
     ! pressure derivatives of the isothermal bulk modulus
-    b0 = v * f2 
+    b0 = v * f2
     b1 = -(1+v*f3/f2)
-    b2 = ((f3+v*f4)/f2**2 - v*f3**2/f2**3) 
+    b2 = ((f3+v*f4)/f2**2 - v*f3**2/f2**3)
 
-    ! thermal pressure 
+    ! thermal pressure
     pext = -f1
     psta = -f1s
     pth = pext - psta
@@ -806,7 +806,7 @@ contains
        end if
        call thermal (theta,t,D,Derr,uvib,cv_vib,fvib,svib)
 
-    case(tm_debye_einstein,tm_debye_einstein_v) 
+    case(tm_debye_einstein,tm_debye_einstein_v)
        ! Debye-Einstein
        if (gamma_from_s .and. t < tlim_gamma) then
           call debeins(p,theta,tlim_gamma,v,D,Derr,uvib,cv_lowt,fvib,svib,cv_ac,cv_op)
@@ -821,7 +821,7 @@ contains
           gam_op = (9d0*b0s*(b1s-1)+2*psta)/(6*(3*b0s-2*psta))
           gamma = (cv_ac * gam_ac + cv_op * gam_op) / cv_vib
        end if
-    case(tm_qhafull) 
+    case(tm_qhafull)
        ! use full phonon spectra at given V by linear interpolation
        ! then, gamma = V / Cv * (ds/dV)_T
        ! the region below tlim_gamma is avoided
@@ -858,28 +858,28 @@ contains
           call vbracket(p,v,id,.false.)
           auxcpol = 0d0
           if (id < 0) then
-             auxcpol(1:4) = p%fel_cpol(1:4,-id) 
+             auxcpol(1:4) = p%fel_cpol(1:4,-id)
              fel = fv0(ftsel_fitmode,T,6,auxcpol)
-             auxcpol(1:4) = p%tsel_cpol(1:4,-id) 
+             auxcpol(1:4) = p%tsel_cpol(1:4,-id)
              sel = fv0(ftsel_fitmode,T,6,auxcpol)
-             auxcpol(1:4) = p%fel_cpol(1:4,-id) - p%tsel_cpol(1:4,-id) 
+             auxcpol(1:4) = p%fel_cpol(1:4,-id) - p%tsel_cpol(1:4,-id)
              cv_el = fv1(ftsel_fitmode,T,6,auxcpol)
           else if (id > 0) then
-             auxcpol(1:4) = p%fel_cpol(1:4,id) 
+             auxcpol(1:4) = p%fel_cpol(1:4,id)
              fel  = fv0(ftsel_fitmode,T,6,auxcpol)
-             auxcpol(1:4) = p%fel_cpol(1:4,id+1) 
+             auxcpol(1:4) = p%fel_cpol(1:4,id+1)
              rdum = fv0(ftsel_fitmode,T,6,auxcpol)
              fel = fel + (v-p%v(id)) / (p%v(id+1)-p%v(id)) * (rdum-fel)
              !
-             auxcpol(1:4) = p%tsel_cpol(1:4,id) 
+             auxcpol(1:4) = p%tsel_cpol(1:4,id)
              sel  = fv0(ftsel_fitmode,T,6,auxcpol)
-             auxcpol(1:4) = p%tsel_cpol(1:4,id+1) 
+             auxcpol(1:4) = p%tsel_cpol(1:4,id+1)
              rdum = fv0(ftsel_fitmode,T,6,auxcpol)
              sel = sel + (v-p%v(id)) / (p%v(id+1)-p%v(id)) * (rdum-sel)
              !
-             auxcpol(1:4) = p%fel_cpol(1:4,id) - p%tsel_cpol(1:4,id) 
+             auxcpol(1:4) = p%fel_cpol(1:4,id) - p%tsel_cpol(1:4,id)
              cv_el  = fv1(ftsel_fitmode,T,6,auxcpol)
-             auxcpol(1:4) = p%fel_cpol(1:4,id+1) - p%tsel_cpol(1:4,id+1) 
+             auxcpol(1:4) = p%fel_cpol(1:4,id+1) - p%tsel_cpol(1:4,id+1)
              rdum = fv1(ftsel_fitmode,T,6,auxcpol)
              cv_el = cv_el + (v-p%v(id)) / (p%v(id+1)-p%v(id)) * (rdum-cv_el)
           else
@@ -912,7 +912,7 @@ contains
     end if
 
     ! Rest of thermodynamic properties -- note g can be calculate in 2 ways:
-    !  with Fsum from two fits or from quasiharmonic formula+.... dg is a measure 
+    !  with Fsum from two fits or from quasiharmonic formula+.... dg is a measure
     !  this inaccuracy.
     ! pbeta = (dp/dT)_V
     b0 = b0 * au2gpa
@@ -920,13 +920,13 @@ contains
     Pbeta = cv_sum * gamma / v * au2gpa
     alpha = Pbeta / b0
     tmp = 1d0 + gamma * alpha * t
-    Cp = cv_sum * tmp 
+    Cp = cv_sum * tmp
     Bs = b0 * tmp
     g = f0 + pext * v
     dg = f0 - f0s - fsum
 
     ! conversion to output units
-    g = g * ha2kjmol 
+    g = g * ha2kjmol
     dg = dg * ha2kjmol
     pext = pext * au2gpa
     pth = pth * au2gpa
@@ -946,7 +946,7 @@ contains
     ssum = ssum * ha2kjmol * 1000
     cv_sum = cv_sum * ha2kjmol * 1000
 
-    ! output properties list -> coordinated with preamble of varbas.f90 
+    ! output properties list -> coordinated with preamble of varbas.f90
     proplist( 1) = pext
     proplist( 2) = t
     proplist( 3) = v
@@ -976,7 +976,7 @@ contains
     proplist(27) = sel
     proplist(28) = cv_vib
     proplist(29) = cv_el
-    
+
   end subroutine dyneos_calc
 
   ! Write the dgtp file.
@@ -1043,7 +1043,7 @@ contains
     write (uout,'("  Writing file : ",A/)') trim(fileroot)//".tpstab"
     lu = fopen(lu,trim(fileroot)//".tpstab"//null,iowrite)
 
-    write (lu,'("## 1:T(K) 2:p(GPa) 3:stable phase 4:G(kJ/mol) 5:V(bohr^3) 6:B_T(GPa)")') 
+    write (lu,'("## 1:T(K) 2:p(GPa) 3:stable phase 4:G(kJ/mol) 5:V(bohr^3) 6:B_T(GPa)")')
     do i = 1, nts
        do j = 1, nps
           gmin = 1d30
@@ -1083,7 +1083,7 @@ contains
     real*8 :: apol(0:mmpar)
 
     if (writelevel < 2) return
-    
+
     if (interp_input > 0) then
        if (.not.allocated(fint)) allocate(fint(mxint))
        if (.not.allocated(iint)) allocate(iint(mxint))
@@ -1132,7 +1132,7 @@ contains
     do i = 1, nph
        if (ph(i)%ninterp <= 0) cycle
        write (lu,'("# Phase ",A)') trim(adjustl(ph(i)%name(1:leng(ph(i)%name))))
-       
+
        n = ph(i)%ninterp
        ifm(1:4) = (/1,ifmt_v,ifmt_p,ifmt_t/)
        ifm(5:n+4) = ifmt_interp
@@ -1175,7 +1175,7 @@ contains
           else
              cycle
           end if
-          
+
           if (v <= ph(i)%v(1) .or. v >= ph(i)%v(ph(i)%nv)) then
              write (uout,'("Volume = ",F12.4)') v
              call error('interpolate','Volume out of V-range for this phase',warning)
@@ -1187,7 +1187,7 @@ contains
              fac = (v-ph(i)%v(k)) / (ph(i)%v(k+1)-ph(i)%v(k))
              fi(1:n) = (1d0-fac) * ph(i)%interp(k,1:n) + fac * ph(i)%interp(k+1,1:n)
           end if
-          
+
           if (iint(j) == 1 .or. iint(j) == 2) then
              write (lu,fms) v, p, "  static  ", fi(1:n)
           else
@@ -1195,7 +1195,7 @@ contains
           end if
 
        end do
-       
+
        write (lu,'(/)')
     end do
 
@@ -1219,7 +1219,7 @@ contains
     integer :: napol
     real*8 :: apol(0:mmpar), psum
     character*(mline) :: msg
-    
+
     integer :: imode, niter
     real*8 :: vexpt, bexpt, fac
     real*8 :: v0, b0, e0, g0, e0new, g0new, v0t, b0t, e0t, g0t
@@ -1301,18 +1301,18 @@ contains
              psta_vexpt = -fv1(ph(i)%fit_mode,vexpt,ph(i)%npol,ph(i)%cpol)
              psum = -fv1(imode,vexpt,napol,apol) - ph(i)%eec_p / au2gpa
              pth_vexpt = psum - psta_vexpt
-             ph(i)%scale_a1 = psum 
+             ph(i)%scale_a1 = psum
           case(scal_apbaf)
              ! shift the energy, e' = e + p*v
              psum = -fv1(imode,vexpt,napol,apol) - ph(i)%eec_p / au2gpa
-             ph(i)%scale_a1 = psum 
+             ph(i)%scale_a1 = psum
              ph(i)%scale_a2 = vexpt
           case(scal_bpscal)
              ! propeties at vexpt
              psta_vexpt = -fv1(ph(i)%fit_mode,vexpt,ph(i)%npol,ph(i)%cpol)
              pth_vexpt = -fv1(imode,vexpt,napol,apol) - psta_vexpt - ph(i)%eec_p / au2gpa
              bsta_vexpt = vexpt * fv2(ph(i)%fit_mode,vexpt,ph(i)%npol,ph(i)%cpol)
-             bt_vexpt = vexpt * fv2(imode,vexpt,napol,apol) 
+             bt_vexpt = vexpt * fv2(imode,vexpt,napol,apol)
              bpobj = -(bexpt - bt_vexpt + bsta_vexpt) / pth_vexpt
 
              ! bracket
@@ -1351,10 +1351,10 @@ contains
 
              ! final static vexp and bexp scaling parameters
              vexp = vexpt / fac
-             bexp = b0 * pth_vexpt / fv1(ph(i)%fit_mode,fac * v0,ph(i)%npol,ph(i)%cpol) 
+             bexp = b0 * pth_vexpt / fv1(ph(i)%fit_mode,fac * v0,ph(i)%npol,ph(i)%cpol)
              ph(i)%scale_a1 = vexp * bexp / v0 / b0
              ph(i)%scale_a2 = v0 / vexp
-             
+
           end select
        end if
 
@@ -1414,13 +1414,13 @@ contains
     function qfac(ff)
       real*8, intent(in) :: ff
       real*8 :: qfac
-      
+
       real*8 :: facv0, psta_fv0, bsta_fv0
 
       facv0 = ff * v0
-      psta_fv0 = -fv1(ph(i)%fit_mode,facv0,ph(i)%npol,ph(i)%cpol) 
-      bsta_fv0 = facv0 * fv2(ph(i)%fit_mode,facv0,ph(i)%npol,ph(i)%cpol) 
-      
+      psta_fv0 = -fv1(ph(i)%fit_mode,facv0,ph(i)%npol,ph(i)%cpol)
+      bsta_fv0 = facv0 * fv2(ph(i)%fit_mode,facv0,ph(i)%npol,ph(i)%cpol)
+
       qfac = bsta_fv0 / psta_fv0 - bpobj
 
     end function qfac
@@ -1434,7 +1434,7 @@ contains
        em_pol4, em_sommerfeld, ftsel_fitmode
     use fit, only: fit_ev, fitinfo
     use param, only: pi, pckbau, pisquare, twothird
-    type(phase), intent(in) :: p 
+    type(phase), intent(in) :: p
     real*8, intent(in) :: T
     integer, intent(out) :: napol
     real*8, intent(out) :: apol(0:mmpar)
@@ -1460,7 +1460,7 @@ contains
              call thermalphon(p,T,p%v(i),uvib,cv,aux(i),dum,cv2)
           else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
              call debeins(p,p%td(i),T,p%v(i),D,Derr,uvib,cv,aux(i),dum,cv_ac,cv_op)
-          else 
+          else
              call thermal(p%td(i),T,D,Derr,uvib,cv,aux(i),dum)
           end if
        end do
@@ -1468,9 +1468,9 @@ contains
 
     ! build Helmholtz free energy
     if (dostatic) then
-       aux = p%e + aux 
+       aux = p%e + aux
     end if
-    
+
     if (doel .and. T > tsmall_el) then
        if (p%emodel == em_sommerfeld) then
           if (p%efree) then
@@ -1482,7 +1482,7 @@ contains
        else if (p%emodel == em_pol4) then
           do i = 1, p%nv
              auxcpol = 0d0
-             auxcpol(1:4) = p%fel_cpol(1:4,i) 
+             auxcpol(1:4) = p%fel_cpol(1:4,i)
              aux(i) = aux(i) + fv0(ftsel_fitmode,T,6,auxcpol)
           end do
        end if
@@ -1526,7 +1526,7 @@ contains
 
     ! 0 K calculations of gamma are tricky -> use ~30 K instead
     t0 = max(T,tlim_gamma)
-    
+
     ! find Svib(V,T) at the grid volumes and store in aux
     aux = 0d0
 
@@ -1538,7 +1538,7 @@ contains
              call thermalphon(p,t0,p%v(i),uvib,cv,dum,aux(i),cv2)
           else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
              call debeins(p,p%td(i),t0,p%v(i),D,Derr,uvib,cv,dum,aux(i),cv_ac,cv_op)
-          else 
+          else
              call thermal(p%td(i),t0,D,Derr,uvib,cv,dum,aux(i))
           end if
        end do
@@ -1557,7 +1557,7 @@ contains
        else if (p%emodel == em_pol4) then
           do i = 1, p%nv
              auxcpol = 0d0
-             auxcpol(1:4) = p%tsel_cpol(1:4,i) 
+             auxcpol(1:4) = p%tsel_cpol(1:4,i)
              aux(i) = aux(i) + fv0(ftsel_fitmode,t0,6,auxcpol)
           end do
        end if
@@ -1567,7 +1567,7 @@ contains
     realv(1:rnv) = pack(p%v,p%dyn_active)
     reals(1:rnv) = pack(aux,p%dyn_active)
 
-    ! -T*S fit for the calculation 
+    ! -T*S fit for the calculation
     call fitt_polygibbs(p%sfit_mode,realv(1:rnv),reals(1:rnv),nspol,spol,ierrs,.false.)
     mode = p%sfit_mode
 
@@ -1582,7 +1582,7 @@ contains
     use evfunc, only: fv1
     use varbas, only: phase, em_pol4, ftsel_fitmode
     use fit, only: fit_ev
-    type(phase), intent(in) :: p 
+    type(phase), intent(in) :: p
     real*8, intent(in) :: T
     integer, intent(out) :: ncvpol
     real*8, intent(out) :: cvpol(0:mmpar)
@@ -1766,7 +1766,7 @@ contains
              pol(npol)%b1 = -(1+v0*f3/f2)
              pol(npol)%b2 = ((f3+v0*f4)/f2**2 - v0*f3**2/f2**3) / au2gpa
           end do
-       end do 
+       end do
 
        ! weights
        pol(1:npol)%w = exp(-pol(1:npol)%rms2 / rms2min * &
@@ -1799,7 +1799,7 @@ contains
           emean2(1:nv) = emean2(1:nv) + pol(j)%w * emean*emean
        end do
        emean2 = sqrt(max(emean2,0d0))
-       
+
        pavg%ndat = ph(i)%nv
        pavg%w = 1d0
        call fit_pshift(mode,ph(i)%v,0d0,pavg%npar,pavg%c,v0,fdum1,fdum2,fdum3,ierr)
@@ -1818,7 +1818,7 @@ contains
        pavg%b2 = ((f3+v0*f4)/f2**2 - v0*f3**2/f2**3) / au2gpa
        pavg%rms2 = sum((ph(i)%e - fv0(mode,ph(i)%v,pavg%npar,pavg%c))**2)
 
-       write (uout,'("  Bootstrap process.")') 
+       write (uout,'("  Bootstrap process.")')
        write (uout,'("  Polynomials accepted: ",I9)') npol
        write (uout,'("  Polynomials rejected: ",I9)') nrej
        fm = format_string_header( &
@@ -1830,7 +1830,7 @@ contains
           write (uout,fm) pol(j)%deg, pol(j)%w, pol(j)%vmin, &
              pol(j)%emin, pol(j)%b0, pol(j)%b1, pol(j)%b2
        end do
-       
+
        quo = abs(prop2 / prop)
        fm = format_string((/15,ifmt_v,ifmt_e,ifmt_b,ifmt_bp,ifmt_bpp/),1)
        write (uout,fm) "-average pol.--", pavg%vmin, pavg%emin, pavg%b0, pavg%b1, pavg%b2
@@ -1917,8 +1917,8 @@ contains
              tmpTot = tmpVol*tmpB*tmpPB
 
              freq(1:n) = ph(i)%freqg(:,1) * tmpTot * ha2cm_1
-             
-             write (lu,'(F10.4,9999(F16.8))') ph(i)%v(j), freq(1:n) 
+
+             write (lu,'(F10.4,9999(F16.8))') ph(i)%v(j), freq(1:n)
           end do
           write (lu,'(/)')
        end if

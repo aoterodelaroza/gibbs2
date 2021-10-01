@@ -1,17 +1,17 @@
 ! Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 ! Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
-! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
-! 
+! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo.
+!
 ! gibbs2 is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or (at
 ! your option) any later version.
-! 
+!
 ! gibbs2 is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -78,7 +78,7 @@ contains
 
     integer :: i, istep, ndat
     real*8 :: p1, p2, p, px, ppx
-    logical :: found 
+    logical :: found
     real*8 :: v1, v2, vxx
     integer :: nstep
 
@@ -110,7 +110,7 @@ contains
        else
           vx = v(ndat)
        end if
-       bx = vx * fv2(mode,vx,npol,cpol) * au2gpa 
+       bx = vx * fv2(mode,vx,npol,cpol) * au2gpa
        ex = fv0(mode,vx,npol,cpol)
        hx = (ex + p * vx)
        return
@@ -120,7 +120,7 @@ contains
     vx = 0.5d0*(v1+v2)
     px = 1d30
     ierr = 1
-    do nstep = 1, mstep 
+    do nstep = 1, mstep
        ! funcall
        px = -fv1(mode,vx,npol,cpol)-p
        if (abs(px) < tol .or. abs(v1-v2) < tolv) then
@@ -145,7 +145,7 @@ contains
        end if
     end do
 
-    bx = vx * fv2(mode,vx,npol,cpol) * au2gpa 
+    bx = vx * fv2(mode,vx,npol,cpol) * au2gpa
     ex = fv0(mode,vx,npol,cpol)
     hx = (ex + p * vx)
 
@@ -243,12 +243,12 @@ contains
     integer, intent(out) :: ierrout
     logical, intent(in) :: ispv
     type(fitinfo), intent(out), optional :: pfit
-    
+
     integer :: imin, iamin(1), ndata
     real*8  :: apar(0:mmpar), rms
     real*8, allocatable :: w(:)
     integer :: npar, nfit
-    integer :: mmfit 
+    integer :: mmfit
     integer, allocatable :: nparfit(:), ndatafit(:)
     integer :: npar2(mpar+1)
     real*8 :: rms2(mpar+1), pwei(mpar+1), rms2min, apar2(0:mmpar,mpar+1)
@@ -290,7 +290,7 @@ contains
        call polfit(ndata,1,ndata,x,func,w,rms,npar,apar)
        nparpro = npar
        aparpro = apar
-    else 
+    else
        if (pweigh_mode == pweigh_gibbs2) then
           ! save the minimum of the energy
           iamin = minloc(func)
@@ -310,7 +310,7 @@ contains
              ! fit this polynomial
              nfit = nfit + 1
              call polfit (ndata,1,ndata,x,func,w,rms,npar,apar2(:,nfit))
-             
+
              !.discard fitts that don't give a minimum in the input bracket
              if (nfit.gt.mmfit) then
                 nfit = mmfit
@@ -334,7 +334,7 @@ contains
           ! polynomial weights
           pwei(1:nfit) = exp(-rms2(1:nfit) / (rms2min+1d-15) * real(npar2(1:nfit),8) / real(ndata,8))
           pwei = pwei / sum(pwei(1:nfit))
-          
+
 
           ! average polynomial
           nparpro = nparmax
@@ -480,7 +480,7 @@ contains
     logical, intent(in) :: ispv
     integer, intent(in), optional :: nfix, idfix(0:mmpar)
     real*8, intent(in), optional :: obelix(0:mmpar)
-    
+
     real*8, parameter :: minpack_tol = 1d-8
 
     integer :: i, count
@@ -530,7 +530,7 @@ contains
     if (nparpro > 3) aparpro(4) = 4d0
     if (nparpro > 4) aparpro(5) = -5d-2
     if (nparpro > 5) aparpro(6) = 5d-4
-    
+
     ! optional fixing of some parameters
     evfunc_npar = nparpro
     if (present(nfix) .and. present(idfix) .and. present(obelix)) then
@@ -582,7 +582,7 @@ contains
           aparpro(i) = atemp(evfunc_mask(i))
        end do
     end if
-    
+
     deallocate(evfunc_xm,evfunc_ym)
 
   end subroutine fitt_eos

@@ -1,17 +1,17 @@
 ! Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 ! Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
-! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
-! 
+! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo.
+!
 ! gibbs2 is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or (at
 ! your option) any later version.
-! 
+!
 ! gibbs2 is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -79,10 +79,10 @@ module evfunc
   !
   ! * bm3, pt3, murn, vinet and AP2: the above (npar = 3) plus
   !   apar(4) = B_0'
-  ! 
+  !
   ! * bm4, pt4: the above (npar = 4) plus
   !   apar(5) = B_0''
-  ! 
+  !
   ! * pt5: the above (npar = 5) plus
   !   apar(6) = B_0'''
   !
@@ -156,7 +156,7 @@ contains
 
   ! Initialize the evfunc variables
   subroutine evfunc_init()
-    
+
     nelectrons = 0
 
   end subroutine evfunc_init
@@ -172,29 +172,29 @@ contains
 
     select case(fmode)
     case(fit_polygibbs)
-       write (lu,'("# Polynomial EOS, result of averaged fit: ")') 
+       write (lu,'("# Polynomial EOS, result of averaged fit: ")')
        write (lu,'("# Degree : ",I2)') npar-2
-       write (lu,'("#      p(x) = a_0 + a_1 * (V/V_scal) + ... + a_n * (V/V_scal)^n")') 
+       write (lu,'("#      p(x) = a_0 + a_1 * (V/V_scal) + ... + a_n * (V/V_scal)^n")')
        do i = 0, npar-2
           write (lu,'("# a_",I2.2," = ",1p,E20.12,0p)') i, apar(i)
        end do
        write (lu,'("# V_scal (bohr^3) = ",1p,E20.12,0p)') apar(npar-1)
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(npar) * au2gpa
     case(fit_bm2)
-       write (lu,'("# Birch-Murnaghan, 2nd order EOS parameters: ")') 
+       write (lu,'("# Birch-Murnaghan, 2nd order EOS parameters: ")')
        write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(4) * au2gpa
     case(fit_bm3)
-       write (lu,'("# Birch-Murnaghan, 3rd order EOS parameters: ")') 
+       write (lu,'("# Birch-Murnaghan, 3rd order EOS parameters: ")')
        write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(5) * au2gpa
     case(fit_bm4)
-       write (lu,'("# Birch-Murnaghan, 4th order EOS parameters: ")') 
+       write (lu,'("# Birch-Murnaghan, 4th order EOS parameters: ")')
        write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
@@ -215,7 +215,7 @@ contains
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(5) * au2gpa
     case(fit_pt4)
-       write (lu,'("# Poirier-Tarantola, 4th order EOS parameters: ")') 
+       write (lu,'("# Poirier-Tarantola, 4th order EOS parameters: ")')
        write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
@@ -223,7 +223,7 @@ contains
        write (lu,'("# B_0'''' = ",1p,E15.7,0p)') apar(5) / au2gpa
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(6) * au2gpa
     case(fit_pt5)
-       write (lu,'("# Poirier-Tarantola, 5th order EOS parameters: ")') 
+       write (lu,'("# Poirier-Tarantola, 5th order EOS parameters: ")')
        write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
@@ -232,37 +232,37 @@ contains
        write (lu,'("# B_0'''''' = ",1p,E15.7,0p)') apar(6) / au2gpa**2
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(7) * au2gpa
     case(fit_murn)
-       write (lu,'("# Murnaghan, 3th order EOS parameters: ")') 
+       write (lu,'("# Murnaghan, 3th order EOS parameters: ")')
        write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(5) * au2gpa
     case(fit_antons)
-       write (lu,'("# Anton-Schmidt, 3th order EOS parameters: ")') 
+       write (lu,'("# Anton-Schmidt, 3th order EOS parameters: ")')
        write (lu,'("# E_infty (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(5) * au2gpa
     case(fit_vinet)
-       write (lu,'("# Vinet, 3th order EOS parameters: ")') 
+       write (lu,'("# Vinet, 3th order EOS parameters: ")')
        write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(5) * au2gpa
     case(fit_ap2)
-       write (lu,'("# Holzapfel AP2, 3th order EOS parameters: ")') 
+       write (lu,'("# Holzapfel AP2, 3th order EOS parameters: ")')
        write (lu,'("# E_0 (Ha) = ",1p,E17.9,0p)') apar(1)
        write (lu,'("# V_0 (bohr^3) = ",F14.8)') apar(2)
        write (lu,'("# B_0 (GPa) = ",F12.6)') apar(3) * au2gpa
        write (lu,'("# B_0'' = ",F12.7)') apar(4)
        write (lu,'("# p_scal (GPa) = ",F20.12)') apar(5) * au2gpa
     case default
-       write (lu,'("# Polynomial fit to strain: ")') 
+       write (lu,'("# Polynomial fit to strain: ")')
        write (lu,'("# Degree : ",I2)') npar-2
-       write (lu,'("#      p(x) = a_0 + a_1 * f(V) + ... + a_n * f(V)^n")') 
+       write (lu,'("#      p(x) = a_0 + a_1 * f(V) + ... + a_n * f(V)^n")')
        do i = 0, npar-2
           write (lu,'("# a_",I2.2," = ",1p,E20.12,0p)') i, apar(i)
        end do
@@ -1228,7 +1228,7 @@ contains
     y2 = apar(npar-1) * (npar-1) * (npar-2)
     y3 = apar(npar-1) * (npar-1) * (npar-2) * (npar-3)
     y = apar(npar-1) * (npar-1) * (npar-2) * (npar-3) * (npar-4)
-    do i = npar-1, 2, -1 
+    do i = npar-1, 2, -1
        y1 = y1 * xp + apar(i-1) * (i-1)
        if (i < 3) cycle
        y2 = y2 * xp + apar(i-1) * (i-1) * (i-2)
@@ -1250,7 +1250,7 @@ contains
 
     integer :: i, strain
     real*8, dimension(size(x)) :: xp, y1, y2, y3, f1v, f2v, f3v, f4v
-    
+
     if (mode == fit_polygibbs) then
        strain = fit_strain_x1
     else
@@ -1381,7 +1381,7 @@ contains
     real*8, intent(in) :: V, x(3)
     integer, intent(in) :: ider
     real*8 :: bm2s
-    
+
     real*8 :: c, f, ff
 
     f = 0.5d0*((x(2) / V)**(twothird) - 1d0)
@@ -1410,7 +1410,7 @@ contains
     real*8, intent(in) :: V(:), x(3)
     integer, intent(in) :: ider
     real*8 :: bm2v(size(V))
-    
+
     real*8 :: c, f(size(V)), ff(size(V))
 
     f = 0.5d0*((x(2) / V)**(twothird) - 1d0)
@@ -1439,7 +1439,7 @@ contains
     real*8, intent(in) :: V, x(4)
     integer, intent(in) :: ider
     real*8 :: bm3s
-    
+
     real*8 :: c, d, f, ff
 
     f = 0.5d0*((x(2) / V)**(twothird) - 1d0)
@@ -1449,7 +1449,7 @@ contains
        bm3s = f * f * (d * f + c) + x(1)
     else if (ider == 1) then
        ff = (2*f+1)**(5d0/2d0)
-       bm3s = -f*((3*d)*f+2*c)*ff / (3*x(2)) 
+       bm3s = -f*((3*d)*f+2*c)*ff / (3*x(2))
     else if (ider == 2) then
        ff = (2*f+1)**4
        bm3s = (2*c + f*((14*c+6*d) + 27*f))*ff / (9*x(2)**2)
@@ -1469,7 +1469,7 @@ contains
     real*8, intent(in) :: V(:), x(4)
     integer, intent(in) :: ider
     real*8 :: bm3v(size(V))
-    
+
     real*8 :: c, d, f(size(V)), ff(size(V))
 
     f = 0.5d0*((x(2) / V)**(twothird) - 1d0)
@@ -1499,7 +1499,7 @@ contains
     real*8, intent(in) :: V, x(5)
     integer, intent(in) :: ider
     real*8 :: bm4s
-    
+
     real*8 :: c, d, ee, f, ff
 
     f = 0.5d0*((x(2) / V)**(twothird) - 1d0)
@@ -1524,7 +1524,7 @@ contains
     end if
 
   end function bm4s
-  
+
   ! Birch-Murnaghan 4, vector, 0-4th derivative
   function bm4v(V,x,ider)
     use param, only: twothird
@@ -1556,7 +1556,7 @@ contains
     end if
 
   end function bm4v
-  
+
   ! Poirier-Tarantola 2, scalar, 0-4th derivative
   function pt2s(V,x,ider)
     real*8, intent(in) :: V, x(3)
@@ -1657,7 +1657,7 @@ contains
     fpv = 1/(3*V)
     c = 4.5d0*x(3)*x(2)
     d=c*(x(4)+2)
-    
+
     if (ider == 0) then
        pt3v = f**2*(f*d+c) + x(1)
     else if (ider == 1) then

@@ -1,17 +1,17 @@
 ! Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 ! Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
-! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
-! 
+! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo.
+!
 ! gibbs2 is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or (at
 ! your option) any later version.
-! 
+!
 ! gibbs2 is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -75,7 +75,7 @@ module tools
   character*(mline), allocatable, private :: buffer(:) !< i/o line buffer array
   integer, private :: bp(0:mopen) !< buffer pointer array
   integer, private :: length(0:mopen) !< lengths of line buffers
-  
+
 contains
 
   !xx! input/output
@@ -101,7 +101,7 @@ contains
     access(stdout) = iowrite
 
   end subroutine ioinit
-  
+
   !> Get command line arguments and argument count
   !> on return, argc will contain the number of arguments and
   !> argv will be a character array containing the arguments.
@@ -109,7 +109,7 @@ contains
     use param, only: null
     integer, intent(out) :: argc
     character*(*), intent(out) :: argv(*)
-    
+
     character*(mline) :: line  !local string for parsing
     integer :: length         !total length of command line
 
@@ -143,14 +143,14 @@ contains
     integer, intent(out) :: local_uin, local_uout
 
     integer :: u(2)
-    integer :: a, nopti, n 
+    integer :: a, nopti, n
 
     nopti=0
     optv=''
     a=0
     n=0
     if (argc.gt.0) then
-       do while (n.lt.argc) 
+       do while (n.lt.argc)
           n=n+1
           if (argv(n)(1:1).ne.'-') then
              a = a + 1
@@ -187,7 +187,7 @@ contains
     character*(*), intent(in) :: filename
     integer, intent(in) :: mode
     integer, intent(out) :: u
-    
+
     integer :: flength,ios
 
     flength = index(filename,null) - 1
@@ -435,7 +435,7 @@ contains
           found = .true.
           lval = .false.
           lp = i + 7
-       else 
+       else
           tempstr = line(i:i+5) // null
           if (lower (tempstr) .eq. ('.true.' // null)) then
              found = .true.
@@ -471,7 +471,7 @@ contains
     enddo
     i=lp
     if (line(i:i) .eq. '+' .or. line(i:i) .eq. '-') i=i+1
-    if (isdigit(line(i:i))) then 
+    if (isdigit(line(i:i))) then
        do while (isdigit(line(i:i)))
           i=i+1
        enddo
@@ -511,21 +511,21 @@ contains
     end do
 
     i = lp
-    if (line(i:i) .eq. '+' .or. line(i:i) .eq. '-') i = i + 1 
-    if (isdigit(line(i:i))) then 
+    if (line(i:i) .eq. '+' .or. line(i:i) .eq. '-') i = i + 1
+    if (isdigit(line(i:i))) then
        do while (isdigit(line(i:i)))
           i = i + 1
        enddo
-       if (line(i:i) .eq. '.') then 
+       if (line(i:i) .eq. '.') then
           i = i + 1
           do while (isdigit(line(i:i)))
              i = i + 1
           enddo
        endif
        matched = .true.
-    else if (line(i:i) .eq. '.') then 
+    else if (line(i:i) .eq. '.') then
        i = i + 1
-       if (isdigit(line(i:i))) then 
+       if (isdigit(line(i:i))) then
           do while (isdigit(line(i:i)))
              i = i + 1
           enddo
@@ -539,12 +539,12 @@ contains
 
     !.....get optional exponent
     tp = i - 1
-    if (matched) then 
+    if (matched) then
        if (line(i:i)=='e' .or. line(i:i)=='E' .or. line(i:i)=='d' .or. line(i:i)=='D'.or.&
-           line(i:i)=='-' .or. line(i:i)=='+') then 
+           line(i:i)=='-' .or. line(i:i)=='+') then
           i = i + 1
-          if (line(i:i) .eq. '+' .or. line(i:i) .eq. '-') i = i + 1 
-          if (isdigit (line(i:i))) then 
+          if (line(i:i) .eq. '+' .or. line(i:i) .eq. '-') i = i + 1
+          if (isdigit (line(i:i))) then
              do while (isdigit(line(i:i)))
                 i = i + 1
              enddo
@@ -556,7 +556,7 @@ contains
                 matched = .false.
                 rval = 0d0
              endif
-          else 
+          else
              matched = .false.
           endif
        else
@@ -599,7 +599,7 @@ contains
        i=i+1
     end do
     sign=1
-    if(string(i:i) .eq. '+' .or. string(i:i) .eq. '-') then 
+    if(string(i:i) .eq. '+' .or. string(i:i) .eq. '-') then
        if (string(i:i) .eq. '-') sign=-1
        i=i+1
     endif
@@ -632,9 +632,9 @@ contains
     esign=1
     i=1
     do while (str(i:i) .eq. blank)
-       i=i+1 
+       i=i+1
     end do
-    if (str (i:i) .eq. '+' .or. str(i:i) .eq.'-') then 
+    if (str (i:i) .eq. '+' .or. str(i:i) .eq.'-') then
        if (str(i:i) .eq. '-') sign=-1
        i=i+1
     endif
@@ -642,7 +642,7 @@ contains
        val=ten*val+ichar(str(i:i))-ichar('0')
        i=i+1
     enddo
-    if (str(i:i) .eq. '.') then 
+    if (str(i:i) .eq. '.') then
        i=i+1
        do while (isdigit(str(i:i)))
           val=ten*val+ichar(str(i:i))-ichar('0')
@@ -652,7 +652,7 @@ contains
     endif
     if (str(i:i).eq.'e' .or. str(i:i).eq.'E' .or. str(i:i).eq.'d' .or. str(i:i).eq.'D') then
        i=i+1
-       if (str (i:i) .eq. '+' .or. str(i:i) .eq.'-') then 
+       if (str (i:i) .eq. '+' .or. str(i:i) .eq.'-') then
           if (str(i:i) .eq. '-') esign=-1
           i=i+1
        endif
@@ -663,7 +663,7 @@ contains
     elseif (str(i:i).eq.'-' .or. str(i:i).eq.'+') then
        esign = 1
        if (str(i:i) .eq. '-') esign=-1
-       i = i + 1 
+       i = i + 1
        do while (isdigit(str(i:i)))
           exponent=ten*exponent+ichar(str(i:i))-ichar('0')
           i=i+1
@@ -932,7 +932,7 @@ contains
     character*(*), intent(in) :: str2 !< Second string
     integer           i1, i2
     character*(index(str1,null)+index(str2,null)-1) :: cat
-    
+
     i1 = index (str1, null) - 1
     i2 = index (str2, null) - 1
     if (i1+i2 .ge. len(cat)) then
@@ -992,15 +992,15 @@ contains
     use param, only: faterr
     real*8, intent(inout), allocatable :: a(:)
     integer, intent(in) :: nnew
-    
+
     real*8, allocatable :: temp(:)
     integer :: nold
-    
+
     if (.not.allocated(a)) &
        call error('realloc1r','array not allocated',faterr)
     nold = size(a)
     allocate(temp(nnew))
-    
+
     temp(1:min(nnew,nold)) = a(1:min(nnew,nold))
     call move_alloc(temp,a)
 
@@ -1011,15 +1011,15 @@ contains
     use param, only: faterr
     integer, intent(inout), allocatable :: a(:)
     integer, intent(in) :: nnew
-    
+
     integer, allocatable :: temp(:)
     integer :: nold
-    
+
     if (.not.allocated(a)) &
        call error('realloc1i','array not allocated',faterr)
     nold = size(a)
     allocate(temp(nnew))
-    
+
     temp(1:min(nnew,nold)) = a(1:min(nnew,nold))
     call move_alloc(temp,a)
 
@@ -1030,15 +1030,15 @@ contains
     use param, only: faterr
     logical, intent(inout), allocatable :: a(:)
     integer, intent(in) :: nnew
-    
+
     logical, allocatable :: temp(:)
     integer :: nold
-    
+
     if (.not.allocated(a)) &
        call error('realloc1l','array not allocated',faterr)
     nold = size(a)
     allocate(temp(nnew))
-    
+
     temp(1:min(nnew,nold)) = a(1:min(nnew,nold))
     call move_alloc(temp,a)
 
@@ -1049,15 +1049,15 @@ contains
     use param, only: faterr
     real*8, intent(inout), allocatable :: a(:,:)
     integer, intent(in) :: n1,n2
-    
+
     real*8, allocatable :: temp(:,:)
     integer :: nold(2)
-    
+
     if (.not.allocated(a)) &
        call error('realloc2r','array not allocated',faterr)
     nold = size(a)
     allocate(temp(n1,n2))
-    
+
     temp(1:min(n1,nold(1)),1:min(n2,nold(2))) = a(1:min(n1,nold(1)),1:min(n2,nold(2)))
     call move_alloc(temp,a)
 
@@ -1068,15 +1068,15 @@ contains
     use param, only: faterr
     real*8, intent(inout), allocatable :: a(:,:,:)
     integer, intent(in) :: n1,n2,n3
-    
+
     real*8, allocatable :: temp(:,:,:)
     integer :: nold(3)
-    
+
     if (.not.allocated(a)) &
        call error('realloc3r','array not allocated',faterr)
     nold = size(a)
     allocate(temp(n1,n2,n3))
-    
+
     temp(1:min(n1,nold(1)),1:min(n2,nold(2)),1:min(n3,nold(3))) = &
        a(1:min(n1,nold(1)),1:min(n2,nold(2)),1:min(n3,nold(3)))
     call move_alloc(temp,a)
@@ -1084,7 +1084,7 @@ contains
   end subroutine realloc3r
 
   !> Sort the elements of the array arr in ascending order using the
-  !> quicksort algorithm. iord is the initial order of data in arr and 
+  !> quicksort algorithm. iord is the initial order of data in arr and
   !> first and last the intervals for elements to be analyzed. In the output,
   !> iord contains the final order in the array arr.
   subroutine qcksort (arr, iord, first, last)
@@ -1133,7 +1133,7 @@ contains
        a=arr(na)
        iord(iq)=iord(l)
 20     continue
-21     if (j.ge.first) then 
+21     if (j.ge.first) then
           if (a.lt.arr(iord(j))) then
              j=j-1
              goto 21
@@ -1160,7 +1160,7 @@ contains
        j=j-1
        go to 20
 30     jstack=jstack+2
-       if(jstack.gt.nstack) call error ('qcksort','Increase nstack',faterr) 
+       if(jstack.gt.nstack) call error ('qcksort','Increase nstack',faterr)
        if(ir-i.ge.i-l)then
           istack(jstack)=ir
           istack(jstack-1)=i+1
@@ -1322,7 +1322,7 @@ contains
   end subroutine gauss
 
   ! One-dimensional quadrature. If step > 0, assume x is equally
-  ! spaced and use Simpson's rule. If step < 0, use x and y with the 
+  ! spaced and use Simpson's rule. If step < 0, use x and y with the
   ! trapezoidal rule
   function quad1(x,y,step)
     real*8, intent(in) :: x(:), y(:), step

@@ -1,17 +1,17 @@
 ! Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 ! Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
-! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
-! 
+! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo.
+!
 ! gibbs2 is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or (at
 ! your option) any later version.
-! 
+!
 ! gibbs2 is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -22,11 +22,11 @@ module param
   ! Math constants
   real*8, parameter :: pi       = 3.14159265358979323846d0
   real*8, parameter :: sqrpi    = 1.77245385090551599275d0
-  real*8, parameter :: rad      = pi / 180d0               
-  real*8, parameter :: twopi    = 2d0 * pi                 
-  real*8, parameter :: halfpi   = pi / 2d0                 
-  real*8, parameter :: tosqrpi  = 2d0 / sqrpi              
-  real*8, parameter :: pisquare = pi * pi                  
+  real*8, parameter :: rad      = pi / 180d0
+  real*8, parameter :: twopi    = 2d0 * pi
+  real*8, parameter :: halfpi   = pi / 2d0
+  real*8, parameter :: tosqrpi  = 2d0 / sqrpi
+  real*8, parameter :: pisquare = pi * pi
   real*8, parameter :: cte      = 2.71828182845904523536d0
   real*8, parameter :: ctsq2    = 1.41421356237309504880d0
   real*8, parameter :: ctsq3    = 1.73205080756887729352d0
@@ -68,12 +68,12 @@ module param
   real*8, parameter :: ha2thz = ha2cm_1 / thz2cm_1     !hartree -> THz
   real*8, parameter :: ha2kjmol = 2625.4996d0          !hartree -> kJ/mol (nist2006)
   real*8, parameter :: au2gpa = 29421.0108037190       !at.u.(pres) --> GPa (nist2006)
-  real*8, parameter :: amu2au = pcamu/pcme           !amu --> at. units
+  real*8, parameter :: amu2au = pcamu/pcme             !amu --> at. units
 
   ! dimension constants
-  integer, parameter :: mline = 2048
-  integer, parameter :: mline_fmt = 2048
-  integer, parameter :: marg = 10
+  integer, parameter :: mline = 2048 ! maximum line length
+  integer, parameter :: mline_fmt = 2048 ! maximum length of a format line
+  integer, parameter :: marg = 10 ! maximum number of arguments
 
   ! logical units
   integer, parameter :: stderr = 0 !< standard error lu
@@ -90,16 +90,16 @@ module param
   integer, parameter :: ioerror = -1 !< error opening file
 
   ! input information
-  character*(mline) :: fileroot
-  character*(mline) :: title
+  character*(mline) :: fileroot ! the root prefix of the calculation files
+  character*(mline) :: title ! title of the run
 
   ! error types
   integer, parameter :: faterr = -1 !< fatal error flag
   integer, parameter :: warning = 1 !< warning flag
   integer, parameter :: noerr = 0   !< info flag
-  integer :: nwarns = 0
-  integer :: ncomms = 0
-  
+  integer :: nwarns = 0 ! number of warnings
+  integer :: ncomms = 0 ! number of comments
+
   ! constants that require initialization
   character*(1) :: null !< null character
   character*(1) :: tab !< tab character
@@ -111,7 +111,7 @@ module param
   character*(1) :: quote !< '
   character*(1) :: backsl !< \
 
-  ! input units
+  ! parameters for input units
   integer, parameter :: units_v_bohr3 = 1
   integer, parameter :: units_v_ang3 = 2
   integer, parameter :: units_e_ha = 1
@@ -123,12 +123,12 @@ module param
   integer, parameter :: units_f_cm1 = 2
   integer, parameter :: units_f_thz = 3
 
-  ! colors
+  ! colors (to be filled during initialization)
   integer, parameter :: mcols = 13
   character*7 :: gplt_rgb(mcols)
   integer :: gplt_sym(mcols)
 
-  ! formats
+  ! formats for outputs (filled during initialization)
   integer, parameter :: afmts = 20, ifmts = 20
   integer, parameter :: ifmt_p = afmts+1
   integer, parameter :: ifmt_v = afmts+2
@@ -259,7 +259,7 @@ contains
     seed = clock + 37 * (/ (i - 1, i = 1, n) /)
     call random_seed(put = seed)
     deallocate(seed)
-    
+
   end subroutine param_init
 
   !> Print the gibbs2 header to uout
@@ -272,9 +272,9 @@ contains
     write (uout,'("          | (_| | | |_) | |_) \__ \/ __/                ")')
     write (uout,'("           \__, |_|_.__/|_.__/|___/_____|               ")')
     write (uout,'("           |___/                                        ")')
-    write (uout,'("      GIBBS2: (p,t) thermodynamics of solids.           ")') 
+    write (uout,'("      GIBBS2: (p,t) thermodynamics of solids.           ")')
     write (uout,'("                                                        ")')
-    write (uout,'("by A. Otero-de-la-Roza, V. Lua~na and D. Abbasi. "/)') 
+    write (uout,'("by A. Otero-de-la-Roza, V. Lua~na and D. Abbasi. "/)')
     write (uout,'("If you find this software useful, please cite:")')
     write (uout,'("  * Comput. Phys. Commun. 182 (2011) 1708--1720 ")')
     write (uout,'("These articles describe the strain polynomial fits:")')
@@ -293,7 +293,7 @@ contains
     integer, intent(in) :: ifmt(:)
     integer, intent(in) :: pad
     character*(mline_fmt) :: format_string
-    
+
     integer :: i
 
     if (pad > 0) then
@@ -334,7 +334,7 @@ contains
     ipad2 = 0
     dif = 0
     do i = 1, size(ifmt)
-       dif = min(dif,0) + ifmtlen(ifmt(i)) - iout(i) 
+       dif = min(dif,0) + ifmtlen(ifmt(i)) - iout(i)
        ipad1 = ipad2 + max(n*dif/d,0)
        ipad2 = max((d-n)*dif/d + max(min(mod(dif,d),1),0) ,0) + 1
        if (i /= size(ifmt)) then

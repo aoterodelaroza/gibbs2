@@ -1,17 +1,17 @@
 ! Copyright (c) 2011 Alberto Otero de la Roza <aoterodelaroza@gmail.com>,
 ! Víctor Luaña <victor@carbono.quimica.uniovi.es> and David
-! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo. 
-! 
+! Abbasi <david@carbono.quimica.uniovi.es>. Universidad de Oviedo.
+!
 ! gibbs2 is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or (at
 ! your option) any later version.
-! 
+!
 ! gibbs2 is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -104,7 +104,7 @@ contains
        imask(ndo) = i
     end do
     if (ndo == 0) return
-          
+
     lu = opengnu(root,.true.)
 
     write (uout,'("  Writing file: ",A/)') trim(root)//".gnu"
@@ -150,7 +150,7 @@ contains
     use varbas, only: ph, nph, mpropout, nps, plist, nts, tm_static, writelevel, propname, tlist
     character*(*), intent(in) :: root
 
-    integer, parameter :: ntemp = 5 
+    integer, parameter :: ntemp = 5
 
     integer :: lu
     integer :: i, j, ip
@@ -172,7 +172,7 @@ contains
        imask(ndo) = i
     end do
     if (ndo == 0) return
-          
+
     lu = opengnu(root,.true.)
 
     write (uout,'("  Writing file: ",A/)') trim(root)//".gnu"
