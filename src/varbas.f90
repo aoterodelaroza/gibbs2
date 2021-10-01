@@ -180,8 +180,8 @@ module varbas
      "Estatic(Ha)   ",&
      "G(kJ/mol)     ",&
      "Gerr(kJ/mol)  ",&
-     "p_sta(GPa)    ",&
-     "p_th(GPa)     ",&
+     "psta(GPa)     ",&
+     "pth(GPa)      ",&
      "B(GPa)        ",&
      "U-Esta(kJ/mol)",&
      "Cv(J/molK)    ",&
@@ -193,16 +193,16 @@ module varbas
      "dp/dT(GPa/K)  ",&
      "Bs(GPa)       ",&
      "Cp(J/molK)    ",&
-     "B_Tp          ",&
-     "B_Tpp(GPa-1)  ",&
+     "BTp           ",&
+     "BTpp(GPa-1)   ",&
      "Fvib(kJ/mol)  ",&
      "Fel(kJ/mol)   ",&
      "Uvib(kJ/mol)  ",&
      "Uel(kJ/mol)   ",&
      "Svib(J/molK)  ",&
      "Sel(J/molK)   ",&
-     "Cv_vib(J/molK)",&
-     "Cv_el(J/molK) "&
+     "Cv,vib(J/molK)",&
+     "Cv,el(J/molK) "&
      /)
   integer, parameter :: propfmt(0:mpropout) = (/&
      1,&
