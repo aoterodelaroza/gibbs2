@@ -33,3 +33,4 @@ tests/*/*.tpstab
 tests/*/*.gnu
 tests/*/*.aux
 tests/*/*.efit
+tests/*/*.outg

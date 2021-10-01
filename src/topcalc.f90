@@ -271,7 +271,7 @@ contains
   ! Calculate the static transition pressures and write to output.
   subroutine static_transp(ga)
     use varbas, only: nph, ph, nps, nph, plist, dotrans, n_not_pv_min
-    use tools, only: error, leng, realloc
+    use tools, only: error, leng, realloc, leng_null
     use param, only: uout, warning, mline
     real*8, intent(in) :: ga(:,:) ! ga(nps,nph)
 
@@ -372,7 +372,8 @@ contains
        else
           phname = trim(ph(iphase(i))%name)
        end if
-       write (uout,'(2X,F12.4," --> ",F12.4,2X,A13,7X,A)') pold, ptrans(i), trim(adjustl(phname)),&
+       write (uout,'(2X,F12.4," --> ",F12.4,2X,A13,7X,A)') pold, ptrans(i), &
+          trim(adjustl(phname(1:leng_null(phname)))),&
           trim(reason(idtrans(i)))
        pold = ptrans(i)
     end do

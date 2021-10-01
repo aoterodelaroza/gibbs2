@@ -34,7 +34,7 @@ module tools
   !xx! errors, warnings, comments
   public :: error
   !xx! string tools
-  public :: equal, cat, leng, lower
+  public :: equal, cat, leng, leng_null, lower
   !xx! memory management
   public :: realloc
   !xx! sorting
@@ -959,6 +959,20 @@ contains
     leng=0
     return
   end function leng
+
+  !> Returns the length of a string up to the first null, or up
+  !> ot the end of the string
+  integer function leng_null(string)
+    use param, only: null
+    character*(*), intent(in) :: string
+
+    integer :: idx
+
+    leng_null = len(string)
+    idx = index(string,null)
+    if (idx /= 0) leng_null = idx-1
+
+  end function leng_null
 
   !> Convert string to lowercase except where quoted
   !> string and lower will return the same
