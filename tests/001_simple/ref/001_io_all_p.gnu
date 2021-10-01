@@ -73,7 +73,7 @@ plot \
 !rm 001_io_p_06.eps
 
 set output '001_io_p_07.eps'
-set ylabel "p_sta(GPa)"
+set ylabel "psta(GPa)"
 plot \
  'temp.dat' u 1: 7 index   0 w lines ls  1 title '       mgo,    0.00K'  ,\
  'temp.dat' u 1: 7 index  25 w lines ls  2 title '       mgo,  165.08K'  ,\
@@ -86,7 +86,7 @@ plot \
 !rm 001_io_p_07.eps
 
 set output '001_io_p_08.eps'
-set ylabel "p_th(GPa)"
+set ylabel "pth(GPa)"
 plot \
  'temp.dat' u 1: 8 index   0 w lines ls  1 title '       mgo,    0.00K'  ,\
  'temp.dat' u 1: 8 index  25 w lines ls  2 title '       mgo,  165.08K'  ,\
@@ -242,7 +242,7 @@ plot \
 !rm 001_io_p_19.eps
 
 set output '001_io_p_20.eps'
-set ylabel "B_Tp"
+set ylabel "BTp"
 plot \
  'temp.dat' u 1:20 index   0 w lines ls  1 title '       mgo,    0.00K'  ,\
  'temp.dat' u 1:20 index  25 w lines ls  2 title '       mgo,  165.08K'  ,\
@@ -255,7 +255,7 @@ plot \
 !rm 001_io_p_20.eps
 
 set output '001_io_p_21.eps'
-set ylabel "B_Tpp(GPa-1)"
+set ylabel "BTpp(GPa-1)"
 plot \
  'temp.dat' u 1:21 index   0 w lines ls  1 title '       mgo,    0.00K'  ,\
  'temp.dat' u 1:21 index  25 w lines ls  2 title '       mgo,  165.08K'  ,\
@@ -346,7 +346,7 @@ plot \
 !rm 001_io_p_27.eps
 
 set output '001_io_p_28.eps'
-set ylabel "Cv_vib(J/molK)"
+set ylabel "Cv,vib(J/molK)"
 plot \
  'temp.dat' u 1:28 index   0 w lines ls  1 title '       mgo,    0.00K'  ,\
  'temp.dat' u 1:28 index  25 w lines ls  2 title '       mgo,  165.08K'  ,\
@@ -359,7 +359,7 @@ plot \
 !rm 001_io_p_28.eps
 
 set output '001_io_p_29.eps'
-set ylabel "Cv_el(J/molK)"
+set ylabel "Cv,el(J/molK)"
 plot \
  'temp.dat' u 1:29 index   0 w lines ls  1 title '       mgo,    0.00K'  ,\
  'temp.dat' u 1:29 index  25 w lines ls  2 title '       mgo,  165.08K'  ,\

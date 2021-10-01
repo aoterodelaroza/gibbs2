@@ -1,11 +1,11 @@
 # Phase al:free
 # 01:p(GPa) 02:T(K) 03:V(bohr^3) 04:Estatic(Ha) 05:G(kJ/mol)
-# 06:Gerr(kJ/mol) 07:p_sta(GPa) 08:p_th(GPa) 09:B(GPa) 10:U-Esta(kJ/mol)
+# 06:Gerr(kJ/mol) 07:psta(GPa) 08:pth(GPa) 09:B(GPa) 10:U-Esta(kJ/mol)
 # 11:Cv(J/molK) 12:F-Esta(kJ/mol) 13:S(J/molK) 14:ThetaD(K) 15:gamma
-# 16:alpha(10^-5/K) 17:dp/dT(GPa/K) 18:Bs(GPa) 19:Cp(J/molK) 20:B_Tp
-# 21:B_Tpp(GPa-1) 22:Fvib(kJ/mol) 23:Fel(kJ/mol) 24:Uvib(kJ/mol) 25:Uel(kJ/mol)
-# 26:Svib(J/molK) 27:Sel(J/molK) 28:Cv_vib(J/molK) 29:Cv_el(J/molK)
-#    p(GPa)      T(K)   V(bohr^3)    Estatic(Ha)        G(kJ/mol)        Gerr(kJ/mol)   p_sta(GPa) p_th(GPa)    B(GPa)   U-Esta(kJ/mol)   Cv(J/molK)   F-Esta(kJ/mol)    S(J/molK)   ThetaD(K)     gamma   alpha(10^-5/K)  dp/dT(GPa/K)    Bs(GPa)    Cp(J/molK)        B_Tp    B_Tpp(GPa-1)  Fvib(kJ/mol)    Fel(kJ/mol)   Uvib(kJ/mol)    Uel(kJ/mol)   Svib(J/molK)    Sel(J/molK)  Cv_vib(J/molK) Cv_el(J/molK)
+# 16:alpha(10^-5/K) 17:dp/dT(GPa/K) 18:Bs(GPa) 19:Cp(J/molK) 20:BTp
+# 21:BTpp(GPa-1) 22:Fvib(kJ/mol) 23:Fel(kJ/mol) 24:Uvib(kJ/mol) 25:Uel(kJ/mol)
+# 26:Svib(J/molK) 27:Sel(J/molK) 28:Cv,vib(J/molK) 29:Cv,el(J/molK)
+#    p(GPa)      T(K)   V(bohr^3)    Estatic(Ha)        G(kJ/mol)        Gerr(kJ/mol)   psta(GPa)   pth(GPa)    B(GPa)   U-Esta(kJ/mol)   Cv(J/molK)   F-Esta(kJ/mol)    S(J/molK)   ThetaD(K)     gamma   alpha(10^-5/K)  dp/dT(GPa/K)    Bs(GPa)    Cp(J/molK)         BTp    BTpp(GPa-1)   Fvib(kJ/mol)    Fel(kJ/mol)   Uvib(kJ/mol)    Uel(kJ/mol)   Svib(J/molK)    Sel(J/molK)  Cv,vib(J/molK) Cv,el(J/molK)
       0.0000     298.15   112.0344  -6.133817E+00  -1.6105188039E+04   7.1486353089E-02    -1.8843     1.8843    72.7336   8.016032E+00   2.347470E+01  -9.241742E-01   2.998560E+01       0.00  2.3570664   7.609058E+00   5.534343E-03    76.6229   2.472997E+01    5.0234975  -1.7414E-01  -8.837237E-01  -4.045051E-02   7.975581E+00   4.045051E-02   2.971425E+01   2.713434E-01   2.320335E+01   2.713434E-01
 
 
@@ -56,12 +56,12 @@
 
 # Phase al:somm_nef
 # 01:p(GPa) 02:T(K) 03:V(bohr^3) 04:Estatic(Ha) 05:G(kJ/mol)
-# 06:Gerr(kJ/mol) 07:p_sta(GPa) 08:p_th(GPa) 09:B(GPa) 10:U-Esta(kJ/mol)
+# 06:Gerr(kJ/mol) 07:psta(GPa) 08:pth(GPa) 09:B(GPa) 10:U-Esta(kJ/mol)
 # 11:Cv(J/molK) 12:F-Esta(kJ/mol) 13:S(J/molK) 14:ThetaD(K) 15:gamma
-# 16:alpha(10^-5/K) 17:dp/dT(GPa/K) 18:Bs(GPa) 19:Cp(J/molK) 20:B_Tp
-# 21:B_Tpp(GPa-1) 22:Fvib(kJ/mol) 23:Fel(kJ/mol) 24:Uvib(kJ/mol) 25:Uel(kJ/mol)
-# 26:Svib(J/molK) 27:Sel(J/molK) 28:Cv_vib(J/molK) 29:Cv_el(J/molK)
-#    p(GPa)      T(K)   V(bohr^3)    Estatic(Ha)        G(kJ/mol)        Gerr(kJ/mol)   p_sta(GPa) p_th(GPa)    B(GPa)   U-Esta(kJ/mol)   Cv(J/molK)   F-Esta(kJ/mol)    S(J/molK)   ThetaD(K)     gamma   alpha(10^-5/K)  dp/dT(GPa/K)    Bs(GPa)    Cp(J/molK)        B_Tp    B_Tpp(GPa-1)  Fvib(kJ/mol)    Fel(kJ/mol)   Uvib(kJ/mol)    Uel(kJ/mol)   Svib(J/molK)    Sel(J/molK)  Cv_vib(J/molK) Cv_el(J/molK)
+# 16:alpha(10^-5/K) 17:dp/dT(GPa/K) 18:Bs(GPa) 19:Cp(J/molK) 20:BTp
+# 21:BTpp(GPa-1) 22:Fvib(kJ/mol) 23:Fel(kJ/mol) 24:Uvib(kJ/mol) 25:Uel(kJ/mol)
+# 26:Svib(J/molK) 27:Sel(J/molK) 28:Cv,vib(J/molK) 29:Cv,el(J/molK)
+#    p(GPa)      T(K)   V(bohr^3)    Estatic(Ha)        G(kJ/mol)        Gerr(kJ/mol)   psta(GPa)   pth(GPa)    B(GPa)   U-Esta(kJ/mol)   Cv(J/molK)   F-Esta(kJ/mol)    S(J/molK)   ThetaD(K)     gamma   alpha(10^-5/K)  dp/dT(GPa/K)    Bs(GPa)    Cp(J/molK)         BTp    BTpp(GPa-1)   Fvib(kJ/mol)    Fel(kJ/mol)   Uvib(kJ/mol)    Uel(kJ/mol)   Svib(J/molK)    Sel(J/molK)  Cv,vib(J/molK) Cv,el(J/molK)
       0.0000     298.15   112.0344  -6.133817E+00  -1.6105188035E+04   7.1731279819E-02    -1.8843     1.8843    72.7336   8.016277E+00   2.347634E+01  -9.244191E-01   2.998724E+01       0.00  2.3568801   7.608989E+00   5.534293E-03    76.6226   2.473159E+01    5.0234887  -1.7414E-01  -8.837237E-01  -4.069535E-02   7.975581E+00   4.069535E-02   2.971425E+01   2.729858E-01   2.320335E+01   2.729858E-01
 
 
@@ -112,12 +112,12 @@
 
 # Phase al:pol4
 # 01:p(GPa) 02:T(K) 03:V(bohr^3) 04:Estatic(Ha) 05:G(kJ/mol)
-# 06:Gerr(kJ/mol) 07:p_sta(GPa) 08:p_th(GPa) 09:B(GPa) 10:U-Esta(kJ/mol)
+# 06:Gerr(kJ/mol) 07:psta(GPa) 08:pth(GPa) 09:B(GPa) 10:U-Esta(kJ/mol)
 # 11:Cv(J/molK) 12:F-Esta(kJ/mol) 13:S(J/molK) 14:ThetaD(K) 15:gamma
-# 16:alpha(10^-5/K) 17:dp/dT(GPa/K) 18:Bs(GPa) 19:Cp(J/molK) 20:B_Tp
-# 21:B_Tpp(GPa-1) 22:Fvib(kJ/mol) 23:Fel(kJ/mol) 24:Uvib(kJ/mol) 25:Uel(kJ/mol)
-# 26:Svib(J/molK) 27:Sel(J/molK) 28:Cv_vib(J/molK) 29:Cv_el(J/molK)
-#    p(GPa)      T(K)   V(bohr^3)    Estatic(Ha)        G(kJ/mol)        Gerr(kJ/mol)   p_sta(GPa) p_th(GPa)    B(GPa)   U-Esta(kJ/mol)   Cv(J/molK)   F-Esta(kJ/mol)    S(J/molK)   ThetaD(K)     gamma   alpha(10^-5/K)  dp/dT(GPa/K)    Bs(GPa)    Cp(J/molK)        B_Tp    B_Tpp(GPa-1)  Fvib(kJ/mol)    Fel(kJ/mol)   Uvib(kJ/mol)    Uel(kJ/mol)   Svib(J/molK)    Sel(J/molK)  Cv_vib(J/molK) Cv_el(J/molK)
+# 16:alpha(10^-5/K) 17:dp/dT(GPa/K) 18:Bs(GPa) 19:Cp(J/molK) 20:BTp
+# 21:BTpp(GPa-1) 22:Fvib(kJ/mol) 23:Fel(kJ/mol) 24:Uvib(kJ/mol) 25:Uel(kJ/mol)
+# 26:Svib(J/molK) 27:Sel(J/molK) 28:Cv,vib(J/molK) 29:Cv,el(J/molK)
+#    p(GPa)      T(K)   V(bohr^3)    Estatic(Ha)        G(kJ/mol)        Gerr(kJ/mol)   psta(GPa)   pth(GPa)    B(GPa)   U-Esta(kJ/mol)   Cv(J/molK)   F-Esta(kJ/mol)    S(J/molK)   ThetaD(K)     gamma   alpha(10^-5/K)  dp/dT(GPa/K)    Bs(GPa)    Cp(J/molK)         BTp    BTpp(GPa-1)   Fvib(kJ/mol)    Fel(kJ/mol)   Uvib(kJ/mol)    Uel(kJ/mol)   Svib(J/molK)    Sel(J/molK)  Cv,vib(J/molK) Cv,el(J/molK)
       0.0000     298.15   112.0344  -6.133817E+00  -1.6105230005E+04   3.1223863047E-02    -1.8873     1.8873    72.7337   8.018890E+00   2.349099E+01  -9.266412E-01   3.000346E+01       0.00  2.3641430   7.637189E+00   5.554810E-03    76.6491   2.475556E+01    5.0254492  -1.7459E-01  -8.837258E-01  -4.291533E-02   7.975581E+00   4.330925E-02   2.971426E+01   2.891986E-01   2.320335E+01   2.876314E-01
 
 

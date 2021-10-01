@@ -61,7 +61,7 @@ plot \
 !rm 001_phases_t_06.eps
 
 set output '001_phases_t_07.eps'
-set ylabel "p_sta(GPa)"
+set ylabel "psta(GPa)"
 plot \
      'temp.dat' u 2: 7 index   0 w lines title '        b1'  ,\
      'temp.dat' u 2: 7 index   1 w lines title '        b2'
@@ -71,7 +71,7 @@ plot \
 !rm 001_phases_t_07.eps
 
 set output '001_phases_t_08.eps'
-set ylabel "p_th(GPa)"
+set ylabel "pth(GPa)"
 plot \
      'temp.dat' u 2: 8 index   0 w lines title '        b1'  ,\
      'temp.dat' u 2: 8 index   1 w lines title '        b2'
@@ -191,7 +191,7 @@ plot \
 !rm 001_phases_t_19.eps
 
 set output '001_phases_t_20.eps'
-set ylabel "B_Tp"
+set ylabel "BTp"
 plot \
      'temp.dat' u 2:20 index   0 w lines title '        b1'  ,\
      'temp.dat' u 2:20 index   1 w lines title '        b2'
@@ -201,7 +201,7 @@ plot \
 !rm 001_phases_t_20.eps
 
 set output '001_phases_t_21.eps'
-set ylabel "B_Tpp(GPa-1)"
+set ylabel "BTpp(GPa-1)"
 plot \
      'temp.dat' u 2:21 index   0 w lines title '        b1'  ,\
      'temp.dat' u 2:21 index   1 w lines title '        b2'
@@ -271,7 +271,7 @@ plot \
 !rm 001_phases_t_27.eps
 
 set output '001_phases_t_28.eps'
-set ylabel "Cv_vib(J/molK)"
+set ylabel "Cv,vib(J/molK)"
 plot \
      'temp.dat' u 2:28 index   0 w lines title '        b1'  ,\
      'temp.dat' u 2:28 index   1 w lines title '        b2'
@@ -281,7 +281,7 @@ plot \
 !rm 001_phases_t_28.eps
 
 set output '001_phases_t_29.eps'
-set ylabel "Cv_el(J/molK)"
+set ylabel "Cv,el(J/molK)"
 plot \
      'temp.dat' u 2:29 index   0 w lines title '        b1'  ,\
      'temp.dat' u 2:29 index   1 w lines title '        b2'

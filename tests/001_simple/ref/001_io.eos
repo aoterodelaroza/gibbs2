@@ -1,11 +1,11 @@
 # Phase mgo
 # 01:p(GPa) 02:T(K) 03:V(bohr^3) 04:Estatic(Ha) 05:G(kJ/mol)
-# 06:Gerr(kJ/mol) 07:p_sta(GPa) 08:p_th(GPa) 09:B(GPa) 10:U-Esta(kJ/mol)
+# 06:Gerr(kJ/mol) 07:psta(GPa) 08:pth(GPa) 09:B(GPa) 10:U-Esta(kJ/mol)
 # 11:Cv(J/molK) 12:F-Esta(kJ/mol) 13:S(J/molK) 14:ThetaD(K) 15:gamma
-# 16:alpha(10^-5/K) 17:dp/dT(GPa/K) 18:Bs(GPa) 19:Cp(J/molK) 20:B_Tp
-# 21:B_Tpp(GPa-1) 22:Fvib(kJ/mol) 23:Fel(kJ/mol) 24:Uvib(kJ/mol) 25:Uel(kJ/mol)
-# 26:Svib(J/molK) 27:Sel(J/molK) 28:Cv_vib(J/molK) 29:Cv_el(J/molK)
-#    p(GPa)      T(K)   V(bohr^3)    Estatic(Ha)        G(kJ/mol)        Gerr(kJ/mol)   p_sta(GPa) p_th(GPa)    B(GPa)   U-Esta(kJ/mol)   Cv(J/molK)   F-Esta(kJ/mol)    S(J/molK)   ThetaD(K)     gamma   alpha(10^-5/K)  dp/dT(GPa/K)    Bs(GPa)    Cp(J/molK)        B_Tp    B_Tpp(GPa-1)  Fvib(kJ/mol)    Fel(kJ/mol)   Uvib(kJ/mol)    Uel(kJ/mol)   Svib(J/molK)    Sel(J/molK)  Cv_vib(J/molK) Cv_el(J/molK)
+# 16:alpha(10^-5/K) 17:dp/dT(GPa/K) 18:Bs(GPa) 19:Cp(J/molK) 20:BTp
+# 21:BTpp(GPa-1) 22:Fvib(kJ/mol) 23:Fel(kJ/mol) 24:Uvib(kJ/mol) 25:Uel(kJ/mol)
+# 26:Svib(J/molK) 27:Sel(J/molK) 28:Cv,vib(J/molK) 29:Cv,el(J/molK)
+#    p(GPa)      T(K)   V(bohr^3)    Estatic(Ha)        G(kJ/mol)        Gerr(kJ/mol)   psta(GPa)   pth(GPa)    B(GPa)   U-Esta(kJ/mol)   Cv(J/molK)   F-Esta(kJ/mol)    S(J/molK)   ThetaD(K)     gamma   alpha(10^-5/K)  dp/dT(GPa/K)    Bs(GPa)    Cp(J/molK)         BTp    BTpp(GPa-1)   Fvib(kJ/mol)    Fel(kJ/mol)   Uvib(kJ/mol)    Uel(kJ/mol)   Svib(J/molK)    Sel(J/molK)  Cv,vib(J/molK) Cv,el(J/molK)
       0.0000       0.00   123.0988  -7.358878E+01  -1.9319213498E+05   6.9941203775E-04    -2.6530     2.6530   165.6944   1.518047E+01   0.000000E+00   1.518047E+01   0.000000E+00     811.46  1.9202628   0.000000E+00   0.000000E+00   165.6944   0.000000E+00    4.1060673  -2.5147E-02   1.518047E+01   0.000000E+00   1.518047E+01   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00
       5.0505       0.00   119.6120  -7.358881E+01  -1.9313745888E+05   3.9642753606E-04     2.2559     2.7946   186.1350   1.602803E+01   0.000000E+00   1.602803E+01   0.000000E+00     856.77  1.8619785   0.000000E+00   0.000000E+00   186.1350   0.000000E+00    3.9926214  -2.0130E-02   1.602803E+01   0.000000E+00   1.602803E+01   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00
      10.1010       0.00   116.5687  -7.358833E+01  -1.9308424991E+05  -2.3843192629E-05     7.1735     2.9275   206.0588   1.680526E+01   0.000000E+00   1.680526E+01   0.000000E+00     898.31  1.8132033   0.000000E+00   0.000000E+00   206.0588   0.000000E+00    3.9000977  -1.6703E-02   1.680526E+01   0.000000E+00   1.680526E+01   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00
