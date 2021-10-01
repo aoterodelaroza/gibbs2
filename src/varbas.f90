@@ -659,8 +659,6 @@ contains
 
           ! Write down the Fvib. Assume same units as E
           fvib_f(iv,nfvib_t) = gdum - e(iv)
-
-          write (*,*) iv, vdum, fvib_f(iv,nfvib_t)
        end do
        call fclose(lu2)
     end do
@@ -1360,7 +1358,7 @@ contains
 
   end subroutine phase_init
 
-  !> Prepare all the phases for using.
+  !> Prepare all phases for calculation.
   subroutine setup_phases()
     use param, only: uout, warning, mline_fmt, au2gpa, faterr, ha2cm_1, ha2thz, units_f_cm1,&
        units_f_thz, format_string, format_string_header
@@ -1371,19 +1369,21 @@ contains
     character*(mline) :: msg
     character*(mline_fmt) :: fm
     real*8 :: pmaxmin, vmin_setv, vmax_setv
-    logical :: anyactive, tim1
+    logical :: anyactive, tim1, tsetexternal
     integer :: ierr, idx(1)
     real*8 :: vmin, vmax, v
     real*8 :: f1, f2, f3, f4, pt, bk, b1, b2
     integer :: strain, order
 
     real*8, parameter :: vdist = 1d-10
+    real*8, parameter :: teps = 1d-5
 
     pmaxmin = 1d30
     vmin_setv = -1d30
     vmax_setv = 1d30
     anyactive = .false.
     tim1 = .true.
+    tsetexternal = .false.
     do i = 1, nph
        ! sort
        call phase_sort(ph(i))
@@ -1501,6 +1501,23 @@ contains
           end if
        else if (ph(i)%tmodel == tm_qhafull) then
           call phase_phdos(ph(i))
+       else if (ph(i)%tmodel == tm_externalfvib) then
+          ! tsetexternal, override temperature list and check consistency
+          if (tdefault .or. .not.tdefault.and..not.tsetexternal) then
+             if (.not.tdefault) &
+                call error('setup_phases','externaltvib overrides user-defined temperature list',warning)
+             tdefault = .false.
+             tsetexternal = .true.
+             nts = ph(i)%nfvib_t
+             if (allocated(tlist)) deallocate(tlist)
+             allocate(tlist(nts))
+             tlist = ph(i)%fvib_t
+          else if (tsetexternal) then
+             if (nts /= ph(i)%nfvib_t) &
+                call error('setup_phases','inconsistent num. of temperatures in two externalfvib phases',faterr)
+             if (any(abs(tlist - ph(i)%fvib_t) > teps)) &
+                call error('setup_phases','inconsistent temperatures in two externalfvib phases',faterr)
+          end if
        end if
 
        ! entropy and ThetaD ratio fit modes
@@ -1670,14 +1687,16 @@ contains
     use tools, only: qcksort
     type(phase), intent(inout) :: p
 
-    integer :: i, idx(p%nv)
+    integer, allocatable :: idx(:)
+    integer :: i
 
     if (.not.allocated(p%v).or..not.allocated(p%e)) return
 
+    ! volume sort
+    allocate(idx(p%nv))
     do i = 1, p%nv
        idx(i) = i
     end do
-
     call qcksort(p%v,idx,1,p%nv)
     p%v = p%v(idx)
     p%e = p%e(idx)
@@ -1688,6 +1707,19 @@ contains
     if (allocated(p%nefermi)) p%nefermi = p%nefermi(idx)
     if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol(:,idx)
     if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol(:,idx)
+    if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f(idx,:)
+
+    ! temperature sort in external fvib
+    if (p%tmodel == tm_externalfvib .and. allocated(p%fvib_t) .and. allocated(p%fvib_f)) then
+       deallocate(idx)
+       allocate(idx(p%nfvib_t))
+       do i = 1, p%nfvib_t
+          idx(i) = i
+       end do
+       call qcksort(p%fvib_t,idx,1,p%nfvib_t)
+       p%fvib_t = p%fvib_t(idx)
+       p%fvib_f = p%fvib_f(:,idx)
+    end if
 
   end subroutine phase_sort
 
@@ -1762,6 +1794,11 @@ contains
     if (allocated(p%tsel_cpol)) then
        if (doshift) p%tsel_cpol(:,1:n) = p%tsel_cpol(:,nv-n+1:nv)
        call realloc(p%tsel_cpol,size(p%tsel_cpol,1),n)
+    end if
+
+    if (allocated(p%fvib_f)) then
+       if (doshift) p%fvib_f(1:n,:) = p%fvib_f(nv-n+1:nv,:)
+       call realloc(p%fvib_f,n,size(p%fvib_f,2))
     end if
 
   end subroutine phase_realloc_volume
