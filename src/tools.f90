@@ -99,9 +99,9 @@ contains
 
   end subroutine ioinit
 
-  !> Get command line arguments and argument count
-  !> on return, argc will contain the number of arguments and
-  !> argv will be a character array containing the arguments.
+  !> Get command line arguments and argument count.  On return, argc
+  !> contains the number of arguments and argv is a character array
+  !> containing the arguments.
   subroutine getargs (argc, argv)
     use param, only: null
     integer, intent(out) :: argc
@@ -921,7 +921,8 @@ contains
 
     if (.not.allocated(a)) &
        call error('realloc2r','array not allocated',faterr)
-    nold = size(a)
+    nold(1) = size(a,1)
+    nold(2) = size(a,2)
     allocate(temp(n1,n2))
 
     temp(1:min(n1,nold(1)),1:min(n2,nold(2))) = a(1:min(n1,nold(1)),1:min(n2,nold(2)))
@@ -940,7 +941,9 @@ contains
 
     if (.not.allocated(a)) &
        call error('realloc3r','array not allocated',faterr)
-    nold = size(a)
+    nold(1) = size(a,1)
+    nold(2) = size(a,2)
+    nold(3) = size(a,3)
     allocate(temp(n1,n2,n3))
 
     temp(1:min(n1,nold(1)),1:min(n2,nold(2)),1:min(n3,nold(3))) = &

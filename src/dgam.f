@@ -1,3 +1,6 @@
+C
+C     Calculation of gamma and incomplete gamma function.
+C
       SUBROUTINE DGAM(A, X, ACC, G, GSTAR, IFLG, IFLGST)                DGA   10
       DOUBLE PRECISION A, X, G, GSTAR, C, AL10, ALX, ALPHA, ALPREC,
      * TOP, BOT, AINF, EPS, EPS1, ES, SGA, AE, AA, AP1, AM1, AEP1,
