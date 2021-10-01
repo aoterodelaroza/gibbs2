@@ -24,7 +24,7 @@ module debye
   public :: thermal, debeins, thermalphon
 
   ! if temperature is lower, then gamma(t) = gamma(tlim)
-  real*8, parameter, public :: tlim_gamma = 50d0 + 1d-6
+  real*8, parameter, public :: tlim_gamma = 1d0 + 1d-6
   real*8, parameter, public :: cvlim = 1d-30
 
 contains
@@ -304,6 +304,8 @@ contains
     real*8 :: ent_op, he_op, veq_static, beq_static
     real*8 :: prefac
 
+    real*8, parameter :: explimit = 250d0
+
     fdebye(z)=z*z*z/(exp(z)-1)
 
     ! number of molecules per cell and normalization factor (3*vfree-3)/(3*vfree*Z-3)
@@ -376,7 +378,7 @@ contains
     debye=3d0*pi*pi*pi*pi/y/y/y/15d0
 
     ! Numerical Debye integral
-    if (y <= 250d0) then
+    if (y <= explimit) then
        !.Loop with increasing number of Legendre points.
        debye0=1d30
        do nl=5,maxnl,5
@@ -393,18 +395,26 @@ contains
              debye0=debye
           endif
        end do
+       cv_ac = 3d0*pckbau*(4d0*debye - 3d0*y/(exp(y)-1d0))
+    else
+       cv_ac = 12d0*pckbau*debye
     end if
 
     !.thermodynamic acoustic vibrational properties
     en_ac = 3d0*pckbau*(ThetaD*3d0/8d0 + T*debye)
-    cv_ac = 3d0*pckbau*(4d0*debye - 3d0*y/(exp(y)-1d0))
     ent_ac= 3d0*pckbau*(debye*4d0/3d0-log(1d0-exp(-y)))
     he_ac = en_ac - T * ent_ac
 
     ! calculamos el sumatorio para la F,S y Cv optica con las
     ! frecuencias  opticas
+    sum_S_op = 0d0
+    do i = 1, p%nfreq
+       if (x_i(i) <= explimit) then
+          sum_S_op = sum_S_op + x_i(i)/(exp(x_i(i))-1)-log(1-exp(-x_i(i)))
+       end if
+    end do
+    sum_S_op = sum_S_op * prefac
     sum_F_op = sum(x_i/2d0 + log(1-exp(-x_i))) * prefac
-    sum_S_op = sum(x_i/(exp(x_i)-1)-log(1-exp(-x_i))) * prefac
     he_op = sum_F_op * pckbau * T
     ent_op= sum_S_op * pckbau
 

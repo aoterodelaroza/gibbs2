@@ -1,7 +1,7 @@
 # emacs backups
 *~
 
-# cmake 
+# cmake
 build*/
 CMakeCache.txt
 CMakeFiles
@@ -34,3 +34,4 @@ tests/*/*.gnu
 tests/*/*.aux
 tests/*/*.efit
 tests/*/*.outg
+tests/*/*.pdf

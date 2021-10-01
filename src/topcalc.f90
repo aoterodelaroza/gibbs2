@@ -543,7 +543,7 @@ contains
 
     if (writelevel < 1) return
 
-    write (uout,'("* Calculated temperature effects ")')
+    write (uout,'("* Thermodynamic properties at the chosen (p,T) values ")')
     write (uout,'("  Writing file : ",A/)') trim(fileroot)//".eos"
     lu = fopen(lu,trim(fileroot)//".eos"//null,iowrite)
 
@@ -584,16 +584,15 @@ contains
 
        ! Loop over temperatures
        do j = 1, nts
-
           ! fit the total helmholtz free energy on the volume grid
-          call fit_agrid_t(ph(i),tlist(j),ft%napol,ft%apol,ft%amode,ierr,.true.,.true.,.true.,pfit)
+          call fit_agrid_t(ph(i),tlist(j),j,ft%napol,ft%apol,ft%amode,ierr,.true.,.true.,.true.,pfit)
           if (ierr > 0) then
              write (uout,'(" T = ",F12.4," P = ",F12.4,"")') tlist(j), 0d0
              call error('dyneos','fit for A(x) not found',faterr)
           end if
 
           ! fit the vibrational entropy on the volume grid
-          call fit_sgrid_t(ph(i),tlist(j),ft%nspol,ft%spol,ft%smode,ierr,.true.,.true.)
+          call fit_sgrid_t(ph(i),tlist(j),j,ft%nspol,ft%spol,ft%smode,ierr,.true.,.true.)
           if (ierr > 0) then
              write (uout,'(" T = ",F12.4," P = ",F12.4,"")') tlist(j), 0d0
              call error('dyneos','fit for -TS(x) not found',faterr)
@@ -1166,7 +1165,7 @@ contains
              t = fint(j+1)
              j = j + 1
 
-             call fit_agrid_t(ph(i),t,napol,apol,imode,ierr,.true.,.true.,.true.)
+             call fit_agrid_t(ph(i),t,0,napol,apol,imode,ierr,.true.,.true.,.true.)
              call fit_pshift(imode,ph(i)%v,p,napol,apol,v,b,e,g,ierr)
              if (ierr > 0) then
                 write (uout,'(" Temperature = ",F12.4)') t
@@ -1274,7 +1273,7 @@ contains
        call fill_thetad(ph(i),.false.)
 
        ! find v0, b0 and g0 at temperature t0
-       call fit_agrid_t(ph(i),ph(i)%eec_t,napol,apol,imode,ierr,.true.,.true.,.true.)
+       call fit_agrid_t(ph(i),ph(i)%eec_t,0,napol,apol,imode,ierr,.true.,.true.,.true.)
        call fit_pshift(imode,ph(i)%v,ph(i)%eec_p,napol,apol,v0t,b0t,e0t,g0t,ierr)
        if (ierr > 0) then
           write (msg,'("Phase ",A,": Can not find minimum of F(V,T). Using NOSCAL.")')&
@@ -1428,16 +1427,24 @@ contains
     end function qfac
   end subroutine eshift_vexp
 
-  ! Returns fitting parameters of F(V,T).
-  subroutine fit_agrid_t(p,T,napol,apol,mode,ierr,dostatic,dovib,doel,pfit)
+  ! For phase p, calculate the fitting coefficients (napol,apol) of
+  ! the Helmholtz free energy at temperature T. iT is the index for
+  ! this temperature from the temperature list (used only in
+  ! externalfvib).  The fitting mode is mode. ierr is the error code.
+  ! If dostatic, add the total energy F. If dovib, add the Fvib to
+  ! F. If doel, add the Fel to F. The fit info, if present, is
+  ! returned in pfit.
+  subroutine fit_agrid_t(p,T,iT,napol,apol,mode,ierr,dostatic,dovib,doel,pfit)
     use debye, only: thermalphon, debeins, thermal
     use evfunc, only: fv0
     use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_debye_einstein_v,&
-       em_pol4, em_sommerfeld, ftsel_fitmode
+       tm_externalfvib, em_pol4, em_sommerfeld, ftsel_fitmode
     use fit, only: fit_ev, fitinfo
-    use param, only: pi, pckbau, pisquare, twothird
+    use tools, only: error
+    use param, only: pi, pckbau, pisquare, twothird, faterr
     type(phase), intent(in) :: p
     real*8, intent(in) :: T
+    integer, intent(in) :: iT
     integer, intent(out) :: napol
     real*8, intent(out) :: apol(0:mmpar)
     integer, intent(out) :: mode
@@ -1454,6 +1461,10 @@ contains
 
     aux = 0d0
 
+    ! consistency check
+    if (iT == 0 .and. p%tmodel == tm_externalfvib) &
+       call error('fit_agrid_t','The externalfvib model cannot be used at arbitrary T',faterr)
+
     ! find Fvib(V,T) at the grid volumes and store in aux
     if (dovib) then
        do i = 1, p%nv
@@ -1462,6 +1473,8 @@ contains
              call thermalphon(p,T,p%v(i),uvib,cv,aux(i),dum,cv2)
           else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
              call debeins(p,p%td(i),T,p%v(i),D,Derr,uvib,cv,aux(i),dum,cv_ac,cv_op)
+          else if (p%tmodel == tm_externalfvib) then
+             aux(i) = p%fvib_f(i,iT)
           else
              call thermal(p%td(i),T,D,Derr,uvib,cv,aux(i),dum)
           end if
@@ -1502,15 +1515,17 @@ contains
   end subroutine fit_agrid_t
 
   ! Returns fitting parameters of -T*S(V,T).
-  subroutine fit_sgrid_t(p,T,nspol,spol,mode,ierrs,dovib,doel)
+  subroutine fit_sgrid_t(p,T,iT,nspol,spol,mode,ierrs,dovib,doel)
     use debye, only: tlim_gamma, thermalphon, debeins, thermal
     use fit, only: fitt_polygibbs
     use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_debye_einstein_v,&
-       em_pol4, em_sommerfeld, ftsel_fitmode
+       tm_externalfvib, em_pol4, em_sommerfeld, ftsel_fitmode
     use evfunc, only: fv0
-    use param, only: pi, pckbau, pisquare, twothird
+    use tools, only: error
+    use param, only: pi, pckbau, pisquare, twothird, faterr
     type(phase), intent(in) :: p
     real*8, intent(in) :: T
+    integer, intent(in) :: iT
     integer, intent(out) :: nspol
     real*8, intent(out) :: spol(0:mmpar)
     integer, intent(out) :: mode
@@ -1523,10 +1538,14 @@ contains
     real*8 :: t0, ef(p%nv)
     real*8 :: auxcpol(0:mmpar)
 
+    ! consistency check
+    if (iT == 0 .and. p%tmodel == tm_externalfvib) &
+       call error('fit_agrid_t','The externalfvib model cannot be used at arbitrary T',faterr)
+
     ! only active
     rnv = count(p%dyn_active)
 
-    ! 0 K calculations of gamma are tricky -> use ~30 K instead
+    ! 0 K calculations of gamma are tricky -> use ~1 K instead
     t0 = max(T,tlim_gamma)
 
     ! find Svib(V,T) at the grid volumes and store in aux
@@ -1540,6 +1559,8 @@ contains
              call thermalphon(p,t0,p%v(i),uvib,cv,dum,aux(i),cv2)
           else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
              call debeins(p,p%td(i),t0,p%v(i),D,Derr,uvib,cv,dum,aux(i),cv_ac,cv_op)
+          else if (p%tmodel == tm_externalfvib) then
+             aux(i) = 0d0
           else
              call thermal(p%td(i),t0,D,Derr,uvib,cv,dum,aux(i))
           end if

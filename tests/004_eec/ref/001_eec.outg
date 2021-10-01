@@ -751,7 +751,7 @@ WARNING(phase_popinfo): Max. pressure (     801.753) exceeds      500.000
   Temperature range (K):        0.000 ->     3000.000
   Number of T points:    301
 
-* Calculated temperature effects 
+* Thermodynamic properties at the chosen (p,T) values 
   Writing file : 001_eec.eos
 
 + Phase lda:uncorr
