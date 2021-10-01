@@ -343,7 +343,6 @@ WARNING(phase_popinfo): Max. pressure (    1556.683) exceeds      500.000
       503.1476 -->     600.0000             b2       End of pressure range
 
 * Temperature range examined
-  Min_{DebyeT} (K):      198.767
   Temperature range (K):        0.000 ->     1000.000
   Number of T points:     51
 

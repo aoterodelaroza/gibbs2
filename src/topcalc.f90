@@ -521,7 +521,8 @@ contains
 
   end subroutine dyn_transp
 
-  ! Calculate and write the EOS file.
+  ! Calculate and write the EOS file at the requested temperature and
+  ! pressure list.
   subroutine dyneos()
     use gnuplot_templates, only: gen_allgnu_t, gen_allgnu_p
     use fit, only: fit_pshift, fitinfo

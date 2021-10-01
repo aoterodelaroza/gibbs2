@@ -470,7 +470,6 @@ WARNING(phase_popinfo): Max. pressure (     748.841) exceeds      500.000
   Writing file : 001_elec_dH.gnu
 
 * Temperature range examined
-  Min_{DebyeT} (K):      198.767
   Temperature range (K):      298.150 ->      298.150
   Number of T points:      1
 
