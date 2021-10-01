@@ -31,7 +31,7 @@ program gibbs2
      phase_init, help_me_and_exit, inplace_sort, varbas_init, process_argv, setup_phases, &
      props_staticeq, phase_punch_pfit, phase_popinfo, quiet
   use tools, only: lower, equal, fopen, fclose, isinteger, ffdate, getword, isreal, fgetline, &
-     leng, error, realloc, timer, ioinit, getargs, stdargs
+     leng, error, realloc, ioinit, getargs, stdargs
   use param, only: amu2au, faterr, ioerror, ncomms, nwarns, null, pct0, uin, uout, &
      header, mline, marg, title, fileroot, param_init
   implicit none
@@ -65,10 +65,6 @@ program gibbs2
 
   ! get date
   sdate = ffdate()
-
-  ! timer
-  call timer (0,ipid,'main',uout)
-  call timer (1,ipid,'main',uout)
 
   ! initialization of default values for variables
   call evfunc_init()
@@ -733,10 +729,5 @@ program gibbs2
   if (allocated(fint)) deallocate(fint)
   if (allocated(iint)) deallocate(iint)
   if (allocated(ph)) deallocate(ph)
-
-  if (.not.quiet) then
-     call timer (4,ipid,'main',-1)
-     call timer (6,ipid,'main',uout)
-  end if
 
 end program gibbs2

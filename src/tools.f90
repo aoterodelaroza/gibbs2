@@ -29,7 +29,6 @@ module tools
   public :: fgetline, getword
   public :: islogical, isreal, isinteger
   !xx! timer routines
-  public :: timer
   public :: ffdate
   !xx! errors, warnings, comments
   public :: error
@@ -63,8 +62,6 @@ module tools
   private :: fflush
   private :: fputstr
   private :: isdigit, atoi, atof
-  !xx! timer routines
-  private :: atimer
   !xx! errors, warnings, comments
   !xx! string tools
 
@@ -700,151 +697,6 @@ contains
     return
 
   end subroutine fputstr
-
-  !xx! timer routines
-
-  !> Accumulates and prints out the elapsed times of a series of up to
-  !> MPROCESS processes.
-  !> Input parameters are:
-  !>   key ........... 0 = reset all time tables.
-  !>                   1 = reset pid entry and begin counting for it.
-  !>                   2 = continue the cont for pid process. Do not
-  !>                       reset previous entry times.
-  !>                   3 = end of pid process. Free pid entry.
-  !>                   4 = end of pid process. Do not free entry.
-  !>                   5 = end of run. Print out all time tables.
-  !>                   6 = close all processes and print out tables.
-  !>   pid ........... process identification number (1..MPROCESS).
-  !>   name .......... process name (used only in the print out).
-  !>   lw ............ printer logical unit. Negative if print out is not
-  !>                   desired.
-  !> key controls what data are used in the run, as the following table
-  !> resumes:
-  !>   key value    pid      name       lw
-  !>   ---------  -------   -------   -------
-  !>      0       ignored   ignored   ignored
-  !>     1,2      output    input     ignored
-  !>     3,4      input     ignored   input
-  !>     5,6      ignored   ignored   input
-  subroutine timer (key,pid,name,lw)
-    use param, only: warning
-    integer, intent(in) :: key, lw
-    integer, intent(inout) :: pid
-    character*(*), intent(in) :: name
-
-    character*(80)   message
-    integer          mprocess
-    parameter        (mprocess=200)
-    character*(20)    pname(mprocess)
-    real*4           time(mprocess),cumtime(mprocess),timedum
-    logical          popen(mprocess),pused(mprocess)
-    logical          firsttime
-    integer*4        pcalls(mprocess)
-    save             time,cumtime,pname,popen,pused,pcalls
-    save             firsttime
-    integer          i
-
-    data firsttime /.true./
-
-    if (key.eq.0 .or. firsttime) then
-
-       ! initiallize all entries:
-       firsttime=.false.
-       do  i=1,mprocess
-          time(i)=0.0
-          cumtime(i)=0.0
-          popen(i)=.false.
-          pused(i)=.false.
-          pname(i)='        '
-          pcalls(i)=0
-       end do
-    else if (key.eq.1 .or. key.eq.2) then
-
-       ! begin pid count:
-       call atimer (timedum)
-       i=1
-15     if (pused(i)) then
-          if (pname(i).ne.name) then
-             i=i+1
-             if (i.gt.mprocess) then
-                call error ('timer','too many processes',warning)
-                return
-             endif
-             goto 15
-          endif
-       endif
-       pid=i
-       if (key.eq.1) then
-          cumtime(pid)=0.0
-          pcalls(pid)=1
-       else
-          pcalls(pid)=pcalls(pid)+1
-       endif
-       time(pid)=timedum
-       popen(pid)=.true.
-       pused(pid)=.true.
-       pname(pid)=name
-    else if (key.eq.3 .or. key.eq.4) then
-
-       ! end pid accounting:
-       if (pid.le.0 .or. pid.gt.mprocess) then
-          write (message,130) pid, name
-          call error ('timer',message,warning)
-       else if (.not.popen(pid)) then
-          call error ('timer','pid unused or closed',warning)
-       else
-          call atimer (timedum)
-          time(pid)=timedum-time(pid)
-          cumtime(pid)=cumtime(pid)+time(pid)
-          popen(pid)=.false.
-          if (lw.gt.0) write (lw,100) pname(pid),time(pid)
-          if (key.eq.3) then
-             pused(pid)=.false.
-             pcalls(pid)=0
-             cumtime(pid)=0.0
-             time(pid)=0.0
-          endif
-       endif
-    else if (key.eq.5 .or. key.eq.6) then
-
-       ! print out the time tables:
-       write (lw,105)
-       call atimer (timedum)
-       do i=1,mprocess
-          if (pused(i)) then
-             if (popen(i)) then
-                time(i)=timedum-time(i)
-                cumtime(i)=cumtime(i)+time(i)
-                if (key.eq.6) popen(i)=.false.
-             endif
-             write (lw,110) i,pname(i),cumtime(i),pcalls(i),popen(i)
-          endif
-       end do
-       write (lw,115)
-    else
-       call error ('timer','key value not recognized',warning)
-    endif
-
-    return
-
-100 format (/1x,'*** timer:'/1x,'*** process name:',a10,5x,'elapsed time (sec):',f10.3/)
-105 format (/1x,'***'/1x,'*** timer:'/1x,'***'/1x,'*** -pid----------name-----------cumtime----pcalls----popen-')
-110 format (1x,'***',i4,2x,a20,f11.3,1x,i9,6x,l2)
-115 format (1x,'***'/)
-130 format ('pid (', i3, ') out of bonds for: ', a)
-  end subroutine timer
-
-  !> Interface to the timer routines of different computers. Returns
-  !> machine seconds at the calling time. (private)
-  subroutine atimer (tiempo)
-
-    real*4          tiempo
-    real*4          etime
-    real*4          tarray(2)
-
-    tiempo = etime (tarray)
-
-  end subroutine atimer
 
   !> Outputs date and time to a string.
   function ffdate()
