@@ -18,7 +18,7 @@
 !.gibbs2 - (P,T) thermodynamics of crystals.
 program gibbs2
   use evfunc, only: nelectrons, evfunc_init, punch_params
-  use topcalc, only: fint, iint, interp_input, mxint, nxint, printfreqs, drhouse, write_energy,&
+  use topcalc, only: fint, iint, interp_input, mxint, nxint, printfreqs, write_energy,&
      dyn_transp, stablevbg, deltag, dyneos, topcalc_init, popinput, eshift_vexp, popenergyfit,&
      plotdh, interpolate, static_transp
   use debye, only: fill_thetad, thermal
@@ -49,7 +49,7 @@ program gibbs2
   integer :: ipid, lp, lp2, onps, onts, onvs
   integer :: i, j, iph
   logical :: ok, ok2, ok3, verbose, doit
-  logical :: callhouse, callpf, calleout
+  logical :: callpf, calleout
   integer :: nhouse
   real*8 :: pini, pend, tini, tend, tmaxmin, vini, vend
   real*8 :: vout_ini, vout_end, vout_step, e0
@@ -72,7 +72,6 @@ program gibbs2
   call varbas_init()
   call topcalc_init()
   fileout = "stdout"//null
-  callhouse = .false.
   pini = 0d0
   pend = 0d0
   tini = 0d0
@@ -512,12 +511,6 @@ program gibbs2
            end if
         end if
 
-     ! drhouse (topcalc)
-     elseif (equal(word,'drhouse'//null)) then
-        callhouse = .true.
-        ok = isinteger(nhouse,line,lp)
-        if (.not.ok) nhouse = 1000
-
      ! printfreq/printfreqs (topcalc)
      elseif (equal(word,'printfreqs'//null) .or. equal(word,'printfreq'//null)) then
         callpf = .true.
@@ -569,9 +562,6 @@ program gibbs2
 
   ! check phase data, set pressure range (varbas)
   call setup_phases()
-
-  ! diagnosis of problems in static E(V) data (topcalc)
-  if (callhouse) call drhouse(nhouse)
 
   ! shift to fit experimental volume (topcalc)
   call eshift_vexp()

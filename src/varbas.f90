@@ -2316,7 +2316,7 @@ contains
     write (uout,fm) "--dir. average-", prop
     write (uout,fm) "---std. dev.---", prop2
     if (prop2(3) > bfrac_warn * prop(3)) then
-       call error('phase_punch_pfit','Errorbar in B is too high. Call DRHOUSE.',warning)
+       call error('phase_punch_pfit','Errorbar in B is too high. Check E(V) data and fit.',warning)
     end if
     write (uout,*)
 
