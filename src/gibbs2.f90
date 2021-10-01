@@ -557,9 +557,8 @@ program gibbs2
      endif
   enddo
 
-  if (nph <= 0) then
+  if (nph <= 0) &
      call error('gibbs2','at least one phase is required',faterr)
-  end if
 
   ! pop header (varbas) + input (topcalc)
   call header()

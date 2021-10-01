@@ -100,6 +100,11 @@ module varbas
      real*8 :: phstep
      real*8, allocatable :: phdos_f(:), phdos_d(:,:,:)
 
+     ! external fvib
+     integer :: nfvib_t
+     real*8, allocatable :: fvib_t(:)
+     real*8, allocatable :: fvib_f(:,:)
+
      ! electronic contribution to the free energy
      integer :: nelec = 0
      integer :: emodel
@@ -148,6 +153,7 @@ module varbas
   integer, parameter :: tm_qhafull = 6
   integer, parameter :: tm_debyegrun = 7
   integer, parameter :: tm_debye_poisson_input = 8
+  integer, parameter :: tm_externalfvib = 9
 
   ! scaling modes
   integer, parameter :: scal_noscal = 1
@@ -564,6 +570,108 @@ contains
 
   end subroutine read_freqg
 
+  ! Read the Fvib as a function of volume and temperature from an
+  ! external set of files. Used in the externalfvib temperature
+  ! model. The file "file" contains two columns with the temperature
+  ! in K and another file. The file in each line, prefixed by
+  ! "prefix", has the G(V) data at the corresponding temperature. It
+  ! must have two columns, volume and G(V,T), and the volumes must be
+  ! equal in number and value to the volumes in the static curve.
+  ! Requires the static volumes (nv, v) and the static energies (e).
+  ! Returns the lits of temperatures and the Fvib(V,T)
+  subroutine read_externalfvib(file,prefix,nv,v,e,nfvib_t,fvib_t,fvib_f)
+    use tools, only: fopen, fclose, fgetline, error, isreal, getword,&
+       leng, cat, realloc
+    use param, only: ioread, faterr, null
+    character*(*), intent(in) :: file
+    character*(*), intent(in) :: prefix
+    integer, intent(in) :: nv
+    real*8, intent(in) :: v(nv)
+    real*8, intent(in) :: e(nv)
+    integer, intent(out) :: nfvib_t
+    real*8, allocatable, intent(inout) :: fvib_t(:)
+    real*8, allocatable, intent(inout) :: fvib_f(:,:)
+
+    integer :: lu, lu2, lp, lp2
+    integer :: iv
+    character*(mline) :: line, line2, word
+    real*8 :: tdum, vdum, gdum
+    logical :: ok, isabspref
+    character*(len(prefix)+1) :: prefix_
+
+    real*8, parameter :: veps = 1d-5
+
+    ! whether the prefix is absolute
+    if (prefix(leng(prefix):leng(prefix)) /= '/') then
+       prefix_ = cat(prefix,'/'//null)
+    else
+       prefix_ = prefix
+    end if
+
+    ! initialize
+    nfvib_t = 0
+    if (allocated(fvib_t)) deallocate(fvib_t)
+    if (allocated(fvib_f)) deallocate(fvib_f)
+    allocate(fvib_t(10))
+    allocate(fvib_f(nv,10))
+
+    ! loop over the lines in the file
+    lu = fopen(lu,file,ioread)
+    do while (fgetline(lu,line))
+       ! get the temperature
+       lp = 1
+       ok = isreal(tdum,line,lp)
+       if (.not.ok) &
+          call error('read_externalfvib','error reading temperature from external Fvib file',faterr)
+
+       ! realloc if necessary and record the temperature
+       nfvib_t = nfvib_t + 1
+       if (nfvib_t > size(fvib_t,1)) then
+          call realloc(fvib_t,2*nfvib_t)
+          call realloc(fvib_f,nv,2*nfvib_t)
+       end if
+       fvib_t(nfvib_t) = tdum
+
+       ! build the path
+       word = getword(word,line,lp)
+       word = cat(trim(prefix_),word)
+
+       ! open and read the file
+       iv = 0
+       lu2 = fopen(lu2,word,ioread)
+       do while (fgetline(lu2,line2))
+          ! read the two values
+          lp2 = 1
+          ok = isreal(vdum,line2,lp2)
+          ok = ok.and.isreal(gdum,line2,lp2)
+          if (.not.ok) &
+             call error('read_externalfvib','error reading external file: '//&
+             word(1:leng(word)),faterr)
+
+          ! check for consistency
+          iv = iv + 1
+          if (iv > nv) &
+             call error('read_externalfvib','extra V/G lines in file: '//&
+             word(1:leng(word)),faterr)
+          if (abs(v(iv)-vdum) > veps) &
+             call error('read_externalfvib','volumes do not match static volumes in file: '//&
+             word(1:leng(word)),faterr)
+
+          ! Write down the Fvib. Assume same units as E
+          fvib_f(iv,nfvib_t) = gdum - e(iv)
+
+          write (*,*) iv, vdum, fvib_f(iv,nfvib_t)
+       end do
+       call fclose(lu2)
+    end do
+    call fclose(lu)
+
+    ! final realloc
+    call realloc(fvib_t,nfvib_t)
+    call realloc(fvib_f,nv,nfvib_t)
+
+  end subroutine read_externalfvib
+
   !> Initialize a phase structure by parsing input line (line_in).
   !> Returns the phase.
   subroutine phase_init(p,line_in)
@@ -585,7 +693,7 @@ contains
     integer :: icol_v, icol_e, icol_td, icol_nef, icol_ph, icol_pol4(8)
     integer :: icol_int(minterp)
     integer :: idum, ifound, iphdos_1, iphdos_2, isep, isep2, nn, nq, numax, uuin
-    character*(mline) :: line, word, prefix, file, linedum, msg
+    character*(mline) :: line, word, prefix, file, linedum, msg, extfvibfile
     real*8 :: fx, gx, hx, zz, eshift
     real*8, allocatable :: ffreq(:)
     logical :: ok, d0, didinterp, havev, havee, haveph
@@ -636,6 +744,7 @@ contains
     zz = 1d0
     eshift = 0d0
     prefix = "./" // null
+    extfvibfile = ""
 
     ! start reading
     ok = .true.
@@ -785,6 +894,9 @@ contains
                    exit
                 end if
              end do
+          elseif (equal(word,'externalfvib'//null)) then
+             p%tmodel = tm_externalfvib
+             extfvibfile = getword(extfvibfile,line,lp)
           else
              call error('phase_init','unknown TMODEL in PHASE keyword',faterr)
           end if
@@ -1234,6 +1346,11 @@ contains
     ! reallocate
     p%nv = nn
     call phase_realloc_volume(p,nn,numax)
+
+    ! if the temperature model is external fvib, read the external Fvib files
+    if (p%tmodel == tm_externalfvib) then
+       call read_externalfvib(extfvibfile,prefix,p%nv,p%v,p%e,p%nfvib_t,p%fvib_t,p%fvib_f)
+    end if
 
     ! apply energy shift
     p%e(1:p%nv) = p%e(1:p%nv) + eshift
@@ -1948,20 +2065,24 @@ contains
        end if
     end if
 
+    ! energy
     if (p%units_e == units_e_ry) then
        if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / 2d0 / zz
        if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol / 2d0 / zz
+       if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f / 2d0 / zz
     else if (p%units_e == units_e_ev) then
        if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / ha2ev / zz
-       if (allocated(p%tsel_cpol)) p%fel_cpol = p%tsel_cpol / ha2ev / zz
+       if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol / ha2ev / zz
+       if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f / ha2ev / zz
     end if
 
-    ! convert input units
+    ! edos input units
     if (p%eunits_e == units_e_ry) then
        if (allocated(p%nefermi)) p%nefermi = p%nefermi * 2d0
     else if (p%eunits_e == units_e_ev) then
        if (allocated(p%nefermi)) p%nefermi = p%nefermi * ha2ev
     end if
+
   end subroutine phase_inputdata
 
   !> Calculate static E(V) fit errors. If ispv, assume the data is p(V).
