@@ -1,0 +1,19 @@
+## check: 002_externalfvib_all_p.gnu -a1e-10
+## check: 002_externalfvib.efit -a1e-10
+## check: 002_externalfvib_efit.aux -a1e-10
+## check: 002_externalfvib_efit.gnu -a1e-10
+## check: 002_externalfvib.eos -a1e-10
+## check: 002_externalfvib.eos_static -a1e-10
+## labels: regression quick
+
+root 002_externalfvib
+set notrans
+mm 40.3044
+vfree 2
+pressure 0 1 250
+
+phase mgo file ../dat/externalfvib_mgo/mgo.res tmodel externalfvib ../dat/externalfvib_mgo/list.gvt \
+                prefix ../dat/externalfvib_mgo
+
+end
+
