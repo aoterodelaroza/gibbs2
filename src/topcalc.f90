@@ -35,15 +35,18 @@ module topcalc
   type fitpack
      integer :: nepol = 0    ! static energy
      integer :: napol = 0    ! total helmholtz free energy
-     integer :: nspol = 0    ! total entropy
+     integer :: nspol = 0    ! -T*Svib
+     integer :: ncvpol = 0   ! Cv (for externalfvib)
      ! fit modes
      integer :: emode = 0
      integer :: amode = 0
      integer :: smode = 0
+     integer :: cvmode = 0
      ! coefficients
      real*8 :: epol(0:mmpar) = 0d0
      real*8 :: apol(0:mmpar) = 0d0
      real*8 :: spol(0:mmpar) = 0d0
+     real*8 :: cvpol(0:mmpar) = 0d0
   end type fitpack
   type(fitpack), save :: ft_null
 
@@ -526,7 +529,8 @@ contains
   subroutine dyneos()
     use gnuplot_templates, only: gen_allgnu_t, gen_allgnu_p
     use fit, only: fit_pshift, fitinfo
-    use varbas, only: nph, ph, mpropout, propfmt, tm_static, nps, plist, nts, tlist, &
+    use varbas, only: nph, ph, mpropout, propfmt, tm_static, tm_externalfvib,&
+       nps, plist, nts, tlist, &
        writelevel, nvs, vlist, doerrorbar, propname, vbracket, vdefault
     use tools, only: error, leng, fopen, fclose
     use param, only: mline, mline_fmt, uout, format_string, format_string_header, fileroot,&
@@ -596,6 +600,15 @@ contains
           if (ierr > 0) then
              write (uout,'(" T = ",F12.4," P = ",F12.4,"")') tlist(j), 0d0
              call error('dyneos','fit for -TS(x) not found',faterr)
+          end if
+
+          ! fit the constant-volume heat capacity on the volume grid
+          if (ph(i)%tmodel == tm_externalfvib) then
+             call fit_cvgrid_t(ph(i),tlist(j),j,ft%ncvpol,ft%cvpol,ft%cvmode,ierr)
+             if (ierr > 0) then
+                write (uout,'(" T = ",F12.4," P = ",F12.4,"")') tlist(j), 0d0
+                call error('dyneos','fit for Cv(x) not found',faterr)
+             end if
           end if
 
           ! sum the pV term corresponding to each pressure and calculate
@@ -755,7 +768,7 @@ contains
     use debye, only: tlim_gamma, cvlim, debeins, thermalphon, thermal, get_thetad
     use varbas, only: mpropout, phase, tm_qhafull, tm_debye_input, tm_debye, tm_debyegrun,&
        tm_debye_poisson_input, tm_debye_einstein, tm_debye_einstein_v, tm_externalfvib,&
-       em_pol4, em_sommerfeld, em_no, ftsel_fitmode, vbracket
+       em_pol4, em_sommerfeld, em_no, ftsel_fitmode, vbracket, nts, tlist
     use tools, only: error
     use param, only: faterr, au2gpa, ha2kjmol, pi, pckbau, pisquare, twothird
     type(phase), intent(in) :: p
@@ -774,7 +787,7 @@ contains
     real*8 :: fsum, ssum, usum, cv_sum
     real*8 :: gam_ac, gam_op, gamma
     real*8 :: pext, psta, pth, dg, mtsvib
-    integer :: id
+    integer :: id, i
     real*8 :: auxcpol(0:mmpar)
     logical :: gamma_from_s
 
@@ -845,8 +858,8 @@ contains
           svib = mtsvib / (-t)
        end if
        uvib = fvib - mtsvib
-       cv_vib = 1d0
-       cv_lowt = 1d0
+       cv_vib = fv0(ft%cvmode,v,ft%ncvpol,ft%cvpol)
+       cv_lowt = cv_vib
     end select
 
     ! electronic contribution
@@ -921,27 +934,43 @@ contains
     ssum = svib + sel
     cv_sum = cv_vib + cv_el
 
-    ! calculate gamma from entropy fit
+    ! bulk modulus
+    b0 = b0 * au2gpa
+    b2 = b2 / au2gpa
+
+    ! gamma and related quantities
     if (gamma_from_s) then
+       ! get the volume-derivative of the entropy
        if (ft%nspol == 0) call error('dyneos_calc','nspol = 0',faterr)
-       if (t < tlim_gamma) then
-          gamma = - v / cv_lowt * fv1(ft%smode,v,ft%nspol,ft%spol) / tlim_gamma
-       else
+
+       if (t >= tlim_gamma) then
+          ! non-zero temperature, usual calculation, no 0/0 here
           gamma = - v / cv_sum * fv1(ft%smode,v,ft%nspol,ft%spol) / t
+       else
+          ! zero temperature or close; careful about 0/0
+          if (p%tmodel == tm_externalfvib) then
+             ! a meaningless gamma value - all properties other than
+             ! gamma will be correct.
+             gamma = 1d0
+          else
+             ! use the limit temperature as a proxy to calculate
+             ! gamma, which has to be finite at T -> 0.
+             gamma = - v / cv_lowt * fv1(ft%smode,v,ft%nspol,ft%spol) / tlim_gamma
+          end if
        end if
     end if
 
-    ! Rest of thermodynamic properties -- note g can be calculate in 2 ways:
-    !  with Fsum from two fits or from quasiharmonic formula+.... dg is a measure
-    !  this inaccuracy.
-    ! pbeta = (dp/dT)_V
-    b0 = b0 * au2gpa
-    b2 = b2 / au2gpa
+    ! gamma is finite at T->0, so no problem here, either
     Pbeta = cv_sum * gamma / v * au2gpa
     alpha = Pbeta / b0
     tmp = 1d0 + gamma * alpha * t
     Cp = cv_sum * tmp
     Bs = b0 * tmp
+
+    ! Rest of thermodynamic properties -- note g can be calculated in
+    ! 2 ways: with Fsum from two fits or from quasiharmonic
+    ! formula.... dg is a measure this inaccuracy.
+    ! pbeta = (dp/dT)_V
     g = f0 + pext * v
     dg = f0 - f0s - fsum
 
@@ -1562,7 +1591,7 @@ contains
 
     ! consistency check
     if (iT == 0 .and. p%tmodel == tm_externalfvib) &
-       call error('fit_agrid_t','The externalfvib model cannot be used at arbitrary T',faterr)
+       call error('fit_sgrid_t','The externalfvib model cannot be used at arbitrary T',faterr)
 
     ! only active
     rnv = count(p%dyn_active)
@@ -1620,6 +1649,57 @@ contains
     spol(nspol) = 0d0
 
   end subroutine fit_sgrid_t
+
+  ! For phase p, calculate the fitting coefficients (ncvpol,cvpol) of
+  ! Cv at temperature T. iT is the index for this temperature from the
+  ! temperature list (used only in externalfvib). The fitting mode is
+  ! mode. ierr is the error code.
+  subroutine fit_cvgrid_t(p,T,iT,ncvpol,cvpol,mode,ierrs)
+    use fit, only: fitt_polygibbs
+    use varbas, only: phase, tm_externalfvib
+    use tools, only: error
+    use param, only: faterr
+    type(phase), intent(in) :: p
+    real*8, intent(in) :: T
+    integer, intent(in) :: iT
+    integer, intent(out) :: ncvpol
+    real*8, intent(out) :: cvpol(0:mmpar)
+    integer, intent(out) :: mode
+    integer, intent(out) :: ierrs
+
+    integer :: i, rnv
+    real*8 :: realv(p%nv), realcv(p%nv), aux(p%nv)
+
+    ! consistency check
+    if (iT == 0 .and. p%tmodel == tm_externalfvib) &
+       call error('fit_cvgrid_t','The externalfvib model cannot be used at arbitrary T',faterr)
+    if (p%tmodel /= tm_externalfvib) &
+       call error('fit_cvgrid_t','fit_cvgrid_t can only be used with externalfvib tmodel',faterr)
+
+    ! only active
+    rnv = count(p%dyn_active)
+
+    ! find Cv(V,T) at the grid volumes and store in aux
+    aux = 0d0
+    ! vibrational contribution
+    do i = 1, p%nv
+       if (.not.p%dyn_active(i)) cycle
+       aux(i) = p%fvib_cv(i,iT)
+    end do
+
+    ! apply mask to remove points with negative frequencies
+    realv(1:rnv) = pack(p%v,p%dyn_active)
+    realcv(1:rnv) = pack(aux,p%dyn_active)
+
+    ! Cv fit
+    call fitt_polygibbs(p%cvfit_mode,realv(1:rnv),realcv(1:rnv),ncvpol,cvpol,ierrs,.false.)
+    mode = p%cvfit_mode
+
+    ! no centering slope in Cv fits
+    ncvpol = ncvpol + 1
+    cvpol(ncvpol) = 0d0
+
+  end subroutine fit_cvgrid_t
 
   !< Returns fitting parameters of Cv_el(V,T).
   subroutine fit_cvelgrid_t(p,T,ncvpol,cvpol,mode,ierr)

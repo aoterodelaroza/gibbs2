@@ -228,9 +228,10 @@ contains
 
   end subroutine fit_ev
 
-  ! Fits polynomials to (var,function) data and averages them, weighted by its chi-square
-  ! test probabilities. It returns the averaged polynomial coefficients in aparpro, and
-  ! the coefficients of its square in a2parpro.
+  ! Fits polynomials to (var,function) data and averages them,
+  ! weighted by its chi-square test probabilities. It returns the
+  ! averaged polynomial coefficients in aparpro, and the coefficients
+  ! of its square in a2parpro.
   subroutine fitt_polygibbs (mode, var, func, nparpro, aparpro, ierrout, ispv, pfit)
     use param, only: warning
     use tools, only: error
@@ -463,7 +464,7 @@ contains
   end subroutine fitt_polygibbs
 
   ! Fit equation of state of type fmode and regression mode rmode to data var (x)
-  ! and func (x). Returns the fitted parametersf aparpro(0:nparpro). ierrout = 0
+  ! and func (x). Returns the fitted parameters aparpro(0:nparpro). ierrout = 0
   ! if success, non-zero if failure. ispv = .true. if these are pv data. nfix,
   ! idfix, obelix - fix some EOS parameters.
   subroutine fitt_eos(fmode,rmode,var,func,nparpro,aparpro,ierrout,ispv,nfix,idfix,obelix)

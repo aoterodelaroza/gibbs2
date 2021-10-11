@@ -105,6 +105,7 @@ module varbas
      real*8, allocatable :: fvib_t(:)
      real*8, allocatable :: fvib_f(:,:)
      real*8, allocatable :: fvib_s(:,:)
+     real*8, allocatable :: fvib_cv(:,:)
 
      ! electronic contribution to the free energy
      integer :: nelec = 0
@@ -571,17 +572,17 @@ contains
 
   end subroutine read_freqg
 
-  ! Read the Fvib and Svib as a function of volume and temperature
-  ! from an external set of files. Used in the externalfvib
-  ! temperature model. The file "file" contains two columns with the
-  ! temperature in K and another file. The file in each line, prefixed
-  ! by "prefix", has the G(V) data at the corresponding
-  ! temperature. It must have two columns, volume and G(V,T), and the
-  ! volumes must be equal in number and value to the volumes in the
-  ! static curve.  Requires the static volumes (nv, v) and the static
-  ! energies (e).  Returns the lits of temperatures and the Fvib(V,T)
-  ! and Svib(V,T).
-  subroutine read_externalfvib(file,prefix,nv,v,nfvib_t,fvib_t,fvib_f,fvib_s)
+  ! Read the Fvib, Svib, and Cv as a function of volume and
+  ! temperature from an external set of files. Used in the
+  ! externalfvib temperature model. The file "file" contains two
+  ! columns with the temperature in K and another file. The file in
+  ! each line, prefixed by "prefix", has the G(V) data at the
+  ! corresponding temperature. It must have two columns, volume and
+  ! G(V,T), and the volumes must be equal in number and value to the
+  ! volumes in the static curve.  Requires the static volumes (nv, v)
+  ! and the static energies (e).  Returns the lits of temperatures and
+  ! the Fvib(V,T), Svib(V,T), and Cv(V,T).
+  subroutine read_externalfvib(file,prefix,nv,v,nfvib_t,fvib_t,fvib_f,fvib_s,fvib_cv)
     use tools, only: fopen, fclose, fgetline, error, isreal, getword,&
        leng, cat, realloc
     use param, only: ioread, faterr, null
@@ -593,12 +594,13 @@ contains
     real*8, allocatable, intent(inout) :: fvib_t(:)
     real*8, allocatable, intent(inout) :: fvib_f(:,:)
     real*8, allocatable, intent(inout) :: fvib_s(:,:)
+    real*8, allocatable, intent(inout) :: fvib_cv(:,:)
 
     integer :: lu, lu2, lp, lp2
     integer :: iv
     character*(mline) :: line, line2, word
     real*8 :: tdum, vdum, rdum
-    logical :: ok, isabspref
+    logical :: ok
     character*(len(prefix)+1) :: prefix_
 
     real*8, parameter :: veps = 1d-5
@@ -615,9 +617,11 @@ contains
     if (allocated(fvib_t)) deallocate(fvib_t)
     if (allocated(fvib_f)) deallocate(fvib_f)
     if (allocated(fvib_s)) deallocate(fvib_s)
+    if (allocated(fvib_cv)) deallocate(fvib_cv)
     allocate(fvib_t(10))
     allocate(fvib_f(nv,10))
     allocate(fvib_s(nv,10))
+    allocate(fvib_cv(nv,10))
 
     ! loop over the lines in the file
     lu = fopen(lu,file,ioread)
@@ -634,6 +638,7 @@ contains
           call realloc(fvib_t,2*nfvib_t)
           call realloc(fvib_f,nv,2*nfvib_t)
           call realloc(fvib_s,nv,2*nfvib_t)
+          call realloc(fvib_cv,nv,2*nfvib_t)
        end if
        fvib_t(nfvib_t) = tdum
 
@@ -669,6 +674,14 @@ contains
           ok = isreal(rdum,line2,lp2)
           if (ok) then
              fvib_s(iv,nfvib_t) = rdum
+
+             ! try to read the heat capacity
+             ok = isreal(rdum,line2,lp2)
+             if (ok) then
+                fvib_cv(iv,nfvib_t) = rdum
+             else
+                fvib_cv(iv,nfvib_t) = 0d0
+             end if
           else
              fvib_s(iv,nfvib_t) = 0d0
           end if
@@ -681,6 +694,7 @@ contains
     call realloc(fvib_t,nfvib_t)
     call realloc(fvib_f,nv,nfvib_t)
     call realloc(fvib_s,nv,nfvib_t)
+    call realloc(fvib_cv,nv,nfvib_t)
 
   end subroutine read_externalfvib
 
@@ -1361,7 +1375,7 @@ contains
 
     ! if the temperature model is external fvib, read the external Fvib files
     if (p%tmodel == tm_externalfvib) then
-       call read_externalfvib(extfvibfile,prefix,p%nv,p%v,p%nfvib_t,p%fvib_t,p%fvib_f,p%fvib_s)
+       call read_externalfvib(extfvibfile,prefix,p%nv,p%v,p%nfvib_t,p%fvib_t,p%fvib_f,p%fvib_s,p%fvib_cv)
     end if
 
     ! apply energy shift
@@ -1379,7 +1393,7 @@ contains
     use tools, only: leng, error, realloc
     use evfunc, only: fit_polygibbs, fv0, fv1, fv2, fv3, fv4, punch_params
     use fit, only: fit_ev
-    integer :: i, j, k
+    integer :: i, j
     character*(mline) :: msg
     character*(mline_fmt) :: fm
     real*8 :: pmaxmin, vmin_setv, vmax_setv
@@ -1389,7 +1403,6 @@ contains
     real*8 :: f1, f2, f3, f4, pt, bk, b1, b2
     integer :: strain, order
 
-    real*8, parameter :: vdist = 1d-10
     real*8, parameter :: teps = 1d-5
 
     pmaxmin = 1d30
@@ -1723,10 +1736,11 @@ contains
     if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol(:,idx)
     if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f(idx,:)
     if (allocated(p%fvib_s)) p%fvib_s = p%fvib_s(idx,:)
+    if (allocated(p%fvib_cv)) p%fvib_cv = p%fvib_cv(idx,:)
 
     ! temperature sort in external fvib
     if (p%tmodel == tm_externalfvib .and. allocated(p%fvib_t) .and. allocated(p%fvib_f)&
-       .and. allocated(p%fvib_s)) then
+       .and. allocated(p%fvib_s) .and. allocated(p%fvib_cv)) then
        deallocate(idx)
        allocate(idx(p%nfvib_t))
        do i = 1, p%nfvib_t
@@ -1736,6 +1750,7 @@ contains
        p%fvib_t = p%fvib_t(idx)
        p%fvib_f = p%fvib_f(:,idx)
        p%fvib_s = p%fvib_s(:,idx)
+       p%fvib_cv = p%fvib_cv(:,idx)
     end if
 
   end subroutine phase_sort
@@ -1821,6 +1836,11 @@ contains
     if (allocated(p%fvib_s)) then
        if (doshift) p%fvib_s(1:n,:) = p%fvib_s(nv-n+1:nv,:)
        call realloc(p%fvib_s,n,size(p%fvib_s,2))
+    end if
+
+    if (allocated(p%fvib_cv)) then
+       if (doshift) p%fvib_cv(1:n,:) = p%fvib_cv(nv-n+1:nv,:)
+       call realloc(p%fvib_cv,n,size(p%fvib_cv,2))
     end if
 
   end subroutine phase_realloc_volume
@@ -2130,11 +2150,13 @@ contains
        if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol / 2d0 / zz
        if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f / 2d0 / zz
        if (allocated(p%fvib_s)) p%fvib_s = p%fvib_s / 2d0 / zz
+       if (allocated(p%fvib_cv)) p%fvib_cv = p%fvib_cv / 2d0 / zz
     else if (p%units_e == units_e_ev) then
        if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / ha2ev / zz
        if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol / ha2ev / zz
        if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f / ha2ev / zz
        if (allocated(p%fvib_s)) p%fvib_s = p%fvib_s / ha2ev / zz
+       if (allocated(p%fvib_cv)) p%fvib_cv = p%fvib_cv / ha2ev / zz
     end if
 
     ! edos input units
