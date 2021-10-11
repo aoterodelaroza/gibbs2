@@ -614,7 +614,7 @@ contains
                 cycle
              end if
 
-             call dyneos_outprop(ph(i),v,tlist(j),plist(k),ft,pfit,proplist,errlist)
+             call dyneos_outprop(ph(i),v,tlist(j),j,plist(k),ft,pfit,proplist,errlist)
              write (lu,fm) proplist
              if (pfit%nfit > 0 .and. doerrorbar) then
                 write (lu,fme) "e", errlist
@@ -648,7 +648,7 @@ contains
                    cycle
                 end if
 
-                call dyneos_outprop(ph(i),vlist(k),tlist(j),undef,ft,pfit,proplist,errlist)
+                call dyneos_outprop(ph(i),vlist(k),tlist(j),j,undef,ft,pfit,proplist,errlist)
                 write (lu,fm) proplist
                 if (pfit%nfit > 0 .and. doerrorbar) then
                    write (lu,fme) "e", errlist
@@ -677,15 +677,21 @@ contains
   end subroutine dyneos
 
   ! Helper routine for dyneos. Calculates the output properties at a given
-  ! volume/temperature/pressure
-  subroutine dyneos_outprop(p,v,t,pres,ft,pfit,proplist,errlist)
+  ! volume (v), temperature (t), and pressure (p). iT is the index for this
+  ! temperature from the temperature list (used only in externalfvib). pres=
+  ! if not undef, this is a fixed-pressure calculation. ft = fitting parameters.
+  ! pfit = fit information for error calculation. proplist = output properties.
+  ! errlist = error in output properties.
+  subroutine dyneos_outprop(p,v,t,iT,pres,ft,pfit,proplist,errlist)
     use varbas, only: mpropout, phase, doerrorbar, vbracket
     use fit, only: fit_pshift, fitinfo
     use tools, only: error
     use param, only: uout, warning, undef
     type(phase), intent(in) :: p
     type(fitpack), intent(in) :: ft
-    real*8, intent(in) :: v, t, pres
+    real*8, intent(in) :: v, t
+    integer, intent(in) :: iT
+    real*8, intent(in) :: pres
     type(fitinfo), intent(in) :: pfit
     real*8, dimension(mpropout), intent(out) :: proplist, errlist
 
@@ -695,7 +701,7 @@ contains
     type(fitpack) :: ft_aux
 
     ! obtain properties
-    call dyneos_calc(p,v,t,ft,proplist)
+    call dyneos_calc(p,v,t,iT,ft,proplist)
 
     errlist = 0d0
     ! error bars
@@ -732,7 +738,7 @@ contains
           ft_aux%apol  = pfit%apar(:,i)
 
           ! calculate properties for this fit
-          call dyneos_calc(p,vol,t,ft_aux,aux)
+          call dyneos_calc(p,vol,t,iT,ft_aux,aux)
 
           ! add to averages
           prop = prop + aux * pfit%wei(i)
@@ -743,18 +749,19 @@ contains
 
   end subroutine dyneos_outprop
 
-  ! Calculate peroperties at a given volume and temperature.
-  subroutine dyneos_calc(p,v,t,ft,proplist)
+  ! Calculate properties at a given volume and temperature.
+  subroutine dyneos_calc(p,v,t,iT,ft,proplist)
     use evfunc, only: fv0, fv1, fv2, fv3, fv4
     use debye, only: tlim_gamma, cvlim, debeins, thermalphon, thermal, get_thetad
     use varbas, only: mpropout, phase, tm_qhafull, tm_debye_input, tm_debye, tm_debyegrun,&
-       tm_debye_poisson_input, tm_debye_einstein, tm_debye_einstein_v, em_pol4,&
-       em_sommerfeld, em_no, ftsel_fitmode, vbracket
+       tm_debye_poisson_input, tm_debye_einstein, tm_debye_einstein_v, tm_externalfvib,&
+       em_pol4, em_sommerfeld, em_no, ftsel_fitmode, vbracket
     use tools, only: error
     use param, only: faterr, au2gpa, ha2kjmol, pi, pckbau, pisquare, twothird
     type(phase), intent(in) :: p
     type(fitpack), intent(in) :: ft
     real*8, intent(in) :: v, t
+    integer, intent(in) :: iT
     real*8, intent(out) :: proplist(mpropout)
 
     real*8 :: f0, f1, f2, f3, f4, b0, b1, b2, tmp
@@ -766,13 +773,14 @@ contains
     real*8 :: fel, sel, uel, cv_el, rdum
     real*8 :: fsum, ssum, usum, cv_sum
     real*8 :: gam_ac, gam_op, gamma
-    real*8 :: pext, psta, pth, dg
+    real*8 :: pext, psta, pth, dg, mtsvib
     integer :: id
     real*8 :: auxcpol(0:mmpar)
     logical :: gamma_from_s
 
     ! calculate gamma from entropy fit?
-    gamma_from_s = (p%tmodel == tm_qhafull) .or. (p%emodel /= em_no)
+    gamma_from_s = (p%tmodel == tm_qhafull) .or. (p%tmodel == tm_externalfvib) .or.&
+       (p%emodel /= em_no)
 
     ! static energy and helmholtz free energy volume derivatives
     if (ft%nepol == 0) call error('dyneos_calc','nepol = 0',faterr)
@@ -803,7 +811,7 @@ contains
     select case(p%tmodel)
     case(tm_debye_input, tm_debye, tm_debyegrun, tm_debye_poisson_input)
        if (gamma_from_s .and. t < tlim_gamma) then
-          call thermal (theta,t,D,Derr,uvib,cv_lowt,fvib,svib)
+          call thermal(theta,t,D,Derr,uvib,cv_lowt,fvib,svib)
        end if
        call thermal (theta,t,D,Derr,uvib,cv_vib,fvib,svib)
 
@@ -828,6 +836,17 @@ contains
        ! the region below tlim_gamma is avoided
        call thermalphon(p,t,v,uvib,cv_vib,fvib,svib,cv_lowt)
 
+    case(tm_externalfvib)
+       fvib = f0 - f0s
+       mtsvib = fv0(ft%smode,v,ft%nspol,ft%spol)
+       if (t < tlim_gamma) then
+          svib = 0d0
+       else
+          svib = mtsvib / (-t)
+       end if
+       uvib = fvib - mtsvib
+       cv_vib = 1d0
+       cv_lowt = 1d0
     end select
 
     ! electronic contribution
@@ -1457,15 +1476,14 @@ contains
     real*8 :: realv(p%nv), reala(p%nv), aux(p%nv), dum, ef(p%nv)
     real*8 :: auxcpol(0:mmpar)
 
-    rnv = count(p%dyn_active)
-
-    aux = 0d0
-
     ! consistency check
     if (iT == 0 .and. p%tmodel == tm_externalfvib) &
        call error('fit_agrid_t','The externalfvib model cannot be used at arbitrary T',faterr)
 
+    rnv = count(p%dyn_active)
+
     ! find Fvib(V,T) at the grid volumes and store in aux
+    aux = 0d0
     if (dovib) then
        do i = 1, p%nv
           if (.not.p%dyn_active(i)) cycle
@@ -1514,7 +1532,11 @@ contains
 
   end subroutine fit_agrid_t
 
-  ! Returns fitting parameters of -T*S(V,T).
+  ! For phase p, calculate the fitting coefficients (nspol,spol) of
+  ! -T*S at temperature T. iT is the index for this temperature from
+  ! the temperature list (used only in externalfvib). The fitting mode
+  ! is mode. ierr is the error code.  If dovib, add the vibrational
+  ! contribution. If doel, add the electronic contribution.
   subroutine fit_sgrid_t(p,T,iT,nspol,spol,mode,ierrs,dovib,doel)
     use debye, only: tlim_gamma, thermalphon, debeins, thermal
     use fit, only: fitt_polygibbs
@@ -1550,7 +1572,6 @@ contains
 
     ! find Svib(V,T) at the grid volumes and store in aux
     aux = 0d0
-
     if (dovib) then
        ! vibrational contribution
        do i = 1, p%nv
@@ -1560,7 +1581,7 @@ contains
           else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
              call debeins(p,p%td(i),t0,p%v(i),D,Derr,uvib,cv,dum,aux(i),cv_ac,cv_op)
           else if (p%tmodel == tm_externalfvib) then
-             aux(i) = 0d0
+             aux(i) = p%fvib_s(i,iT)
           else
              call thermal(p%td(i),t0,D,Derr,uvib,cv,dum,aux(i))
           end if
