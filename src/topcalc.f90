@@ -1586,7 +1586,7 @@ contains
     integer :: i, rnv
     real*8 :: uvib, cv, cv2, D, Derr, cv_ac, cv_op
     real*8 :: realv(p%nv), reals(p%nv), aux(p%nv), dum
-    real*8 :: t0, ef(p%nv)
+    real*8 :: ef(p%nv)
     real*8 :: auxcpol(0:mmpar)
 
     ! consistency check
@@ -1596,9 +1596,6 @@ contains
     ! only active
     rnv = count(p%dyn_active)
 
-    ! 0 K calculations of gamma are tricky -> use ~1 K instead
-    t0 = max(T,tlim_gamma)
-
     ! find Svib(V,T) at the grid volumes and store in aux
     aux = 0d0
     if (dovib) then
@@ -1606,16 +1603,16 @@ contains
        do i = 1, p%nv
           if (.not.p%dyn_active(i)) cycle
           if (p%tmodel == tm_qhafull) then
-             call thermalphon(p,t0,p%v(i),uvib,cv,dum,aux(i),cv2)
+             call thermalphon(p,T,p%v(i),uvib,cv,dum,aux(i),cv2)
           else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
-             call debeins(p,p%td(i),t0,p%v(i),D,Derr,uvib,cv,dum,aux(i),cv_ac,cv_op)
+             call debeins(p,p%td(i),T,p%v(i),D,Derr,uvib,cv,dum,aux(i),cv_ac,cv_op)
           else if (p%tmodel == tm_externalfvib) then
              aux(i) = p%fvib_s(i,iT)
           else
-             call thermal(p%td(i),t0,D,Derr,uvib,cv,dum,aux(i))
+             call thermal(p%td(i),T,D,Derr,uvib,cv,dum,aux(i))
           end if
        end do
-       aux = aux * (-t0)
+       aux = aux * (-T)
     end if
 
     if (doel) then
@@ -1631,7 +1628,7 @@ contains
           do i = 1, p%nv
              auxcpol = 0d0
              auxcpol(1:4) = p%tsel_cpol(1:4,i)
-             aux(i) = aux(i) + fv0(ftsel_fitmode,t0,6,auxcpol)
+             aux(i) = aux(i) + fv0(ftsel_fitmode,T,6,auxcpol)
           end do
        end if
     end if

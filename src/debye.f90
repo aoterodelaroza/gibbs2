@@ -171,7 +171,7 @@ contains
   end subroutine get_thetad
 
   ! Compute Debye model vibrational properties.
-  subroutine thermal (ThetaD,T,debye,xabs,en,cv,he,ent)
+  subroutine thermal(ThetaD,T,debye,xabs,en,cv,he,ent)
     use param, only: faterr, pckbau, pi, zero
     use tools, only: error, gauleg
     use varbas, only: vfree
