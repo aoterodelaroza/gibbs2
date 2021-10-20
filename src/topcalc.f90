@@ -768,7 +768,7 @@ contains
     use debye, only: tlim_gamma, cvlim, debeins, thermalphon, thermal, get_thetad
     use varbas, only: mpropout, phase, tm_qhafull, tm_debye_input, tm_debye, tm_debyegrun,&
        tm_debye_poisson_input, tm_debye_einstein, tm_debye_einstein_v, tm_externalfvib,&
-       em_pol4, em_sommerfeld, em_no, ftsel_fitmode, vbracket, nts, tlist
+       em_pol4, em_sommerfeld, em_no, ftsel_fitmode, vbracket
     use tools, only: error
     use param, only: faterr, au2gpa, ha2kjmol, pi, pckbau, pisquare, twothird
     type(phase), intent(in) :: p
@@ -787,7 +787,7 @@ contains
     real*8 :: fsum, ssum, usum, cv_sum
     real*8 :: gam_ac, gam_op, gamma
     real*8 :: pext, psta, pth, dg, mtsvib
-    integer :: id, i
+    integer :: id
     real*8 :: auxcpol(0:mmpar)
     logical :: gamma_from_s
 
@@ -1500,14 +1500,28 @@ contains
     logical, intent(in) :: dostatic, dovib, doel
     type(fitinfo), intent(out), optional :: pfit
 
-    integer :: i, rnv
+    integer :: i, rnv, iT_
     real*8 :: uvib, cv, cv2, D, Derr, cv_ac, cv_op
     real*8 :: realv(p%nv), reala(p%nv), aux(p%nv), dum, ef(p%nv)
-    real*8 :: auxcpol(0:mmpar)
+    real*8 :: auxcpol(0:mmpar), dtmin, dt
 
-    ! consistency check
-    if (iT == 0 .and. p%tmodel == tm_externalfvib) &
-       call error('fit_agrid_t','The externalfvib model cannot be used at arbitrary T',faterr)
+    real*8 :: externalfvib_deltat = 2 ! 2 K difference to identify an isotherm
+
+    ! consistency check; get the closest temperature if externalfvib
+    iT_ = iT
+    if (iT == 0 .and. p%tmodel == tm_externalfvib) then
+       ! try to find a close temperature
+       dtmin = 1d40
+       do i = 1, p%nfvib_t
+          dt = abs(p%fvib_t(i) - T)
+          if (dt < externalfvib_deltat .and. dt < dtmin) then
+             dtmin = dt
+             iT_ = i
+          end if
+       end do
+       if (iT_ == 0) &
+          call error('fit_agrid_t','The externalfvib model cannot be used at arbitrary T',faterr)
+    end if
 
     rnv = count(p%dyn_active)
 
@@ -1521,7 +1535,7 @@ contains
           else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
              call debeins(p,p%td(i),T,p%v(i),D,Derr,uvib,cv,aux(i),dum,cv_ac,cv_op)
           else if (p%tmodel == tm_externalfvib) then
-             aux(i) = p%fvib_f(i,iT)
+             aux(i) = p%fvib_f(i,iT_)
           else
              call thermal(p%td(i),T,D,Derr,uvib,cv,aux(i),dum)
           end if
@@ -1567,7 +1581,7 @@ contains
   ! is mode. ierr is the error code.  If dovib, add the vibrational
   ! contribution. If doel, add the electronic contribution.
   subroutine fit_sgrid_t(p,T,iT,nspol,spol,mode,ierrs,dovib,doel)
-    use debye, only: tlim_gamma, thermalphon, debeins, thermal
+    use debye, only: thermalphon, debeins, thermal
     use fit, only: fitt_polygibbs
     use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_debye_einstein_v,&
        tm_externalfvib, em_pol4, em_sommerfeld, ftsel_fitmode
