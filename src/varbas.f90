@@ -2145,18 +2145,24 @@ contains
     end if
 
     ! energy
+    if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / zz
+    if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol / zz
+    if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f / zz
+    if (allocated(p%fvib_s)) p%fvib_s = p%fvib_s / zz
+    if (allocated(p%fvib_cv)) p%fvib_cv = p%fvib_cv / zz
+
     if (p%units_e == units_e_ry) then
-       if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / 2d0 / zz
-       if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol / 2d0 / zz
-       if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f / 2d0 / zz
-       if (allocated(p%fvib_s)) p%fvib_s = p%fvib_s / 2d0 / zz
-       if (allocated(p%fvib_cv)) p%fvib_cv = p%fvib_cv / 2d0 / zz
+       if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / 2d0
+       if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol / 2d0
+       if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f / 2d0
+       if (allocated(p%fvib_s)) p%fvib_s = p%fvib_s / 2d0
+       if (allocated(p%fvib_cv)) p%fvib_cv = p%fvib_cv / 2d0
     else if (p%units_e == units_e_ev) then
-       if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / ha2ev / zz
-       if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol / ha2ev / zz
-       if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f / ha2ev / zz
-       if (allocated(p%fvib_s)) p%fvib_s = p%fvib_s / ha2ev / zz
-       if (allocated(p%fvib_cv)) p%fvib_cv = p%fvib_cv / ha2ev / zz
+       if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / ha2ev
+       if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol / ha2ev
+       if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f / ha2ev
+       if (allocated(p%fvib_s)) p%fvib_s = p%fvib_s / ha2ev
+       if (allocated(p%fvib_cv)) p%fvib_cv = p%fvib_cv / ha2ev
     end if
 
     ! edos input units
