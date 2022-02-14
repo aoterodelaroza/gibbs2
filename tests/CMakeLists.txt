@@ -1,5 +1,7 @@
 ## enable testing
 
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+
 ## list of test bundles
 set(TESTDIRS
   001_simple        ## simple inputs and outputs
