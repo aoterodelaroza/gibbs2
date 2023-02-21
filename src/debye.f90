@@ -94,7 +94,7 @@ contains
        p%td0 = exp(fv0(p%tdfit_mode,log(p%veq_static),p%ntpol,p%tpol))
     else
        ! fill td0
-       f2s = fv2(p%fit_mode,p%veq_static,p%npol,p%cpol)
+       f2s = max(fv2(p%fit_mode,p%veq_static,p%npol,p%cpol),0d0)
        p%td0 = (6*pi*pi*vfree*p%veq_static*p%veq_static)**third / pckbau * p%pofunc * sqrt(f2s/mm)
     end if
 
