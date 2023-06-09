@@ -2208,8 +2208,8 @@ contains
        p%r2 = 1 - sse / yvar
     end if
     ntot = p%npol - p%nfix
-    p%aic = 2 * ntot + p%nv * log(sse)
-    p%bic = log(real(p%nv,8)) * ntot + p%nv * log(sse)
+    p%aic = 2 * ntot + p%nv * log(max(sse,1d-40))
+    p%bic = log(real(p%nv,8)) * ntot + p%nv * log(max(sse,1d-40))
 
   end subroutine phase_checkfiterr
 
