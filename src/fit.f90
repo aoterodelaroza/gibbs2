@@ -303,7 +303,7 @@ contains
           !.fitting loops through different polynomials:
           nfit = 0
           ! nparmax = min(ndata-5,mpar)
-          nparmax = max(min(ndata/2-1,mpar),3)
+          nparmax = max(min(ndata/2-1,mpar),2)
           mmfit = mpar + 1
           rms2min = 1d30
           apar2 = 0d0
