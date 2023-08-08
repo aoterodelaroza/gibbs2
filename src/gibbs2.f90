@@ -709,7 +709,7 @@ program gibbs2
   call interpolate()
 
   ! end
-  write (uout,'("GIBBS2 ended succesfully (",I3," WARNINGS, ",I3," COMMENTS)"/)')&
+  write (uout,'("GIBBS2 ended successfully (",I3," WARNINGS, ",I3," COMMENTS)"/)')&
      nwarns, ncomms
   if (.not.quiet) then
      sdate = ffdate()
