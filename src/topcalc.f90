@@ -943,7 +943,7 @@ contains
        ! get the volume-derivative of the entropy
        if (ft%nspol == 0) call error('dyneos_calc','nspol = 0',faterr)
 
-       if (t >= tlim_gamma) then
+       if (t >= tlim_gamma .and. cv_sum > 1d-20) then
           ! non-zero temperature, usual calculation, no 0/0 here
           gamma = - v / cv_sum * fv1(ft%smode,v,ft%nspol,ft%spol) / t
        else
