@@ -689,6 +689,8 @@ contains
        call fclose(lu2)
     end do
     call fclose(lu)
+    if (iv /= nv) &
+       call error('read_externalfvib','inconsistent number of volumes in externalfvib',faterr)
 
     ! final realloc
     call realloc(fvib_t,nfvib_t)
