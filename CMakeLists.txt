@@ -2,8 +2,8 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 ## some project variables
-set(gibbs2_MAJOR_VERSION 1)
-set(gibbs2_MINOR_VERSION 0)
+file(READ "VERSION" gibbs2_VERSION)
+string(REGEX REPLACE " *\n$" "" gibbs2_VERSION "${gibbs2_VERSION}")
 set(gibbs2_URL "https://aoterodelaroza.github.io/gibbs2/")
 set(gibbs2_EMAIL "aoterodelaroza@gmail.com")
 set(gibbs2_LICENSE "GNU/GPL version 3")
@@ -11,7 +11,7 @@ set(gibbs2_DESCRIPTION "Thermodynamics of solids under pressure and temperature 
 string(TIMESTAMP DATE "%a %d %b %Y %H:%M:%S")
 
 ## project definition
-project(gibbs2 VERSION "${gibbs2_MAJOR_VERSION}.${gibbs2_MINOR_VERSION}" LANGUAGES Fortran)
+project(gibbs2 VERSION "${gibbs2_VERSION}" LANGUAGES Fortran)
 
 ## find git to see if we can have a git commit; n/a otherwise
 find_package(Git QUIET)
