@@ -155,7 +155,8 @@ module varbas
   integer, parameter :: tm_qhafull = 6
   integer, parameter :: tm_debyegrun = 7
   integer, parameter :: tm_debye_poisson_input = 8
-  integer, parameter :: tm_externalfvib = 9
+  integer, parameter :: tm_debye_extended = 9
+  integer, parameter :: tm_externalfvib = 10
 
   ! scaling modes
   integer, parameter :: scal_noscal = 1

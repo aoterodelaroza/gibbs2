@@ -48,8 +48,9 @@ program gibbs2
   character*(mline) :: fileout
   integer :: ipid, lp, lp2, onps, onts, onvs
   integer :: i, j, iph
-  logical :: ok, ok2, ok3, verbose, dotdebye
+  logical :: ok, ok2, ok3, verbose
   logical :: callpf, calleout
+  logical, allocatable :: dodebye(:)
   integer :: nhouse
   real*8 :: pini, pend, tini, tend, tmaxmin, vini, vend
   real*8 :: vout_ini, vout_end, vout_step, e0
@@ -607,20 +608,20 @@ program gibbs2
   call plotdh(ga)
 
   ! Calculate or fit debye temperatures at input volumes (verbose if any phase is debye)
-  dotdebye = .false.
-  do i = 1, nph
-     dotdebye = dotdebye .or. (ph(i)%tmodel == tm_debye_input .or. ph(i)%tmodel == tm_debye .or.&
-                       ph(i)%tmodel == tm_debyegrun .or. ph(i)%tmodel == tm_debye_einstein .or.&
-                       ph(i)%tmodel == tm_debye_einstein_v .or. ph(i)%tmodel == tm_debye_poisson_input)
-  end do
-  if (dotdebye) write (uout,'("* Computed Debye temperatures from static data")')
-  do i = 1, nph
-     verbose = (ph(i)%tmodel == tm_debye_input .or. ph(i)%tmodel == tm_debye .or.&
-                ph(i)%tmodel == tm_debyegrun .or. ph(i)%tmodel == tm_debye_einstein .or.&
-                ph(i)%tmodel == tm_debye_einstein_v .or. ph(i)%tmodel == tm_debye_poisson_input)
-     call fill_thetad(ph(i),verbose)
-  end do
-  if (dotdebye) write (uout,*)
+  if (nph > 0) then
+     allocate(dodebye(nph))
+     do i = 1, nph
+        dodebye(i) = (ph(i)%tmodel == tm_debye_input .or. ph(i)%tmodel == tm_debye .or.&
+           ph(i)%tmodel == tm_debyegrun .or. ph(i)%tmodel == tm_debye_einstein .or.&
+           ph(i)%tmodel == tm_debye_einstein_v .or. ph(i)%tmodel == tm_debye_poisson_input)
+     end do
+     if (any(dodebye)) write (uout,'("* Computed Debye temperatures from static data")')
+     do i = 1, nph
+        if (dodebye(i)) &
+           call fill_thetad(ph(i),.true.)
+     end do
+     if (any(dodebye)) write (uout,*)
+  end if
 
   ! transition pressures, static (topcalc)
   call static_transp(ga)
@@ -647,12 +648,14 @@ program gibbs2
 
   ! Set temperature range if not given in input
   write (uout,'("* Temperature range examined")')
-  if (dotdebye) then
+  if (any(dodebye)) then
      tmaxmin = 1d30
      do i = 1, nph
-        do j = 1, ph(i)%nv
-           tmaxmin = min(tmaxmin,ph(i)%td(j))
-        end do
+        if (dodebye(i)) then
+           do j = 1, ph(i)%nv
+              tmaxmin = min(tmaxmin,ph(i)%td(j))
+           end do
+        end if
      end do
      tmaxmin = tmaxmin * 1.5d0
      tmaxmin = max(tmaxmin,pct0)
@@ -685,7 +688,10 @@ program gibbs2
         end do
      end if
   end if
-  call inplace_sort(tlist(1:nts)) ! sort the temperatures - externalfvib is already sorted
+  deallocate(dodebye)
+
+  ! sort the temperatures - externalfvib is already sorted
+  call inplace_sort(tlist(1:nts))
   write (uout,'("  Temperature range (K): ",F12.3," -> ",F12.3)') &
      tlist(1), tlist(nts)
   write (uout,'("  Number of T points: ",I6)') nts
