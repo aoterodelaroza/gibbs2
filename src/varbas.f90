@@ -107,6 +107,15 @@ module varbas
      real*8, allocatable :: fvib_s(:,:)
      real*8, allocatable :: fvib_cv(:,:)
 
+     ! debye extended
+     real*8, allocatable :: tde(:)
+     real*8, allocatable :: f0(:)
+     integer :: tde_nanh
+     integer :: tde_nein
+     real*8, allocatable :: tde_anh(:,:)
+     real*8, allocatable :: tde_cein(:,:)
+     real*8, allocatable :: tde_tein(:,:)
+
      ! electronic contribution to the free energy
      integer :: nelec = 0
      integer :: emodel
@@ -720,7 +729,8 @@ contains
     integer :: lp, lp2
     integer :: i, j
     integer :: icol_v, icol_e, icol_td, icol_nef, icol_ph, icol_pol4(8)
-    integer :: icol_int(minterp)
+    integer :: icol_int(minterp), icol_f0, icol_tde
+    integer, allocatable :: icol_anh(:), icol_cein(:), icol_tein(:)
     integer :: idum, ifound, iphdos_1, iphdos_2, isep, isep2, nn, nq, numax, uuin
     character*(mline) :: line, word, prefix, file, linedum, msg, extfvibfile
     real*8 :: fx, gx, hx, zz, eshift
@@ -767,6 +777,8 @@ contains
     icol_nef = -1
     icol_ph = -1
     icol_pol4 = -1
+    icol_f0 = -1
+    icol_tde = -1
 
     ! local initializations
     file = ""
@@ -845,6 +857,7 @@ contains
                 call error('phase_init','unknown STRAIN in PHASE/FIT keyword',faterr)
              end if
              ok = isinteger(idum,line,lp)
+             if (.not.ok) call error('phase_init','Wrong syntax in STRAIN',faterr)
              p%fit_mode = p%fit_mode + idum
           else
              call error('phase_init','unknown FIT in PHASE keyword',faterr)
@@ -927,8 +940,17 @@ contains
              p%tmodel = tm_externalfvib
              extfvibfile = getword(extfvibfile,line,lp)
           elseif (equal(word,'debye_extended'//null)) then
-             write (*,*) "here!"
-             stop 1
+             p%tmodel = tm_debye_extended
+             ok = isinteger(p%tde_nanh,line,lp)
+             ok = ok .and. isinteger(p%tde_nein,line,lp)
+             if (.not.ok) call error('phase_init','wrong DEBYE_EXTENDED input',faterr)
+
+             icol_f0 = 0
+             icol_tde = 0
+             allocate(icol_anh(p%tde_nanh),icol_cein(p%tde_nein),icol_tein(p%tde_nein))
+             icol_anh = 0
+             icol_cein = 0
+             icol_tein = 0
           else
              call error('phase_init','unknown TMODEL in PHASE keyword',faterr)
           end if
@@ -1184,6 +1206,37 @@ contains
        else if (icol_ph == 0) then
           icol_ph = i
           cycle
+       else if (icol_f0 == 0) then
+          !! debye_extended
+          icol_f0 = i
+          cycle
+       else if (icol_tde == 0) then
+          icol_tde = i
+          cycle
+       else if (any(icol_anh == 0)) then
+          do j = 1, p%tde_nanh
+             if (icol_anh(j) == 0) then
+                icol_anh(j) = i
+                exit
+             end if
+          end do
+          cycle
+       else if (any(icol_cein == 0)) then
+          do j = 1, p%tde_nein
+             if (icol_cein(j) == 0) then
+                icol_cein(j) = i
+                exit
+             end if
+          end do
+          cycle
+       else if (any(icol_tein == 0)) then
+          do j = 1, p%tde_nein
+             if (icol_tein(j) == 0) then
+                icol_tein(j) = i
+                exit
+             end if
+          end do
+          cycle
        end if
        exit
     end do
@@ -1221,6 +1274,17 @@ contains
        allocate(p%tsel_cpol(4,phase_vmax))
        p%fel_cpol = 0d0
        p%tsel_cpol = 0d0
+    end if
+    !! debye_extended
+    if (icol_tde > 0) then
+       allocate(p%f0(phase_vmax))
+       allocate(p%tde(phase_vmax))
+       allocate(p%tde_anh(p%tde_nanh,phase_vmax))
+       allocate(p%tde_cein(p%tde_nein,phase_vmax))
+       allocate(p%tde_tein(p%tde_nein,phase_vmax))
+       p%tde_anh = 0d0
+       p%tde_cein = 0d0
+       p%tde_tein = 0d0
     end if
 
     ! run over the input file
@@ -1326,7 +1390,46 @@ contains
                    exit
                 end if
              end do
+          else if (idum == icol_f0) then
+             ! debye_extended: free energy
+             ok = isreal(p%f0(nn),line,lp)
+          else if (idum == icol_tde) then
+             ! debye_extended: debye temperature
+             ok = isreal(p%tde(nn),line,lp)
           else
+             ! debye-extended: anharmonic coefficients
+             ifound = 0
+             do i = 1, p%tde_nanh
+                if (idum == icol_anh(i)) ifound = i
+             end do
+             if (ifound > 0) then
+                ok = isreal(p%tde_anh(ifound,nn),line,lp)
+                if (.not.ok) exit
+                cycle
+             end if
+
+             ! debye-extended: einstein coefficients
+             ifound = 0
+             do i = 1, p%tde_nein
+                if (idum == icol_cein(i)) ifound = i
+             end do
+             if (ifound > 0) then
+                ok = isreal(p%tde_cein(ifound,nn),line,lp)
+                if (.not.ok) exit
+                cycle
+             end if
+
+             ! debye-extended: einstein temperature
+             ifound = 0
+             do i = 1, p%tde_nein
+                if (idum == icol_tein(i)) ifound = i
+             end do
+             if (ifound > 0) then
+                ok = isreal(p%tde_tein(ifound,nn),line,lp)
+                if (.not.ok) exit
+                cycle
+             end if
+
              ! interpolation field
              ifound = 0
              do i = 1, p%ninterp
@@ -1334,10 +1437,12 @@ contains
              end do
              if (ifound > 0) then
                 ok = isreal(p%interp(nn,ifound),line,lp)
-             else
-                ! none of the above -> skip this field
-                word = getword(word,line,lp)
+                if (.not.ok) exit
+                cycle
              end if
+
+             ! none of the above -> skip this field
+             word = getword(word,line,lp)
           end if
        end do
 
@@ -1380,9 +1485,8 @@ contains
     call phase_realloc_volume(p,nn,numax)
 
     ! if the temperature model is external fvib, read the external Fvib files
-    if (p%tmodel == tm_externalfvib) then
+    if (p%tmodel == tm_externalfvib) &
        call read_externalfvib(extfvibfile,prefix,p%nv,p%v,p%nfvib_t,p%fvib_t,p%fvib_f,p%fvib_s,p%fvib_cv)
-    end if
 
     ! apply energy shift
     p%e(1:p%nv) = p%e(1:p%nv) + eshift
@@ -1849,6 +1953,31 @@ contains
        call realloc(p%fvib_cv,n,size(p%fvib_cv,2))
     end if
 
+    if (allocated(p%tde)) then
+       if (doshift) p%tde(1:n) = p%tde(nv-n+1:nv)
+       call realloc(p%tde,n)
+    end if
+
+    if (allocated(p%f0)) then
+       if (doshift) p%f0(1:n) = p%f0(nv-n+1:nv)
+       call realloc(p%f0,n)
+    end if
+
+    if (allocated(p%tde_anh)) then
+       if (doshift) p%tde_anh(:,1:n) = p%tde_anh(:,nv-n+1:nv)
+       call realloc(p%tde_anh,size(p%tde_anh,1),n)
+    end if
+
+    if (allocated(p%tde_cein)) then
+       if (doshift) p%tde_cein(:,1:n) = p%tde_cein(:,nv-n+1:nv)
+       call realloc(p%tde_cein,size(p%tde_cein,1),n)
+    end if
+
+    if (allocated(p%tde_tein)) then
+       if (doshift) p%tde_tein(:,1:n) = p%tde_tein(:,nv-n+1:nv)
+       call realloc(p%tde_tein,size(p%tde_tein,1),n)
+    end if
+
   end subroutine phase_realloc_volume
 
   !> Write information about phase i to the standard output.
@@ -2156,6 +2285,7 @@ contains
     if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f / zz
     if (allocated(p%fvib_s)) p%fvib_s = p%fvib_s / zz
     if (allocated(p%fvib_cv)) p%fvib_cv = p%fvib_cv / zz
+    if (allocated(p%f0)) p%f0 = p%f0 / zz
 
     if (p%units_e == units_e_ry) then
        if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / 2d0
@@ -2163,12 +2293,14 @@ contains
        if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f / 2d0
        if (allocated(p%fvib_s)) p%fvib_s = p%fvib_s / 2d0
        if (allocated(p%fvib_cv)) p%fvib_cv = p%fvib_cv / 2d0
+       if (allocated(p%f0)) p%f0 = p%f0 / 2d0
     else if (p%units_e == units_e_ev) then
        if (allocated(p%fel_cpol)) p%fel_cpol = p%fel_cpol / ha2ev
        if (allocated(p%tsel_cpol)) p%tsel_cpol = p%tsel_cpol / ha2ev
        if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f / ha2ev
        if (allocated(p%fvib_s)) p%fvib_s = p%fvib_s / ha2ev
        if (allocated(p%fvib_cv)) p%fvib_cv = p%fvib_cv / ha2ev
+       if (allocated(p%f0)) p%f0 = p%f0 / ha2ev
     end if
 
     ! edos input units
