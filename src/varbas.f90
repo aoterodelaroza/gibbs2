@@ -926,6 +926,9 @@ contains
           elseif (equal(word,'externalfvib'//null)) then
              p%tmodel = tm_externalfvib
              extfvibfile = getword(extfvibfile,line,lp)
+          elseif (equal(word,'debye_extended'//null)) then
+             write (*,*) "here!"
+             stop 1
           else
              call error('phase_init','unknown TMODEL in PHASE keyword',faterr)
           end if

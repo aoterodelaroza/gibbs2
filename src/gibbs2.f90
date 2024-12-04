@@ -49,7 +49,7 @@ program gibbs2
   integer :: ipid, lp, lp2, onps, onts, onvs
   integer :: i, j, iph
   logical :: ok, ok2, ok3, verbose
-  logical :: callpf, calleout
+  logical :: callpf, calleout, dothermal
   logical, allocatable :: dodebye(:)
   integer :: nhouse
   real*8 :: pini, pend, tini, tend, tmaxmin, vini, vend
@@ -608,20 +608,18 @@ program gibbs2
   call plotdh(ga)
 
   ! Calculate or fit debye temperatures at input volumes (verbose if any phase is debye)
-  if (nph > 0) then
-     allocate(dodebye(nph))
-     do i = 1, nph
-        dodebye(i) = (ph(i)%tmodel == tm_debye_input .or. ph(i)%tmodel == tm_debye .or.&
-           ph(i)%tmodel == tm_debyegrun .or. ph(i)%tmodel == tm_debye_einstein .or.&
-           ph(i)%tmodel == tm_debye_einstein_v .or. ph(i)%tmodel == tm_debye_poisson_input)
-     end do
-     if (any(dodebye)) write (uout,'("* Computed Debye temperatures from static data")')
-     do i = 1, nph
-        if (dodebye(i)) &
-           call fill_thetad(ph(i),.true.)
-     end do
-     if (any(dodebye)) write (uout,*)
-  end if
+  allocate(dodebye(nph))
+  do i = 1, nph
+     dodebye(i) = (ph(i)%tmodel == tm_debye_input .or. ph(i)%tmodel == tm_debye .or.&
+        ph(i)%tmodel == tm_debyegrun .or. ph(i)%tmodel == tm_debye_einstein .or.&
+        ph(i)%tmodel == tm_debye_einstein_v .or. ph(i)%tmodel == tm_debye_poisson_input)
+  end do
+  if (any(dodebye)) write (uout,'("* Computed Debye temperatures from static data")')
+  do i = 1, nph
+     if (dodebye(i)) &
+        call fill_thetad(ph(i),.true.)
+  end do
+  if (any(dodebye)) write (uout,*)
 
   ! transition pressures, static (topcalc)
   call static_transp(ga)
@@ -631,85 +629,86 @@ program gibbs2
 
   ! wrap up the static run
   deallocate(va,ba,ga)
-  ok = .true.
-  do i = 1, nph
-     ok = ok .and. (ph(i)%tmodel == tm_static)
-  end do
-  if (ok) goto 99
 
   !!! END of the STATIC run !!!
 
-  ! prepare for the THERMAL run
-  ! check that mm and vfree were given in input
-  if (mm < 0d0) &
-     call error('gibbs2','molecular mass not found',faterr)
-  if (vfree <= 0) &
-     call error('gibbs2','vfree not found',faterr)
+  ! determine if we want the thermal run
+  dothermal = .false.
+  do i = 1, nph
+     dothermal = dothermal .or. (ph(i)%tmodel /= tm_static)
+  end do
 
-  ! Set temperature range if not given in input
-  write (uout,'("* Temperature range examined")')
-  if (any(dodebye)) then
-     tmaxmin = 1d30
-     do i = 1, nph
-        if (dodebye(i)) then
-           do j = 1, ph(i)%nv
-              tmaxmin = min(tmaxmin,ph(i)%td(j))
-           end do
-        end if
-     end do
-     tmaxmin = tmaxmin * 1.5d0
-     tmaxmin = max(tmaxmin,pct0)
-     write (uout,'("  Min_{DebyeT} (K): ",F12.3)') tmaxmin / 1.5d0
-  else
-     tmaxmin = pct0
-  end if
-  if (tdefault) then
-     nts = 100
-     allocate(tlist(nts))
-     tlist(1) = 0d0
-     tstep = tmaxmin / real(nts-1,8)
-     do i = 2, nts
-        tlist(i) = tlist(i-1) + tstep
-     end do
-  else if (.not.allocated(tlist)) then
-     if (nts > 0) then
+  if (dothermal) then
+     ! prepare for the THERMAL run
+     ! check that mm and vfree were given in input
+     if (mm < 0d0) &
+        call error('gibbs2','molecular mass not found',faterr)
+     if (vfree <= 0) &
+        call error('gibbs2','vfree not found',faterr)
+
+     ! Set temperature range if not given in input
+     write (uout,'("* Temperature range examined")')
+     if (any(dodebye)) then
+        tmaxmin = 1d30
+        do i = 1, nph
+           if (dodebye(i)) then
+              do j = 1, ph(i)%nv
+                 tmaxmin = min(tmaxmin,ph(i)%td(j))
+              end do
+           end if
+        end do
+        tmaxmin = tmaxmin * 1.5d0
+        tmaxmin = max(tmaxmin,pct0)
+        write (uout,'("  Min_{DebyeT} (K): ",F12.3)') tmaxmin / 1.5d0
+     else
+        tmaxmin = pct0
+     end if
+     if (tdefault) then
+        nts = 100
         allocate(tlist(nts))
         tlist(1) = 0d0
         tstep = tmaxmin / real(nts-1,8)
         do i = 2, nts
            tlist(i) = tlist(i-1) + tstep
         end do
-     else
-        nts = floor(tmaxmin / tstep) + 1
-        allocate(tlist(nts))
-        tlist(1) = 0d0
-        do i = 2, nts
-           tlist(i) = tlist(i-1) + tstep
-        end do
+     else if (.not.allocated(tlist)) then
+        if (nts > 0) then
+           allocate(tlist(nts))
+           tlist(1) = 0d0
+           tstep = tmaxmin / real(nts-1,8)
+           do i = 2, nts
+              tlist(i) = tlist(i-1) + tstep
+           end do
+        else
+           nts = floor(tmaxmin / tstep) + 1
+           allocate(tlist(nts))
+           tlist(1) = 0d0
+           do i = 2, nts
+              tlist(i) = tlist(i-1) + tstep
+           end do
+        end if
      end if
+     if (allocated(dodebye)) deallocate(dodebye)
+
+     ! sort the temperatures - externalfvib is already sorted
+     call inplace_sort(tlist(1:nts))
+     write (uout,'("  Temperature range (K): ",F12.3," -> ",F12.3)') &
+        tlist(1), tlist(nts)
+     write (uout,'("  Number of T points: ",I6)') nts
+     write (uout,*)
+
+     ! Properties at input temperatures (topcalc)
+     call dyneos()
+
+     ! delta_G(T,p) (topcalc)
+     call deltag()
+
+     ! G(T,p), V(T,p) and B(T,p) for the stable phase (topcalc)
+     call stablevbg()
+
+     ! transitions pressures (T) (topcalc).
+     call dyn_transp()
   end if
-  if (allocated(dodebye)) deallocate(dodebye)
-
-  ! sort the temperatures - externalfvib is already sorted
-  call inplace_sort(tlist(1:nts))
-  write (uout,'("  Temperature range (K): ",F12.3," -> ",F12.3)') &
-     tlist(1), tlist(nts)
-  write (uout,'("  Number of T points: ",I6)') nts
-  write (uout,*)
-
-  ! Properties at input temperatures (topcalc)
-  call dyneos()
-
-  ! delta_G(T,p) (topcalc)
-  call deltag()
-
-  ! G(T,p), V(T,p) and B(T,p) for the stable phase (topcalc)
-  call stablevbg()
-
-  ! transitions pressures (T) (topcalc).
-  call dyn_transp()
-
-99 continue
 
   ! user-requested interpolations
   call interpolate()
