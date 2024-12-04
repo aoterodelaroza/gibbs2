@@ -688,7 +688,7 @@ program gibbs2
         end do
      end if
   end if
-  deallocate(dodebye)
+  if (allocated(dodebye)) deallocate(dodebye)
 
   ! sort the temperatures - externalfvib is already sorted
   call inplace_sort(tlist(1:nts))
