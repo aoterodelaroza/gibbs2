@@ -674,5 +674,5 @@ WARNING(dyneos): T =    1000.00 P =     125.00, G minimum not found, skipping.
 * Dynamic transition pressures (linear interpolation)
   Writing file : 001_phases.ptrans
 
-GIBBS2 ended succesfully (312 WARNINGS,   3 COMMENTS)
+GIBBS2 ended successfully (312 WARNINGS,   3 COMMENTS)
 

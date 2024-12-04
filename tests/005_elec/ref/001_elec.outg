@@ -486,5 +486,5 @@ WARNING(dyneos): T =     298.15 V =     150.0000, volume out of known region.
 WARNING(dyneos): T =     298.15 V =      35.2000, volume out of known region.
 WARNING(dyneos): T =     298.15 V =     150.0000, volume out of known region.
 
-GIBBS2 ended succesfully ( 12 WARNINGS,   3 COMMENTS)
+GIBBS2 ended successfully ( 12 WARNINGS,   3 COMMENTS)
 

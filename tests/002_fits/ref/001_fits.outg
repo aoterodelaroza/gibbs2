@@ -500,5 +500,5 @@ WARNING(phase_popinfo): Max. pressure (     796.021) exceeds      500.000
 
   Writing file: 001_fits_all_t.gnu
 
-GIBBS2 ended succesfully (  5 WARNINGS,   0 COMMENTS)
+GIBBS2 ended successfully (  5 WARNINGS,   0 COMMENTS)
 

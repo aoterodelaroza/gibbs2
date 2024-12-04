@@ -1920,7 +1920,7 @@ WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
    160.0000     506.81     506.81
 
 * Temperature range examined
-  Min_{DebyeT} (K):      198.767
+  Min_{DebyeT} (K):      506.811
   Temperature range (K):      298.150 ->      298.150
   Number of T points:      1
 
@@ -1934,5 +1934,5 @@ WARNING(phase_popinfo): Max. pressure (    1801.897) exceeds      500.000
 
   Writing file: 001_tmodels_all_p.gnu
 
-GIBBS2 ended succesfully (  5 WARNINGS,   4 COMMENTS)
+GIBBS2 ended successfully (  5 WARNINGS,   4 COMMENTS)
 

@@ -765,5 +765,5 @@ WARNING(phase_popinfo): Max. pressure (     801.753) exceeds      500.000
 
   Writing file: 001_eec_all_t.gnu
 
-GIBBS2 ended succesfully (  8 WARNINGS,   0 COMMENTS)
+GIBBS2 ended successfully (  8 WARNINGS,   0 COMMENTS)
 

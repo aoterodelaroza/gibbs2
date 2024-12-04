@@ -185,5 +185,5 @@ WARNING(props_staticeq): Phase mgo: for pressure (     151.515), no min. in stat
 
   Writing file: 001_io_all_p.gnu
 
-GIBBS2 ended succesfully (  1 WARNINGS,   0 COMMENTS)
+GIBBS2 ended successfully (  1 WARNINGS,   0 COMMENTS)
 
