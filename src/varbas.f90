@@ -786,6 +786,13 @@ contains
     eshift = 0d0
     prefix = "./" // null
     extfvibfile = ""
+    allocate(icol_anh(1),icol_cein(1),icol_tein(1))
+    icol_anh = -1
+    icol_cein = -1
+    icol_tein = -1
+    p%tde_nanh = 0
+    p%tde_nein = 0
+    p%ninterp = 0
 
     ! start reading
     ok = .true.
@@ -947,6 +954,7 @@ contains
 
              icol_f0 = 0
              icol_tde = 0
+             if (allocated(icol_anh)) deallocate(icol_anh)
              allocate(icol_anh(p%tde_nanh),icol_cein(p%tde_nein),icol_tein(p%tde_nein))
              icol_anh = 0
              icol_cein = 0
