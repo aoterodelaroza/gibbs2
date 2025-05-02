@@ -1851,8 +1851,8 @@ contains
        write (uout,'("  New pressure range (GPa): ",F12.3," -> ",F12.3)') &
           plist(1), plist(nps)
        write (uout,'("  New number of p points: ",I6)') nps
-       write (uout,*)
     end if
+    write (uout,*)
 
   end subroutine props_staticeq
 
@@ -2063,7 +2063,7 @@ contains
     write (uout,'("  Number of volume points: ",I4)') p%nv
     write (uout,'("  Number of vfree units (Z): ",F12.3)') p%z
     write (uout,'("  p(V) input data? ",L1)') p%pvdata
-    write (uout,'("  Pressure range (GPa): ",F12.3," -> ",F12.3)') &
+    write (uout,'("  Calculable pressure range for this phase (GPa): ",F12.3," -> ",F12.3)') &
        p%pmin, p%pmax
     write (uout,'("  Number of interpolated fields : ",I4)') p%ninterp
 
@@ -2175,11 +2175,17 @@ contains
        write (uout,'("  Temperature model: Debye with Poisson ratio in input.")')
     case(tm_qhafull)
        write (uout,'("  Temperature model: QHA (phonon DOS).")')
-       write (uout,'("  Frequency step: ",1p,E12.4)') p%phstep
+       write (uout,'("    Frequency step: ",1p,E12.4)') p%phstep
     case(tm_debyegrun)
        write (uout,'("  Temperature model: Debye-Gruneisen with gamma = a + b*B'' .")')
-       write (uout,'("  Gamma a coefficient: ",F12.3)') p%a_grun
-       write (uout,'("  Gamma b coefficient: ",F12.3)') p%b_grun
+       write (uout,'("    Gamma a coefficient: ",F12.3)') p%a_grun
+       write (uout,'("    Gamma b coefficient: ",F12.3)') p%b_grun
+    case(tm_debye_extended)
+       write (uout,'("  Temperature model: Extended Debye model.")')
+       write (uout,'("    Number of anharmonicity parameters: ",I3)') p%tde_nanh
+       write (uout,'("    Number of Einstein parameters: ",I3)') p%tde_nein
+    case(tm_externalfvib)
+       write (uout,'("  Temperature model: F, S, and CV from external source.")')
     end select
     if (all(p%dyn_active)) then
        write (uout,'("  All data points are ACTIVE for dynamic calculations")')
@@ -2232,7 +2238,6 @@ contains
        write (msg,'("Max. pressure (",F12.3,") exceeds ",F12.3)') ph(i)%pmax, warn_pmax
        call error('phase_popinfo',msg,warning)
     end if
-
     write (uout,*)
 
   end subroutine phase_popinfo

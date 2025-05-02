@@ -59,9 +59,10 @@ contains
           write (luw,'("# Lines beginning with ''e'' contain fit error estimation.")')
        end if
     end if
+    write (uout,'("# All extensive properties per formula unit.")')
     fm = format_string_header( &
-       (/2,ifmt_p,ifmt_eprec,ifmt_eprec,ifmt_v,ifmt_x,ifmt_p,ifmt_b,ifmt_bp,ifmt_bpp/),&
-       (/2,6,6,6,9,4,10,6,2,10/))
+       (/1,ifmt_p,ifmt_eprec,ifmt_eprec,ifmt_v,ifmt_x,ifmt_p,ifmt_b,ifmt_bp,ifmt_bpp/),&
+       (/1,6,6,6,9,4,10,6,2,10/))
     write (uout,fm) "#","p(GPa)","E(Ha)","H(Ha)","V(bohr^3)","V/V0","p_fit(GPa)","B(GPa)",&
        "Bp","Bpp(GPa-1)"
 
