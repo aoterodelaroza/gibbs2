@@ -80,7 +80,8 @@ contains
   !> Initialize file system and connect standard units
   subroutine ioinit ()
     use param, only: ioread, iowrite, stderr, stdin, stdout
-    !.initialize i/o buffers:
+
+    ! initialize i/o buffers:
     bp = 0
     length = 0
     alloc = .false.
@@ -89,7 +90,7 @@ contains
     ! allocate buffer
     allocate(buffer(0:mopen))
 
-    !.connect standard units:
+    ! connect standard units:
     alloc(stderr) = .true.
     alloc(stdin) = .true.
     alloc(stdout) = .true.
@@ -112,13 +113,14 @@ contains
 
     argc=0
 10  continue
-    call getarg (argc+1,line)
+    call getarg(argc+1,line)
     length=leng(line)
     if (length.gt.0) then
        argc=argc+1
        argv(argc)=line(1:length)//null
     endif
     if (length.gt.0) goto 10
+
   end subroutine getargs
 
   !> Connect input files to units with standard defaults

@@ -768,7 +768,6 @@ contains
 
     ! read phase identifier
     p%name = getword(p%name,line,lp)
-    p%name = lower(p%name)
 
     ! input file field management
     icol_v = 1
@@ -955,6 +954,8 @@ contains
              icol_f0 = 0
              icol_tde = 0
              if (allocated(icol_anh)) deallocate(icol_anh)
+             if (allocated(icol_cein)) deallocate(icol_cein)
+             if (allocated(icol_tein)) deallocate(icol_tein)
              allocate(icol_anh(p%tde_nanh),icol_cein(p%tde_nein),icol_tein(p%tde_nein))
              icol_anh = 0
              icol_cein = 0
@@ -1221,7 +1222,7 @@ contains
        else if (icol_tde == 0) then
           icol_tde = i
           cycle
-       else if (any(icol_anh == 0)) then
+       else if (any(icol_anh(1:p%tde_nanh) == 0)) then
           do j = 1, p%tde_nanh
              if (icol_anh(j) == 0) then
                 icol_anh(j) = i
@@ -1229,7 +1230,7 @@ contains
              end if
           end do
           cycle
-       else if (any(icol_cein == 0)) then
+       else if (any(icol_cein(1:p%tde_nein) == 0)) then
           do j = 1, p%tde_nein
              if (icol_cein(j) == 0) then
                 icol_cein(j) = i
@@ -1237,7 +1238,7 @@ contains
              end if
           end do
           cycle
-       else if (any(icol_tein == 0)) then
+       else if (any(icol_tein(1:p%tde_nein) == 0)) then
           do j = 1, p%tde_nein
              if (icol_tein(j) == 0) then
                 icol_tein(j) = i
@@ -1294,6 +1295,37 @@ contains
        p%tde_cein = 0d0
        p%tde_tein = 0d0
     end if
+
+    ! call phase_init(ph(nph),line2)
+    write (uout,'("+ Initializing phase: ",A)') trim(adjustl(p%name(1:leng(p%name))))
+    if (len_trim(file) > 0) then
+       write (uout,'("  Reading data from file: ",A)') trim(adjustl(file(1:leng(file))))
+    else
+       write (uout,'("  Reading data from main input")')
+    end if
+    write (uout,'("  Interpretation of columns in the data file:")')
+    write (uout,'("    Volume: ",I3)') icol_v
+    write (uout,'("    Energy: ",I3)') icol_e
+    if (icol_td > 0) &
+       write (uout,'("    Debye temperature: ",I3)') icol_td
+    if (icol_nef > 0) &
+       write (uout,'("    N(Ef): ",I3)') icol_nef
+    if (icol_ph > 0) &
+       write (uout,'("    Phonon DOS/frequency file: ",I3)') icol_ph
+    if (any(icol_int(1:p%ninterp) > 0)) &
+       write (uout,'("    Interpolation fields: ",999(I3,X))') (icol_int(i),i=1,p%ninterp)
+    if (icol_pol4(1) > 0) &
+       write (uout,'("    Electronic contribution polynomial: ",8(I3,X))') (icol_pol4(i),i=1,8)
+    if (icol_f0 > 0) &
+       write (uout,'("    Zero-point free energy: ",I3)') icol_f0
+    if (icol_tde > 0) &
+       write (uout,'("    Debye temperature (extended): ",I3)') icol_tde
+    if (any(icol_anh(1:p%tde_nanh) > 0)) &
+       write (uout,'("    Anharmonicity polynomial coefs.: ",99(I3,X))') (icol_anh(i),i=1,p%tde_nanh)
+    if (any(icol_cein(1:p%tde_nein) > 0)) &
+       write (uout,'("    Einstein polynomial coefs.: ",99(I3,X))') (icol_cein(i),i=1,p%tde_nein)
+    if (any(icol_tein(1:p%tde_nein) > 0)) &
+       write (uout,'("    Einstein polynomial temps.: ",99(I3,X))') (icol_tein(i),i=1,p%tde_nein)
 
     ! run over the input file
     nn = 0

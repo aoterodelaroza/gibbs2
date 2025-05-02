@@ -93,7 +93,14 @@ program gibbs2
      call help_me_and_exit()
   endif
 
+  ! header
+  call header()
+  if (.not.quiet) then
+     write (uout,'("tictac -- ",A)') trim(sdate)
+  end if
+
   ! Start reading
+  write (uout,'(/"* Reading main input file")')
   do while (fgetline(uin,line))
      lp=1
      word = getword(word,line,lp)
@@ -550,15 +557,13 @@ program gibbs2
         call error('gibbs2','Unknown keyword in line: '//line(1:leng(line)-1),faterr)
      endif
   enddo
+  write (uout,*)
 
+  ! check we have at least one phase
   if (nph <= 0) &
      call error('gibbs2','at least one phase is required',faterr)
 
   ! pop header (varbas) + input (topcalc)
-  call header()
-  if (.not.quiet) then
-     write (uout,'("tictac -- ",A)') trim(sdate)
-  end if
   call popinput(fileout)
 
   ! check phase data, set pressure range (varbas)
