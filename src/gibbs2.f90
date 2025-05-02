@@ -563,7 +563,7 @@ program gibbs2
   if (nph <= 0) &
      call error('gibbs2','at least one phase is required',faterr)
 
-  ! pop header (varbas) + input (topcalc)
+  ! some initial info about the run
   call popinput(fileout)
 
   ! check phase data, set pressure range (varbas)

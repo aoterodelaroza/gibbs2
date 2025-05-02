@@ -718,7 +718,7 @@ contains
 
   !> Send an error message 'message' to stdout, coming from routine
   !> 'routine'. errortype is the error code (see mod_param.f90).
-  subroutine error (routine,message,errortype)
+  subroutine error(routine,message,errortype)
     use param, only: faterr, ncomms, nwarns, noerr, stderr, uout, warning
     character*(*), intent(in) :: routine !< routine calling the error
     character*(*), intent(in) :: message !< the message

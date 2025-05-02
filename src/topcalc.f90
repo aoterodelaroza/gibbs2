@@ -73,7 +73,8 @@ contains
     integer :: i
 
     write (uout,'("* Input ")')
-    write (uout,'("  Title: ",A)') trim(adjustl(title(1:leng(title)-1)))
+    if (leng(title) > 0) &
+       write (uout,'("  Title: ",A)') trim(adjustl(title(1:leng(title)-1)))
     write (uout,'("  Output file (lu=",I2,"): ",A)') uout, &
        fileout(1:leng(fileout))
     write (uout,'("  Units: output is in atomic units, except where noted.")')

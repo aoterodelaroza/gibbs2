@@ -1754,10 +1754,10 @@ contains
     end if
 
     write (uout,'("* Pressure range examined")')
-    write (uout,'("  Min_phases{p_max} (GPa): ",F12.3)') pmaxmin
+    write (uout,'("  Minimum p_max across all phases (GPa): ",F12.3)') pmaxmin
     write (uout,'("  Pressure range (GPa): ",F12.3," -> ",F12.3)') &
        plist(1), plist(nps)
-    write (uout,'("  Number of p points: ",I6)') nps
+    write (uout,'("  Number of pressure points: ",I6)') nps
     write (uout,*)
 
     ! set volume range if not given in input
@@ -1887,6 +1887,11 @@ contains
     if (allocated(p%fvib_f)) p%fvib_f = p%fvib_f(idx,:)
     if (allocated(p%fvib_s)) p%fvib_s = p%fvib_s(idx,:)
     if (allocated(p%fvib_cv)) p%fvib_cv = p%fvib_cv(idx,:)
+    if (allocated(p%f0)) p%f0 = p%f0(idx)
+    if (allocated(p%tde)) p%tde = p%tde(idx)
+    if (allocated(p%tde_anh)) p%tde_anh = p%tde_anh(:,idx)
+    if (allocated(p%tde_cein)) p%tde_cein = p%tde_cein(:,idx)
+    if (allocated(p%tde_tein)) p%tde_tein = p%tde_tein(:,idx)
 
     ! temperature sort in external fvib
     if (p%tmodel == tm_externalfvib .and. allocated(p%fvib_t) .and. allocated(p%fvib_f)&
