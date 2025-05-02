@@ -574,6 +574,8 @@ program gibbs2
 
   !!! BEGIN the STATIC run !!!
 
+  write (uout,'("** STATIC RUN **"/)')
+
   ! obtain static equilibrium properties (varbas)
   call props_staticeq()
 

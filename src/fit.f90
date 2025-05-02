@@ -103,6 +103,8 @@ contains
           end if
        end do
     end do a
+
+    ! the pressure could not be bracketed, this is an ierr = 2 type of error, bail out
     if (.not. found) then
        ierr = 2
        if (fv0(mode,v(1),npol,cpol) < fv0(mode,v(ndat),npol,cpol)) then
@@ -116,7 +118,7 @@ contains
        return
     end if
 
-    ! find p(V) = p
+    ! find p(V) = p by bisection
     vx = 0.5d0*(v1+v2)
     px = 1d30
     ierr = 1
@@ -150,7 +152,7 @@ contains
     hx = (ex + p * vx)
 
     if (ierr == 1) then
-       call error('fit_pshift','Error finding minimum',faterr)
+       call error('fit_pshift','Error finding minimum (too many steps in bisection)',faterr)
     end if
 
   end subroutine fit_pshift

@@ -1801,34 +1801,41 @@ contains
   subroutine props_staticeq()
     use fit, only: fit_pshift
     use tools, only: leng, error, realloc
-    use param, only: uout, warning
-    integer :: i, j
+    use param, only: uout, warning, mline_fmt, format_string, ifmt_p, ifmt_v, ifmt_x,&
+       ifmt_integer5
+    integer :: i, j, ipcut
     character*(mline) :: msg
     real*8 :: vk, bk, ek, gk
     integer :: ierr
+    logical :: changedplist
+    character*(mline_fmt) :: fm
+
+    write (uout,'("* Calculating static properties on pressure grid")')
+    changedplist = .false.
+    fm = format_string((/ifmt_integer5,ifmt_p,ifmt_v,ifmt_x/),1)
 
     ! check that it is possible to minimize G(static) = E(static) + pV vs. V
     ! get static equilibrium properties.
     do i = 1, nph
+       write (uout,'("+ Phase ",I2," (",A,")")') i, trim(adjustl(ph(i)%name(1:leng(ph(i)%name))))
+       write (uout,'("# Volumes per formula unit.")')
+       write (uout,'("# xV indicates position of V on the volume grid (0 = beginning, 1 = end)")')
+       write (uout,'("# Num    p(GPa)    V(bohr^3)    xV")')
+
        ! check that it is possible to minimize G(static) = E(static) + pV vs. V
+       ipcut = nps+1
        do j = 1, nps
           call fit_pshift(ph(i)%fit_mode, ph(i)%v,plist(j),ph(i)%npol,ph(i)%cpol,vk,bk,ek,gk,ierr)
           if (ierr > 0) then
-             write (msg,&
-                '("Phase ",A,": for pressure (",F12.3,"), no min. in static H.")')&
-                trim(adjustl(ph(i)%name(1:leng(ph(i)%name)))), plist(j)
-             call error('props_staticeq',msg,warning)
-
-             if (plist(j) > ph(i)%pmax .and..not.ph(i)%extend) then
-                nps = max(j-1,1)
-                call realloc(plist,nps)
-                write (uout,'("  New pressure range (GPa): ",F12.3," -> ",F12.3)') &
-                   plist(1), plist(nps)
-                write (uout,'("  New number of p points: ",I6)') nps
-                write (uout,*)
-                exit
+             write (uout,'(X,I5,X,F10.4,X," -- minimum outside volume grid --")') j, plist(j)
+             if (plist(j) > ph(i)%pmax.and..not.ph(i)%extend) then
+                ipcut = min(j-1,ipcut)
+                changedplist = .true.
              end if
+          else
+             write (uout,fm) j, plist(j), vk, (vk - ph(i)%v(1)) / (ph(i)%v(ph(i)%nv) - ph(i)%v(1))
           end if
+
           if (j == 1) then
              ph(i)%veq_static = vk
              ph(i)%eeq_static = gk
@@ -1836,6 +1843,16 @@ contains
           end if
        end do
     end do
+
+    if (changedplist) then
+       nps = ipcut
+       call realloc(plist,nps)
+       call error('props_staticeq',"Pressure range reduced because no minimum in static curve",warning)
+       write (uout,'("  New pressure range (GPa): ",F12.3," -> ",F12.3)') &
+          plist(1), plist(nps)
+       write (uout,'("  New number of p points: ",I6)') nps
+       write (uout,*)
+    end if
 
   end subroutine props_staticeq
 

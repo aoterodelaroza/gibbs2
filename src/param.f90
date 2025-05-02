@@ -129,7 +129,7 @@ module param
   integer :: gplt_sym(mcols)
 
   ! formats for outputs (filled during initialization)
-  integer, parameter :: afmts = 20, ifmts = 20
+  integer, parameter :: afmts = 21, ifmts = 21
   integer, parameter :: ifmt_p = afmts+1
   integer, parameter :: ifmt_v = afmts+2
   integer, parameter :: ifmt_x = afmts+3
@@ -150,6 +150,7 @@ module param
   integer, parameter :: ifmt_order = afmts+18
   integer, parameter :: ifmt_ef = afmts+19
   integer, parameter :: ifmt_nef = afmts+20
+  integer, parameter :: ifmt_integer5 = afmts+21
   character*(12) :: fmt(afmts+ifmts)
   integer :: ifmtlen(afmts+ifmts)
 
@@ -231,6 +232,7 @@ contains
     fmt(ifmt_order) = "I2"
     fmt(ifmt_ef) = "F12.7"
     fmt(ifmt_nef) = "F14.10"
+    fmt(ifmt_integer5) = "I5"
     ifmtlen(ifmt_p) = 10
     ifmtlen(ifmt_v) = 10
     ifmtlen(ifmt_x) = 10
@@ -251,6 +253,7 @@ contains
     ifmtlen(ifmt_order) = 2
     ifmtlen(ifmt_ef) = 12
     ifmtlen(ifmt_nef) = 14
+    ifmtlen(ifmt_integer5) = 5
 
     ! random seed
     call random_seed(size = n)
