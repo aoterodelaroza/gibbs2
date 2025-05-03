@@ -49,7 +49,7 @@ contains
        write (lu,'("set style line ",I2," lt 1 lc rgb """,A7,""" pt ",I2," ps 0.75")')&
           i, gplt_rgb(i), gplt_sym(i)
     end do
-    write (lu,'("set style increment user ")')
+    ! write (lu,'("set style increment user ")')
     write (lu,*)
     opengnu = lu
 

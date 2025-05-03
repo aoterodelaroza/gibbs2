@@ -55,7 +55,6 @@ program gibbs2
   real*8 :: pini, pend, tini, tend, tmaxmin, vini, vend
   real*8 :: vout_ini, vout_end, vout_step, e0
   integer :: ierr, isv, onxint, nid
-  real*8, allocatable :: va(:,:), ba(:,:), ga(:,:)   ! v(p), b(p) and g(p) for all the phases.
   real*8 :: adebye, axabs, aen, acv, ahe, aent
 
   ! initialize
@@ -576,7 +575,7 @@ program gibbs2
 
   write (uout,'("** STATIC RUN **"/)')
 
-  ! obtain static equilibrium properties (varbas)
+  ! obtain static properties (varbas)
   call props_staticeq()
 
   ! Phase information
@@ -597,22 +596,9 @@ program gibbs2
      call write_energy(vout_ini,vout_step,vout_end)
   end if
 
-  ! Calculate static V(p1...pn), B and G
-  allocate(va(nps,nph),ba(nps,nph),ga(nps,nph))
-  va = 0d0
-  ba = 0d0
-  ga = 0d0
-  do i = 1, nph
-     ! Calculate static V(p1..pn) (fit)
-     do j = 1, nps
-        call fit_pshift(ph(i)%fit_mode,ph(i)%v,plist(j),ph(i)%npol,ph(i)%cpol,&
-           va(j,i),ba(j,i),e0,ga(j,i),ierr)
-     end do
-  end do
-
   ! Output fitted static energies (topcalc), enthalpy plot
   call popenergyfit()
-  call plotdh(ga)
+  call plotdh()
 
   ! Calculate or fit debye temperatures at input volumes (verbose if any phase is debye)
   allocate(dodebye(nph))
@@ -629,13 +615,10 @@ program gibbs2
   if (any(dodebye)) write (uout,*)
 
   ! transition pressures, static (topcalc)
-  call static_transp(ga)
+  call static_transp()
 
   ! Print Debye-Eisntein frequencies (topcalc)
   if (callpf) call printfreqs()
-
-  ! wrap up the static run
-  deallocate(va,ba,ga)
 
   !!! END of the STATIC run !!!
 

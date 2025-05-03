@@ -77,8 +77,12 @@ contains
     fme  = format_string((/1,ifmt_p,ifmt_eprec,ifmt_eprec,ifmt_v,ifmt_x,&
        ifmt_p,ifmt_b,ifmt_bp,ifmt_bpp/),0)
     do i = 1, nps
-       call fit_pshift(p%fit_mode,p%v,plist(i),p%npol,p%cpol,vk,bk,ek,gk,ierr)
-       if (ierr > 0) cycle
+       vk = p%static_v(i)
+       if (vk < 0d0) cycle
+       ek = p%static_e(i)
+       gk = p%static_g(i)
+       bk = p%static_b(i)
+
        f1 = fv1(p%fit_mode,vk,p%npol,p%cpol)
        f2 = fv2(p%fit_mode,vk,p%npol,p%cpol)
        f3 = fv3(p%fit_mode,vk,p%npol,p%cpol)

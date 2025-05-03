@@ -175,8 +175,10 @@ contains
     ! write the gnu file
     write (uout,'("  Writing file : ",A/)') trim(fileroot)//"_efit.gnu"
     lu = opengnu(trim(fileroot)//"_efit")
-    write (lu,'("set xrange ["F20.4":"F20.4"]")') vmin, vmax
-    write (lu,'("set yrange ["F20.4":"F20.4"]")') emin, emax
+    write (lu,'("set xrange ["F20.4":"F20.4"]")') vmin - 0.01d0 * (vmax-vmin), &
+       vmax + 0.01d0 * (vmax-vmin)
+    write (lu,'("set yrange ["F20.4":"F20.4"]")') emin - 0.01d0 * (emax-emin), &
+       emax + 0.01d0 * (emax-emin)
     write (lu,'("set ylabel ""Energy (Ha)""")')
     write (lu,'("set xlabel ""Volume (bohr^3)""")')
     ends = ",\ "
@@ -205,12 +207,11 @@ contains
   end subroutine popenergyfit
 
   ! Make the delta-H vs. p plot using the information in the ga(:) array
-  subroutine plotdh(ga)
+  subroutine plotdh()
     use gnuplot_templates, only: opengnu, closegnu
     use varbas, only: nph, ph, nps, plist, writelevel, doplotdh, n_not_pv_min
     use tools, only: error, leng, fopen, fclose
     use param, only: uout, fileroot, iowrite, warning, null
-    real*8, intent(in) :: ga(:,:)
 
     integer :: i, j, k
     character*5 :: starts
@@ -229,17 +230,19 @@ contains
     write (uout,'("* Plotting static DeltaH"/)')
     write (uout,'("  Writing file : ",A/)') trim(fileroot) // "_dH.aux"
     lu = fopen(lu,trim(fileroot) // "_dH.aux"//null,iowrite)
-    write (lu,'("# H(p) plot, auxiliary file. ")')
-    write (lu,'("# Contains dH(p) (Ha) calculated on input pressures. ")')
+    write (lu,'("# Relative H(p) plot, auxiliary file. ")')
+    write (lu,'("# Phase 1 taken as reference: ",A)') trim(adjustl(ph(1)%name(1:leng(ph(1)%name))))
+    write (lu,'("# Contains delta-H(p) (in Hartree per formula unit) calculated on input pressures. ")')
     write (lu,'("# p(GPa)",999(2X,A13,4X))') &
        (trim(adjustl(ph(k)%name(1:leng(ph(k)%name)))),k=2,nph)
     do j = 1, nps
+       if (ph(1)%static_v(j) < 0d0) cycle
        write (lu,'(F12.4,1X)',advance='no') plist(j)
        do k = 2, nph
-          if (plist(j) < ph(k)%pmin .or. plist(j) > ph(k)%pmax) then
+          if (ph(k)%static_v(j) < 0d0) then
              write (lu,'(1p,A20,2X)',advance='no') "n/a"
           else
-             write (lu,'(1p,E20.10,2X)',advance='no') ga(j,k)-ga(j,1)
+             write (lu,'(1p,E20.10,2X)',advance='no') ph(k)%static_g(j) - ph(1)%static_g(j)
           end if
        end do
        write (lu,*)
@@ -273,17 +276,17 @@ contains
   end subroutine plotdh
 
   ! Calculate the static transition pressures and write to output.
-  subroutine static_transp(ga)
+  subroutine static_transp()
     use varbas, only: nph, ph, nps, nph, plist, dotrans, n_not_pv_min
     use tools, only: error, leng, realloc, leng_null
     use param, only: uout, warning, mline
-    real*8, intent(in) :: ga(:,:) ! ga(nps,nph)
 
     integer :: i, j, nphase, idmin
     real*8, allocatable :: ptrans(:)
     integer, allocatable :: iphase(:), idtrans(:)
     character(mline) :: phname
     real*8 :: pold
+    real*8 :: gajp, gaj1p, gajp1, gaj1p1
 
     integer, parameter :: idtrans_not_set = 0
     integer, parameter :: idtrans_invalid_to_valid = 1
@@ -359,8 +362,11 @@ contains
              idtrans(nphase-1) = idtrans_phase_disappeared
           else
              ! a usual phase to phase transition
-             ptrans(nphase-1) = plist(j-1) - (ga(j-1,iphase(nphase))-ga(j-1,iphase(nphase-1))) * (plist(j) - plist(j-1)) /&
-                (ga(j,iphase(nphase))-ga(j,iphase(nphase-1)) - (ga(j-1,iphase(nphase))-ga(j-1,iphase(nphase-1))))
+             gajp   = ph(iphase(nphase))%static_g(j)
+             gaj1p  = ph(iphase(nphase))%static_g(j-1)
+             gajp1  = ph(iphase(nphase-1))%static_g(j)
+             gaj1p1 = ph(iphase(nphase-1))%static_g(j-1)
+             ptrans(nphase-1) = plist(j-1) - (gaj1p - gaj1p1) * (plist(j) - plist(j-1)) / (gajp - gajp1 - (gaj1p-gaj1p1))
              idtrans(nphase-1) = idtrans_normal
           end if
        end if
@@ -394,8 +400,8 @@ contains
       idmin_ = 0
       gmin = huge(1d0)
       do ii = 1, nph
-         if (ga(jj,ii) < gmin .and. plist(jj)>ph(ii)%pmin .and. plist(jj)<ph(ii)%pmax) then
-            gmin = ga(jj,ii)
+         if (ph(ii)%static_g(jj) < gmin .and. ph(ii)%static_v(jj) > 0d0) then
+            gmin = ph(ii)%static_g(jj)
             idmin_ = ii
          end if
       end do
