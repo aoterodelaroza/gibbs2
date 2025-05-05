@@ -537,7 +537,7 @@ contains
     integer, intent(in) :: iv
     real*8, intent(out) :: Fvib, S, CV
 
-    real*8 :: V, TD, F0, termf, terms, termcv, Fein, Sein, CVein
+    real*8 :: V, TD, termf, terms, termcv, Fein, Sein, CVein
     real*8 :: UVib, D3, xabs, x, sumc, ex, emx, l1emx
     integer :: i
 
@@ -610,7 +610,7 @@ contains
     end if
 
     ! add the zero-point contribution
-    Fvib = Fvib + F0
+    Fvib = Fvib + p%f0(iv)
 
   end subroutine thermal_debye_extended
 
