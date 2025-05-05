@@ -597,26 +597,26 @@ contains
 
           if (allocated(ph(i)%ffit_npol)) deallocate(ph(i)%ffit_npol)
           if (allocated(ph(i)%ffit_apol)) deallocate(ph(i)%ffit_apol)
+          if (allocated(ph(i)%tsfit_npol)) deallocate(ph(i)%tsfit_npol)
+          if (allocated(ph(i)%tsfit_apol)) deallocate(ph(i)%tsfit_apol)
+          if (allocated(ph(i)%cvfit_npol)) deallocate(ph(i)%cvfit_npol)
+          if (allocated(ph(i)%cvfit_apol)) deallocate(ph(i)%cvfit_apol)
           allocate(ph(i)%ffit_npol(nts))
           allocate(ph(i)%ffit_apol(0:mmpar,nts))
+          allocate(ph(i)%tsfit_npol(nts))
+          allocate(ph(i)%tsfit_apol(0:mmpar,nts))
+          allocate(ph(i)%cvfit_npol(nts))
+          allocate(ph(i)%cvfit_apol(0:mmpar,nts))
 
           allocate(xfit(ph(i)%nv),yfit(ph(i)%nv),ynew(ph(i)%nv))
           do k = 1, nts
+             ! calculate thermodynamic properties on the (V,T) grid
              do j = 1, ph(i)%nv
                 call thermal_debye_extended(ph(i),tlist(k),j,ph(i)%dynamic_fvib(j,k),&
                    ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
              end do
 
-             xfit = ph(i)%v(1:ph(i)%nv)
-             yfit = ph(i)%e + ph(i)%dynamic_fvib(:,k)
-
-             call fit_ev(ph(i)%fit_mode,ph(i)%reg_mode,xfit,yfit,ph(i)%ffit_npol(k),&
-                ph(i)%ffit_apol(:,k),ierr,.false.)
-             if (ierr > 0) then
-                write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
-                call error('dyneos','fit for A(x) not found',faterr)
-             end if
-
+             ! print out the results
              write (uout,'("# Temperature = ",F12.4)') tlist(k)
              write (uout,'("# All properties per unit formula.")')
              write (uout,'("# V(bohr^3)   Fvib(Ha)           S(Ha/K)        CV(Ha/K)")')
@@ -624,11 +624,48 @@ contains
                 write (uout,'(F10.4,1X,1p,E18.10,1X,E14.6,1X,E14.6)') ph(i)%v(j), ph(i)%dynamic_fvib(j,k),&
                    ph(i)%dynamic_s(j,k), ph(i)%dynamic_cv(j,k)
              end do
+
+             ! fit the F(V) as a function of temperature
+             xfit = ph(i)%v(1:ph(i)%nv)
+             yfit = ph(i)%e + ph(i)%dynamic_fvib(:,k)
+             call fit_ev(ph(i)%fit_mode,ph(i)%reg_mode,xfit,yfit,ph(i)%ffit_npol(k),&
+                ph(i)%ffit_apol(:,k),ierr,.false.)
+             if (ierr > 0) then
+                write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
+                call error('dyneos','fit for F(V;T) not found',faterr)
+             end if
              ynew = fv0(ph(i)%fit_mode,ph(i)%v,ph(i)%ffit_npol(k),ph(i)%ffit_apol(:,k))
              rms = sqrt(sum((ynew - yfit)**2) / real(ph(i)%nv,8))
              may = sum(abs(yfit)) / real(ph(i)%nv,8)
-             write (uout,'("# RMS(F-fit,Ha) = ",1p,E18.10,"   avg-abs-F(Ha) = ",E18.10)') rms, may
-             write (uout,*)
+             write (uout,'("# F(V) fit: RMS(Ha) = ",1p,E18.10,"   avg-abs(Ha) = ",E18.10)') rms, may
+
+             ! fit -T*S(V) as a function of temperature
+             xfit = ph(i)%v(1:ph(i)%nv)
+             yfit = -tlist(k) * ph(i)%dynamic_s(:,k)
+             call fit_ev(ph(i)%sfit_mode,ph(i)%reg_mode,xfit,yfit,ph(i)%tsfit_npol(k),&
+                ph(i)%tsfit_apol(:,k),ierr,.false.)
+             if (ierr > 0) then
+                write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
+                call error('dyneos','fit for -T*S(V;T) not found',faterr)
+             end if
+             ynew = fv0(ph(i)%sfit_mode,ph(i)%v,ph(i)%tsfit_npol(k),ph(i)%tsfit_apol(:,k))
+             rms = sqrt(sum((ynew - yfit)**2) / real(ph(i)%nv,8))
+             may = sum(abs(yfit)) / real(ph(i)%nv,8)
+             write (uout,'("# -T*S(V) fit: RMS(Ha) = ",1p,E18.10,"   avg-abs(Ha) = ",E18.10)') rms, may
+
+             ! fit CV(V) as a function of temperature
+             xfit = ph(i)%v(1:ph(i)%nv)
+             yfit = ph(i)%dynamic_cv(:,k)
+             call fit_ev(ph(i)%cvfit_mode,ph(i)%reg_mode,xfit,yfit,ph(i)%cvfit_npol(k),&
+                ph(i)%cvfit_apol(:,k),ierr,.false.)
+             if (ierr > 0) then
+                write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
+                call error('dyneos','fit for CV(V;T) not found',faterr)
+             end if
+             ynew = fv0(ph(i)%cvfit_mode,ph(i)%v,ph(i)%cvfit_npol(k),ph(i)%cvfit_apol(:,k))
+             rms = sqrt(sum((ynew - yfit)**2) / real(ph(i)%nv,8))
+             may = sum(abs(yfit)) / real(ph(i)%nv,8)
+             write (uout,'("# CV(V) fit: RMS(Ha/K) = ",1p,E18.10,"   avg-abs(Ha/K) = ",E18.10)') rms, may
           end do
           deallocate(xfit,yfit,ynew)
 

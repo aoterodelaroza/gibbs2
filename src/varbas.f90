@@ -78,6 +78,10 @@ module varbas
 
      integer, allocatable :: ffit_npol(:)  ! number of coefficients for F(V;T) fit
      real*8, allocatable :: ffit_apol(:,:) ! coefficients for F(V;T) fit
+     integer, allocatable :: tsfit_npol(:)  ! number of coefficients for -T*S(V;T) fit
+     real*8, allocatable :: tsfit_apol(:,:) ! coefficients for -T*S(V;T) fit
+     integer, allocatable :: cvfit_npol(:)  ! number of coefficients for CV(V;T) fit
+     real*8, allocatable :: cvfit_apol(:,:) ! coefficients for CV(V;T) fit
 
      ! scaling
      integer :: scaltype
