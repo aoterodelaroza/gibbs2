@@ -619,9 +619,11 @@ contains
              ! print out the results
              write (uout,'("# Temperature = ",F12.4)') tlist(k)
              write (uout,'("# All properties per unit formula.")')
-             write (uout,'("# V(bohr^3)   Fvib(Ha)           S(Ha/K)        CV(Ha/K)")')
+             write (uout,'("# V(bohr^3)      F(Ha)              Fvib(Ha)         Fvib-F0(Ha)        S(Ha/K)        CV(Ha/K)")')
              do j = 1, ph(i)%nv
-                write (uout,'(F10.4,1X,1p,E18.10,1X,E14.6,1X,E14.6)') ph(i)%v(j), ph(i)%dynamic_fvib(j,k),&
+                write (uout,'(F10.4,1X,1p,3(E18.10,1X),E14.6,1X,E14.6)') ph(i)%v(j), &
+                   ph(i)%e(j) + ph(i)%dynamic_fvib(j,k), &
+                   ph(i)%dynamic_fvib(j,k), ph(i)%dynamic_fvib(j,k)-ph(i)%f0(j),&
                    ph(i)%dynamic_s(j,k), ph(i)%dynamic_cv(j,k)
              end do
 
