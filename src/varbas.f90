@@ -71,6 +71,11 @@ module varbas
      real*8, allocatable :: static_g(:) ! static G (=H) on pressure grid
      real*8, allocatable :: static_b(:) ! static B on pressure grid
 
+     ! dynamic properties on the volume grid
+     real*8, allocatable :: dynamic_fvib(:,:) ! Fvib(V,T)
+     real*8, allocatable :: dynamic_s(:,:) ! S(V,T)
+     real*8, allocatable :: dynamic_cv(:,:) ! CV(V,T)
+
      ! scaling
      integer :: scaltype
      real*8 :: vscal, bscal

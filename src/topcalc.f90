@@ -534,10 +534,11 @@ contains
   ! Calculate and write the EOS file at the requested temperature and
   ! pressure list.
   subroutine dyneos()
+    use debye, only: thermal_debye_extended
     use gnuplot_templates, only: gen_allgnu_t, gen_allgnu_p
     use fit, only: fit_pshift, fitinfo
     use varbas, only: nph, ph, mpropout, propfmt, tm_static, tm_externalfvib,&
-       nps, plist, nts, tlist, &
+       tm_debye_extended, nps, plist, nts, tlist, &
        writelevel, nvs, vlist, doerrorbar, propname, vbracket, vdefault
     use tools, only: error, leng, fopen, fclose
     use param, only: mline, mline_fmt, uout, format_string, format_string_header, fileroot,&
@@ -582,6 +583,23 @@ contains
        write (lu,fm) "# ",(trim(adjustl(propname(j))),j=1,mpropout)
        fm = format_string(propfmt(1:mpropout),2)
        fme = format_string(propfmt(0:mpropout),0)
+
+       ! calculate fvib, S, CV on the volume and temperature grid
+       if (ph(i)%tmodel == tm_debye_extended) then
+          if (allocated(ph(i)%dynamic_fvib)) deallocate(ph(i)%dynamic_fvib)
+          if (allocated(ph(i)%dynamic_s)) deallocate(ph(i)%dynamic_s)
+          if (allocated(ph(i)%dynamic_cv)) deallocate(ph(i)%dynamic_cv)
+          allocate(ph(i)%dynamic_fvib(ph(i)%nv,nts))
+          allocate(ph(i)%dynamic_s(ph(i)%nv,nts))
+          allocate(ph(i)%dynamic_cv(ph(i)%nv,nts))
+
+          do k = 1, nts
+             do j = 1, ph(i)%nv
+                call thermal_debye_extended(ph(i),tlist(k),j,ph(i)%dynamic_fvib(j,k),&
+                   ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
+             end do
+          end do
+       end if
 
        ! allocate G(T,p), V(T,p) and B(T,p) arrays
        allocate(ph(i)%gtp(nts,nps), ph(i)%vtp(nts,nps), ph(i)%btp(nts,nps))

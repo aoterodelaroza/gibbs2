@@ -21,7 +21,7 @@ module debye
 
   ! public
   public :: fill_thetad, get_thetad
-  public :: thermal, debeins, thermalphon
+  public :: thermal, debeins, thermalphon, thermal_debye_extended
 
   ! if temperature is lower, then gamma(t) = gamma(tlim)
   real*8, parameter, public :: tlim_gamma = 1d0 + 1d-6
@@ -527,6 +527,93 @@ contains
 
   end subroutine thermalphon
 
+  ! Compute Debye extended model vibrational properties (Fvib, S, CV).
+  subroutine thermal_debye_extended(p,T,iv,Fvib,S,CV)
+    use varbas, only: phase, vfree
+    use param, only: pckbau
+
+    type(phase), intent(in) :: p
+    real*8, intent(in) :: T
+    integer, intent(in) :: iv
+    real*8, intent(out) :: Fvib, S, CV
+
+    real*8 :: V, TD, F0, termf, terms, termcv, Fein, Sein, CVein
+    real*8 :: UVib, D3, xabs, x, sumc, ex, emx, l1emx
+    integer :: i
+
+    real*8, parameter :: vsmall = 1d-80
+    real*8, parameter :: lhuge = log(huge(1d0))
+    real*8, parameter :: ltiny = log(tiny(1d0))
+
+    ! input properties
+    V = p%v(iv)
+    TD = p%tde(iv)
+
+    ! calculate the debye contribution
+    call thermal(TD,T,D3,xabs,Uvib,CV,Fvib,S)
+
+    ! remove the Debye zero point energy
+    Fvib = Fvib - 9d0/8d0 * TD * pckbau * vfree
+
+    ! add the anharmonic contribution
+    if (p%tde_nanh > 0) then
+       x = T / TD
+       termf = 0d0
+       terms = 0d0
+       termcv = 0d0
+       do i = p%tde_nanh, 1, -1
+          termf = x * termf - p%tde_anh(i,iv) / real(i+1,8)
+          terms = x * terms + p%tde_anh(i,iv)
+          termcv = x * termcv + p%tde_anh(i,iv) * real(i,8)
+       end do
+       termf = x * termf
+       terms = x * terms
+       termcv = x * termcv
+       Fvib = Fvib + vfree * pckbau * T * termf
+       S = S + vfree * pckbau * terms
+       CV = CV + vfree * pckbau * termcv
+    end if
+
+    ! add the einstein contribution
+    if (p%tde_nein > 0) then
+       Fein = 0d0
+       Sein = 0d0
+       CVein = 0d0
+       sumc = 0d0
+       do i = 1, p%tde_nein
+          ! skip if the temperature is exactly zero because no contributions
+          if (T < vsmall) cycle
+
+          ! calculate TD/T
+          x = p%tde_tein(i,iv) / T
+
+          ! F and S in the low temperature limit both go to zero
+          if (x < -ltiny) then
+             emx = exp(-x)
+             l1emx = log(1 - emx)
+             Fein = Fein + p%tde_cein(i,iv) * vfree * pckbau * T * l1emx
+             Sein = Sein - p%tde_cein(i,iv) * vfree * pckbau * (l1emx - x * emx / (1 - emx))
+          end if
+
+          ! CV, in the low temperature limit: CV -> 0
+          if (x <= 0.5 * lhuge) then
+             ex = exp(x)
+             CVein = CVein + p%tde_cein(i,iv) * vfree * pckbau * &
+                x**2 * ex / (ex - 1d0)**2
+          end if
+          sumc = sumc + p%tde_cein(i,iv)
+       end do
+
+       Fvib = (1-sumc) * Fvib + Fein
+       S = (1-sumc) * S + Sein
+       CV = (1-sumc) * CV + CVein
+    end if
+
+    ! add the zero-point contribution
+    Fvib = Fvib + F0
+
+  end subroutine thermal_debye_extended
+
   ! Interpolate the phonon density of states to volume v. Returns
   ! the interpolated phDOS in d.
   function phdos_interpolate(p,v) result(d)
@@ -599,5 +686,58 @@ contains
     ff = (1d0-fac) * p%freqg(:,id) + fac * p%freqg(:,id+1)
 
   end function freqg_interpolate
+
+  !> Calculate Debye's integral,
+  !
+  !                                  |    x^3     |
+  ! Debye (y) = 3*y^(-3) * INT (0,y) | ---------- | dx
+  !                                  | exp(x) - 1 |
+  ! with y = TD/T. The integral is evaluated using a Gauss-Legendre
+  ! quadrature.
+  function debye_d3(T,TD)
+    use tools, only: gauleg
+    use param, only: pi
+    real*8, intent(in) :: T,TD
+    real*8 :: debye_d3
+
+    real*8, parameter :: epslo = 1d-5
+    real*8, parameter :: epshi = 250d0
+    real*8, parameter :: epsconv = 1d-12
+    integer, parameter :: maxnl=100
+
+    real*8 :: y, debye0, summ, xabs
+    integer :: nl, i
+    real*8 :: x(maxnl), w(maxnl)
+
+    debye_d3 = 0d0
+    if (T < epslo) return
+
+    y = TD/T
+    if (y > epslo) then
+       debye_d3 = 3d0 * pi**4 / y**3 / 15d0
+    else
+       debye_d3 = 3d0 * pi**4 / 15d0 * (T/TD)**3
+    end if
+    if (y > epshi) return
+
+    ! loop with increasing number of Legendre points.
+    debye0 = 1d30
+    do nl = 5, maxnl, 5
+       call gauleg(0d0, y, x, w, nl)
+       summ = sum(w(1:nl) * x(1:nl)**3 / (exp(x(1:nl))-1))
+       if (y > epslo) then
+          debye_d3 = summ * 3d0 / y**3
+       else
+          debye_d3 = summ * 3d0 * (T/TD)**3
+       end if
+       xabs = abs(debye_d3 - debye0)
+       if (xabs < epsconv) then
+          return
+       else
+          debye0 = debye_d3
+       endif
+    end do
+
+  end function debye_d3
 
 end module debye

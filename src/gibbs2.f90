@@ -632,9 +632,9 @@ program gibbs2
      ! prepare for the THERMAL run
      ! check that mm and vfree were given in input
      if (mm < 0d0) &
-        call error('gibbs2','molecular mass not found',faterr)
+        call error('gibbs2','thermal run requested but no molecular mass (MM) not found',faterr)
      if (vfree <= 0) &
-        call error('gibbs2','vfree not found',faterr)
+        call error('gibbs2','thermal run requested but no VFREE found',faterr)
 
      ! Set temperature range if not given in input
      write (uout,'("* Temperature range examined")')
