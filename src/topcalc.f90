@@ -669,6 +669,36 @@ contains
           end do
           deallocate(xfit,yfit,ynew)
 
+          ! allocate G(T,p), V(T,p) and B(T,p) arrays
+          if (allocated(ph(i)%gtp)) deallocate(ph(i)%gtp)
+          if (allocated(ph(i)%vtp)) deallocate(ph(i)%vtp)
+          if (allocated(ph(i)%btp)) deallocate(ph(i)%btp)
+          allocate(ph(i)%gtp(nts,nps),ph(i)%vtp(nts,nps),ph(i)%btp(nts,nps),ph(i)%didtp(nts,nps))
+          ph(i)%vtp = -1d0
+          ph(i)%vtp = -1d0
+          ph(i)%gtp = 0d0
+          ph(i)%didtp = .false.
+
+          ! calculate the T,p properties
+          do j = 1, nts
+             do k = 1, nps
+                ! find the equilibrium volume at (p,T)
+                call fit_pshift(ph(i)%fit_mode,ph(i)%v,plist(k),ph(i)%ffit_npol(j),&
+                   ph(i)%ffit_apol(:,j),v,b,e,g,ierr)
+                if (ierr > 0) cycle
+
+                ! calculate the rest of the properties
+                call dyneos_calc_new(ph(i),v,j,proplist)
+                write (lu,fm) proplist
+
+                ph(i)%didtp(j,k) = .true.
+                ph(i)%gtp(j,k) = proplist(5) ! G(T,p)
+                ph(i)%vtp(j,k) = proplist(3) ! V(T,p)
+                ph(i)%btp(j,k) = proplist(9) ! BT(T,p)
+             end do
+             write (lu,'(/)')
+          end do
+
        else
           !!!!! FIX ME !!!!!
 
@@ -1123,6 +1153,168 @@ contains
     proplist(29) = cv_el
 
   end subroutine dyneos_calc
+
+  ! Calculate properties at a given volume and temperature.
+  subroutine dyneos_calc_new(p,v,it,proplist)
+    use evfunc, only: fv0, fv1, fv2, fv3, fv4
+    use debye, only: tlim_gamma, cvlim, debeins, thermalphon, thermal, get_thetad
+    use varbas, only: mpropout, phase, tm_qhafull, tm_debye_input, tm_debye, tm_debyegrun,&
+       tm_debye_poisson_input, tm_debye_einstein, tm_debye_einstein_v, tm_externalfvib,&
+       em_pol4, em_sommerfeld, em_no, ftsel_fitmode, vbracket, tlist
+    use tools, only: error
+    use param, only: faterr, au2gpa, ha2kjmol, pi, pckbau, pisquare, twothird
+    type(phase), intent(in) :: p
+    real*8, intent(in) :: v
+    integer, intent(in) :: it
+    real*8, intent(out) :: proplist(mpropout)
+
+    real*8 :: t
+    real*8 :: f0, f1, f2, f3, f4, b0, b1, b2, tmp
+    real*8 :: f0s, f1s, f2s, f3s, b0s, b1s, g
+    real*8 :: nef, ef, theta
+    real*8 :: pbeta, alpha, cp, bs, D, Derr
+    real*8 :: cv_ac, cv_op, cv_lowt
+    real*8 :: fvib, svib, uvib, cv_vib
+    real*8 :: fel, sel, uel, cv_el, rdum
+    real*8 :: fsum, ssum, usum, cv_sum
+    real*8 :: gam_ac, gam_op, gamma
+    real*8 :: pext, psta, pth, dg, mtsvib
+    integer :: id
+    real*8 :: auxcpol(0:mmpar)
+
+    ! temperature
+    t = tlist(it)
+
+    ! static energy and helmholtz free energy volume derivatives
+    f0s = fv0(p%fit_mode,v,p%npol,p%cpol)
+    f1s = fv1(p%fit_mode,v,p%npol,p%cpol)
+    f2s = fv2(p%fit_mode,v,p%npol,p%cpol)
+    f3s = fv3(p%fit_mode,v,p%npol,p%cpol)
+    f0  = fv0(p%fit_mode,v,p%ffit_npol(it),p%ffit_apol(:,it))
+    f1  = fv1(p%fit_mode,v,p%ffit_npol(it),p%ffit_apol(:,it))
+    f2  = fv2(p%fit_mode,v,p%ffit_npol(it),p%ffit_apol(:,it))
+    f3  = fv3(p%fit_mode,v,p%ffit_npol(it),p%ffit_apol(:,it))
+    f4  = fv4(p%fit_mode,v,p%ffit_npol(it),p%ffit_apol(:,it))
+
+    ! pressure derivatives of the isothermal bulk modulus
+    b0 = v * f2
+    b1 = -(1+v*f3/f2)
+    b2 = ((f3+v*f4)/f2**2 - v*f3**2/f2**3)
+
+    ! thermal pressure
+    pext = -f1
+    psta = -f1s
+    pth = pext - psta
+
+    ! vibrational contribution
+    !  sets Uvib, Cv_vib, Svib, Fvib, theta and gamma
+    call get_thetad(p,v,f2s,f3s,theta,gamma)
+
+    ! rest of properties
+    fvib = f0 - f0s
+    mtsvib = fv0(p%sfit_mode,v,p%tsfit_npol(it),p%tsfit_apol(:,it))
+    if (t < tlim_gamma) then
+       svib = 0d0
+    else
+       svib = mtsvib / (-t)
+    end if
+    uvib = fvib - mtsvib
+    cv_vib = fv0(p%cvfit_mode,v,p%cvfit_npol(it),p%cvfit_apol(:,it))
+    cv_lowt = cv_vib
+
+    ! electronic contribution
+    uel = 0d0
+    fel = 0d0
+    sel = 0d0
+    cv_el = 0d0
+
+    ! sum up
+    fsum = fvib + fel
+    usum = uvib + uel
+    ssum = svib + sel
+    cv_sum = cv_vib + cv_el
+
+    ! bulk modulus
+    b0 = b0 * au2gpa
+    b2 = b2 / au2gpa
+
+    ! gamma and related quantities
+    if (t >= tlim_gamma .and. cv_sum > 1d-20) then
+       ! non-zero temperature, usual calculation, no 0/0 here
+       gamma = - v / cv_sum * fv1(p%sfit_mode,v,p%tsfit_npol(it),p%tsfit_apol(:,it)) / t
+    else
+       ! a meaningless gamma value - all properties other than
+       ! gamma will be correct.
+       gamma = 1d0
+    end if
+
+    ! gamma is finite at T->0, so no problem here, either
+    Pbeta = cv_sum * gamma / v * au2gpa
+    alpha = Pbeta / b0
+    tmp = 1d0 + gamma * alpha * t
+    Cp = cv_sum * tmp
+    Bs = b0 * tmp
+
+    ! Rest of thermodynamic properties -- note g can be calculated in
+    ! 2 ways: with Fsum from two fits or from quasiharmonic
+    ! formula.... dg is a measure this inaccuracy.
+    ! pbeta = (dp/dT)_V
+    g = f0 + pext * v
+    dg = f0 - f0s - fsum
+
+    ! conversion to output units
+    g = g * ha2kjmol
+    dg = dg * ha2kjmol
+    pext = pext * au2gpa
+    pth = pth * au2gpa
+    psta = psta * au2gpa
+    cp = cp * ha2kjmol * 1000
+    alpha = alpha * 1d5
+    fvib = fvib * ha2kjmol
+    uvib = uvib * ha2kjmol
+    svib = svib * ha2kjmol * 1000
+    cv_vib = cv_vib * ha2kjmol * 1000
+    fel = fel * ha2kjmol
+    uel = uel * ha2kjmol
+    sel = sel * ha2kjmol * 1000
+    cv_el = cv_el * ha2kjmol * 1000
+    fsum = fsum * ha2kjmol
+    usum = usum * ha2kjmol
+    ssum = ssum * ha2kjmol * 1000
+    cv_sum = cv_sum * ha2kjmol * 1000
+
+    ! output properties list -> coordinated with preamble of varbas.f90
+    proplist( 1) = pext
+    proplist( 2) = t
+    proplist( 3) = v
+    proplist( 4) = f0s
+    proplist( 5) = g
+    proplist( 6) = dg
+    proplist( 7) = psta
+    proplist( 8) = pth
+    proplist( 9) = b0
+    proplist(10) = usum
+    proplist(11) = cv_sum
+    proplist(12) = fsum
+    proplist(13) = ssum
+    proplist(14) = theta
+    proplist(15) = gamma
+    proplist(16) = alpha
+    proplist(17) = pbeta
+    proplist(18) = bs
+    proplist(19) = cp
+    proplist(20) = b1
+    proplist(21) = b2
+    proplist(22) = fvib
+    proplist(23) = fel
+    proplist(24) = uvib
+    proplist(25) = uel
+    proplist(26) = svib
+    proplist(27) = sel
+    proplist(28) = cv_vib
+    proplist(29) = cv_el
+
+  end subroutine dyneos_calc_new
 
   ! Write the dgtp file.
   subroutine deltag()
