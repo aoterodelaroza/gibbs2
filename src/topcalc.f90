@@ -534,9 +534,10 @@ contains
   ! Calculate and write the EOS file at the requested temperature and
   ! pressure list.
   subroutine dyneos()
+    use evfunc, only: fv0
     use debye, only: thermal_debye_extended
     use gnuplot_templates, only: gen_allgnu_t, gen_allgnu_p
-    use fit, only: fit_pshift, fitinfo
+    use fit, only: fit_pshift, fitinfo, mmpar, fit_ev
     use varbas, only: nph, ph, mpropout, propfmt, tm_static, tm_externalfvib,&
        tm_debye_extended, nps, plist, nts, tlist, &
        writelevel, nvs, vlist, doerrorbar, propname, vbracket, vdefault
@@ -549,9 +550,10 @@ contains
     character*(mline) :: msg
     character*(mline_fmt) :: fm, fme
     type(fitinfo) :: pfit
-    real*8 :: proplist(mpropout), errlist(mpropout)
+    real*8 :: proplist(mpropout), errlist(mpropout), rms, may
     type(fitpack) :: ft
     logical :: isalloc
+    real*8, allocatable :: xfit(:), yfit(:), ynew(:)
 
     if (writelevel < 1) return
 
@@ -593,116 +595,148 @@ contains
           allocate(ph(i)%dynamic_s(ph(i)%nv,nts))
           allocate(ph(i)%dynamic_cv(ph(i)%nv,nts))
 
+          if (allocated(ph(i)%ffit_npol)) deallocate(ph(i)%ffit_npol)
+          if (allocated(ph(i)%ffit_apol)) deallocate(ph(i)%ffit_apol)
+          allocate(ph(i)%ffit_npol(nts))
+          allocate(ph(i)%ffit_apol(0:mmpar,nts))
+
+          allocate(xfit(ph(i)%nv),yfit(ph(i)%nv),ynew(ph(i)%nv))
           do k = 1, nts
              do j = 1, ph(i)%nv
                 call thermal_debye_extended(ph(i),tlist(k),j,ph(i)%dynamic_fvib(j,k),&
                    ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
              end do
+
+             xfit = ph(i)%v(1:ph(i)%nv)
+             yfit = ph(i)%e + ph(i)%dynamic_fvib(:,k)
+
+             call fit_ev(ph(i)%fit_mode,ph(i)%reg_mode,xfit,yfit,ph(i)%ffit_npol(k),&
+                ph(i)%ffit_apol(:,k),ierr,.false.)
+             if (ierr > 0) then
+                write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
+                call error('dyneos','fit for A(x) not found',faterr)
+             end if
+
+             write (uout,'("# Temperature = ",F12.4)') tlist(k)
+             write (uout,'("# All properties per unit formula.")')
+             write (uout,'("# V(bohr^3)   Fvib(Ha)           S(Ha/K)        CV(Ha/K)")')
+             do j = 1, ph(i)%nv
+                write (uout,'(F10.4,1X,1p,E18.10,1X,E14.6,1X,E14.6)') ph(i)%v(j), ph(i)%dynamic_fvib(j,k),&
+                   ph(i)%dynamic_s(j,k), ph(i)%dynamic_cv(j,k)
+             end do
+             ynew = fv0(ph(i)%fit_mode,ph(i)%v,ph(i)%ffit_npol(k),ph(i)%ffit_apol(:,k))
+             rms = sqrt(sum((ynew - yfit)**2) / real(ph(i)%nv,8))
+             may = sum(abs(yfit)) / real(ph(i)%nv,8)
+             write (uout,'("# RMS(F-fit,Ha) = ",1p,E18.10,"   avg-abs-F(Ha) = ",E18.10)') rms, may
+             write (uout,*)
           end do
-       end if
+          deallocate(xfit,yfit,ynew)
 
-       ! allocate G(T,p), V(T,p) and B(T,p) arrays
-       allocate(ph(i)%gtp(nts,nps), ph(i)%vtp(nts,nps), ph(i)%btp(nts,nps))
-       allocate(ph(i)%didtp(nts,nps))
+       else
+          !!!!! FIX ME !!!!!
 
-       ! fill in the static energy fit
-       ft = ft_null
-       ft%emode = ph(i)%fit_mode
-       ft%nepol = ph(i)%npol
-       ft%epol = ph(i)%cpol
+          ! allocate G(T,p), V(T,p) and B(T,p) arrays
+          allocate(ph(i)%gtp(nts,nps), ph(i)%vtp(nts,nps), ph(i)%btp(nts,nps))
+          allocate(ph(i)%didtp(nts,nps))
 
-       ! Loop over temperatures
-       do j = 1, nts
-          ! fit the total helmholtz free energy on the volume grid
-          call fit_agrid_t(ph(i),tlist(j),j,ft%napol,ft%apol,ft%amode,ierr,.true.,.true.,.true.,pfit)
-          if (ierr > 0) then
-             write (uout,'(" T = ",F12.4," P = ",F12.4,"")') tlist(j), 0d0
-             call error('dyneos','fit for A(x) not found',faterr)
-          end if
+          ! fill in the static energy fit
+          ft = ft_null
+          ft%emode = ph(i)%fit_mode
+          ft%nepol = ph(i)%npol
+          ft%epol = ph(i)%cpol
 
-          ! fit the vibrational entropy on the volume grid
-          call fit_sgrid_t(ph(i),tlist(j),j,ft%nspol,ft%spol,ft%smode,ierr,.true.,.true.)
-          if (ierr > 0) then
-             write (uout,'(" T = ",F12.4," P = ",F12.4,"")') tlist(j), 0d0
-             call error('dyneos','fit for -TS(x) not found',faterr)
-          end if
-
-          ! fit the constant-volume heat capacity on the volume grid
-          if (ph(i)%tmodel == tm_externalfvib) then
-             call fit_cvgrid_t(ph(i),tlist(j),j,ft%ncvpol,ft%cvpol,ft%cvmode,ierr)
+          ! Loop over temperatures
+          do j = 1, nts
+             ! fit the total helmholtz free energy on the volume grid
+             call fit_agrid_t(ph(i),tlist(j),j,ft%napol,ft%apol,ft%amode,ierr,.true.,.true.,.true.,pfit)
              if (ierr > 0) then
                 write (uout,'(" T = ",F12.4," P = ",F12.4,"")') tlist(j), 0d0
-                call error('dyneos','fit for Cv(x) not found',faterr)
-             end if
-          end if
-
-          ! sum the pV term corresponding to each pressure and calculate
-          ! the rest of properties, from min(G): etc(p,T).
-          do k = 1, nps
-             ! equilibrium volume (p,T)
-             call fit_pshift(ft%amode,ph(i)%v,plist(k),ft%napol,ft%apol,v,b,e,g,ierr)
-             if (ierr > 0 .or..not.is_dyn_v_in(ph(i),v)) then
-                write (msg,'(" T = ",F10.2," P = ",F10.2,", G minimum not found, skipping.")') &
-                   tlist(j), plist(k)
-                call error('dyneos',msg,warning)
-                ph(i)%didtp(j,k) = .false.
-                ph(i)%gtp(j,k) = 0d0
-                ph(i)%vtp(j,k) = 0d0
-                ph(i)%btp(j,k) = 0d0
-                cycle
+                call error('dyneos','fit for A(x) not found',faterr)
              end if
 
-             call dyneos_outprop(ph(i),v,tlist(j),j,plist(k),ft,pfit,proplist,errlist)
-             write (lu,fm) proplist
-             if (pfit%nfit > 0 .and. doerrorbar) then
-                write (lu,fme) "e", errlist
+             ! fit the vibrational entropy on the volume grid
+             call fit_sgrid_t(ph(i),tlist(j),j,ft%nspol,ft%spol,ft%smode,ierr,.true.,.true.)
+             if (ierr > 0) then
+                write (uout,'(" T = ",F12.4," P = ",F12.4,"")') tlist(j), 0d0
+                call error('dyneos','fit for -TS(x) not found',faterr)
              end if
 
-             ! coordinated with preamble of varbas.f90
-             ph(i)%didtp(j,k) = .true.
-             ph(i)%gtp(j,k) = proplist(5) ! G(T,p)
-             ph(i)%vtp(j,k) = proplist(3) ! V(T,p)
-             ph(i)%btp(j,k) = proplist(9) ! BT(T,p)
-          end do
-          write (lu,'(/)')
-
-          if (.not.vdefault) then
-             ! if this was a "volume input", use the volumes for this particular phase
-             isalloc = allocated(vlist)
-             if (.not.isalloc) then
-                nvs = ph(i)%nv
-                allocate(vlist(nvs))
-                vlist = ph(i)%v(1:ph(i)%nv)
+             ! fit the constant-volume heat capacity on the volume grid
+             if (ph(i)%tmodel == tm_externalfvib) then
+                call fit_cvgrid_t(ph(i),tlist(j),j,ft%ncvpol,ft%cvpol,ft%cvmode,ierr)
+                if (ierr > 0) then
+                   write (uout,'(" T = ",F12.4," P = ",F12.4,"")') tlist(j), 0d0
+                   call error('dyneos','fit for Cv(x) not found',faterr)
+                end if
              end if
 
-             ! (V,T) properties
-             do k = 1, nvs
-                ! check volume is inside the known region
-                call vbracket(ph(i),vlist(k),id,.true.)
-                if (id == 0) then
-                   write (msg,'(" T = ",F10.2," V = ",F12.4,", volume out of known region.")') &
-                      tlist(j), vlist(k)
+             ! sum the pV term corresponding to each pressure and calculate
+             ! the rest of properties, from min(G): etc(p,T).
+             do k = 1, nps
+                ! equilibrium volume (p,T)
+                call fit_pshift(ft%amode,ph(i)%v,plist(k),ft%napol,ft%apol,v,b,e,g,ierr)
+                if (ierr > 0 .or..not.is_dyn_v_in(ph(i),v)) then
+                   write (msg,'(" T = ",F10.2," P = ",F10.2,", G minimum not found, skipping.")') &
+                      tlist(j), plist(k)
                    call error('dyneos',msg,warning)
+                   ph(i)%didtp(j,k) = .false.
+                   ph(i)%gtp(j,k) = 0d0
+                   ph(i)%vtp(j,k) = 0d0
+                   ph(i)%btp(j,k) = 0d0
                    cycle
                 end if
 
-                call dyneos_outprop(ph(i),vlist(k),tlist(j),j,undef,ft,pfit,proplist,errlist)
+                call dyneos_outprop(ph(i),v,tlist(j),j,plist(k),ft,pfit,proplist,errlist)
                 write (lu,fm) proplist
                 if (pfit%nfit > 0 .and. doerrorbar) then
                    write (lu,fme) "e", errlist
                 end if
+
+                ! coordinated with preamble of varbas.f90
+                ph(i)%didtp(j,k) = .true.
+                ph(i)%gtp(j,k) = proplist(5) ! G(T,p)
+                ph(i)%vtp(j,k) = proplist(3) ! V(T,p)
+                ph(i)%btp(j,k) = proplist(9) ! BT(T,p)
              end do
              write (lu,'(/)')
 
-             ! clean up if this was a "volume input" command
-             if (.not.isalloc) then
-                deallocate(vlist)
-                nvs = 0
-             endif
-          end if
-       end do
-       write (lu,'(/)')
+             if (.not.vdefault) then
+                ! if this was a "volume input", use the volumes for this particular phase
+                isalloc = allocated(vlist)
+                if (.not.isalloc) then
+                   nvs = ph(i)%nv
+                   allocate(vlist(nvs))
+                   vlist = ph(i)%v(1:ph(i)%nv)
+                end if
 
+                ! (V,T) properties
+                do k = 1, nvs
+                   ! check volume is inside the known region
+                   call vbracket(ph(i),vlist(k),id,.true.)
+                   if (id == 0) then
+                      write (msg,'(" T = ",F10.2," V = ",F12.4,", volume out of known region.")') &
+                         tlist(j), vlist(k)
+                      call error('dyneos',msg,warning)
+                      cycle
+                   end if
+
+                   call dyneos_outprop(ph(i),vlist(k),tlist(j),j,undef,ft,pfit,proplist,errlist)
+                   write (lu,fm) proplist
+                   if (pfit%nfit > 0 .and. doerrorbar) then
+                      write (lu,fme) "e", errlist
+                   end if
+                end do
+                write (lu,'(/)')
+
+                ! clean up if this was a "volume input" command
+                if (.not.isalloc) then
+                   deallocate(vlist)
+                   nvs = 0
+                endif
+             end if
+          end do
+          write (lu,'(/)')
+       end if
     end do
     call fclose(lu)
 

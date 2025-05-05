@@ -76,6 +76,9 @@ module varbas
      real*8, allocatable :: dynamic_s(:,:) ! S(V,T)
      real*8, allocatable :: dynamic_cv(:,:) ! CV(V,T)
 
+     integer, allocatable :: ffit_npol(:)  ! number of coefficients for F(V;T) fit
+     real*8, allocatable :: ffit_apol(:,:) ! coefficients for F(V;T) fit
+
      ! scaling
      integer :: scaltype
      real*8 :: vscal, bscal
@@ -266,7 +269,7 @@ module varbas
   logical :: doefit       !< write input and fitted energy?
   logical :: doplotdh     !< write static dH plot?
   logical :: phonsplin    !< use splines to fit phonon DOS?
-  integer :: writelevel   !< 0 - nothing ; 1 - eos only ; 2 - all
+  integer :: writelevel   !< 0 - nothing ; 1 - eos only ; 2 - all; 3 - debug
   logical :: quiet        !< if true, do not print timestamps
 
   ! private functions
@@ -331,6 +334,9 @@ contains
        else if (equal(argv(i)//null,"-e"//null) .or. equal(argv(i)//null,"--eos"//null)) then
           writelevel = 1
 
+       else if (equal(argv(i)//null,"-g"//null) .or. equal(argv(i)//null,"--debug"//null)) then
+          writelevel = 3
+
        else if (equal(argv(i)//null,"-b"//null) .or. equal(argv(i)//null,"--errorbar"//null)) then
           doerrorbar = .true.
 
@@ -374,6 +380,10 @@ contains
     write (uout,'(" -e --eos")')
     write (uout,'("         Same as -n, but the .eos and .eos_static files are written.")')
     write (uout,'("         (SET WRITELEVEL 1)")')
+    write (uout,'("")')
+    write (uout,'(" -g --debug")')
+    write (uout,'("         Write everything plus extra information for debugging the program.")')
+    write (uout,'("         (SET WRITELEVEL 3)")')
     write (uout,'("")')
     write (uout,'(" -b --errorbar")')
     write (uout,'("         Calculate and output the error bars for each thermodynamic quantity. ")')
