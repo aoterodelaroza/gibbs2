@@ -598,8 +598,7 @@ contains
           ! CV, in the low temperature limit: CV -> 0
           if (x <= 0.5 * lhuge) then
              ex = exp(x)
-             CVein = CVein + p%tde_cein(i,iv) * vfree * pckbau * &
-                x**2 * ex / (ex - 1d0)**2
+             CVein = CVein + p%tde_cein(i,iv) * vfree * pckbau * x**2 * ex / (ex - 1d0)**2
           end if
           sumc = sumc + p%tde_cein(i,iv)
        end do
