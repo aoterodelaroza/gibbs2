@@ -535,25 +535,25 @@ contains
   ! pressure list.
   subroutine dyneos()
     use evfunc, only: fv0
-    use debye, only: thermal_debye_extended
+    use debye, only: thermal_debye_extended, thermal_qha
     use gnuplot_templates, only: gen_allgnu_t, gen_allgnu_p
     use fit, only: fit_pshift, fitinfo, mmpar, fit_ev
     use varbas, only: nph, ph, mpropout, propfmt, tm_static, tm_externalfvib,&
-       tm_debye_extended, nps, plist, nts, tlist, &
+       tm_debye_extended, tm_qhafull, nps, plist, nts, tlist, &
        writelevel, nvs, vlist, doerrorbar, propname, vbracket, vdefault
     use tools, only: error, leng, fopen, fclose
     use param, only: mline, mline_fmt, uout, format_string, format_string_header, fileroot,&
        iowrite, warning, faterr, null, undef
     integer :: lu
     integer :: i, j, k, ierr, id
-    real*8 :: v, b, e, g
+    real*8 :: v, b, e, g, dum
     character*(mline) :: msg
     character*(mline_fmt) :: fm, fme
     type(fitinfo) :: pfit
     real*8 :: proplist(mpropout), errlist(mpropout), rms, may
     type(fitpack) :: ft
     logical :: isalloc
-    real*8, allocatable :: xfit(:), yfit(:), ynew(:)
+    real*8, allocatable :: xfit(:), yfit(:), ynew(:), f0(:)
 
     if (writelevel < 1) return
 
@@ -587,7 +587,7 @@ contains
        fme = format_string(propfmt(0:mpropout),0)
 
        ! calculate fvib, S, CV on the volume and temperature grid
-       if (ph(i)%tmodel == tm_debye_extended) then
+       if (ph(i)%tmodel == tm_debye_extended .or.ph(i)%tmodel == tm_qhafull) then
           if (allocated(ph(i)%dynamic_fvib)) deallocate(ph(i)%dynamic_fvib)
           if (allocated(ph(i)%dynamic_s)) deallocate(ph(i)%dynamic_s)
           if (allocated(ph(i)%dynamic_cv)) deallocate(ph(i)%dynamic_cv)
@@ -608,12 +608,27 @@ contains
           allocate(ph(i)%cvfit_npol(nts))
           allocate(ph(i)%cvfit_apol(0:mmpar,nts))
 
+          ! calculate zero-point energies
+          allocate(f0(ph(i)%nv))
+          do j = 1, ph(i)%nv
+             if (ph(i)%tmodel == tm_debye_extended) then
+                call thermal_debye_extended(ph(i),0d0,j,f0(j),dum,dum)
+             elseif (ph(i)%tmodel == tm_qhafull) then
+                call thermal_qha(ph(i),0d0,j,f0(j),dum,dum)
+             end if
+          end do
+
           allocate(xfit(ph(i)%nv),yfit(ph(i)%nv),ynew(ph(i)%nv))
           do k = 1, nts
              ! calculate thermodynamic properties on the (V,T) grid
              do j = 1, ph(i)%nv
-                call thermal_debye_extended(ph(i),tlist(k),j,ph(i)%dynamic_fvib(j,k),&
-                   ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
+                if (ph(i)%tmodel == tm_debye_extended) then
+                   call thermal_debye_extended(ph(i),tlist(k),j,ph(i)%dynamic_fvib(j,k),&
+                      ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
+                elseif (ph(i)%tmodel == tm_qhafull) then
+                   call thermal_qha(ph(i),tlist(k),j,ph(i)%dynamic_fvib(j,k),&
+                      ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
+                end if
              end do
 
              ! print out the results
@@ -623,7 +638,7 @@ contains
              do j = 1, ph(i)%nv
                 write (uout,'(F10.4,1X,1p,3(E18.10,1X),E14.6,1X,E14.6)') ph(i)%v(j), &
                    ph(i)%e(j) + ph(i)%dynamic_fvib(j,k), &
-                   ph(i)%dynamic_fvib(j,k), ph(i)%dynamic_fvib(j,k)-ph(i)%f0(j),&
+                   ph(i)%dynamic_fvib(j,k), ph(i)%dynamic_fvib(j,k)-f0(j),&
                    ph(i)%dynamic_s(j,k), ph(i)%dynamic_cv(j,k)
              end do
 
@@ -669,7 +684,7 @@ contains
              may = sum(abs(yfit)) / real(ph(i)%nv,8)
              write (uout,'("# CV(V) fit: RMS(Ha/K) = ",1p,E18.10,"   avg-abs(Ha/K) = ",E18.10)') rms, may
           end do
-          deallocate(xfit,yfit,ynew)
+          deallocate(xfit,yfit,ynew,f0)
 
           ! allocate G(T,p), V(T,p) and B(T,p) arrays
           if (allocated(ph(i)%gtp)) deallocate(ph(i)%gtp)
@@ -972,10 +987,8 @@ contains
           gamma = (cv_ac * gam_ac + cv_op * gam_op) / cv_vib
        end if
     case(tm_qhafull)
-       ! use full phonon spectra at given V by linear interpolation
-       ! then, gamma = V / Cv * (ds/dV)_T
-       ! the region below tlim_gamma is avoided
-       call thermalphon(p,t,v,uvib,cv_vib,fvib,svib,cv_lowt)
+       write (*,*) "deprecated: you should not be here!"
+       stop 1
 
     case(tm_externalfvib)
        fvib = f0 - f0s
@@ -1159,12 +1172,10 @@ contains
   ! Calculate properties at a given volume and temperature.
   subroutine dyneos_calc_new(p,v,it,proplist)
     use evfunc, only: fv0, fv1, fv2, fv3, fv4
-    use debye, only: tlim_gamma, cvlim, debeins, thermalphon, thermal, get_thetad
-    use varbas, only: mpropout, phase, tm_qhafull, tm_debye_input, tm_debye, tm_debyegrun,&
-       tm_debye_poisson_input, tm_debye_einstein, tm_debye_einstein_v, tm_externalfvib,&
-       em_pol4, em_sommerfeld, em_no, ftsel_fitmode, vbracket, tlist
+    use debye, only: tlim_gamma, debeins, thermalphon, thermal, get_thetad
+    use varbas, only: mpropout, phase, vbracket, tlist
     use tools, only: error
-    use param, only: faterr, au2gpa, ha2kjmol, pi, pckbau, pisquare, twothird
+    use param, only: au2gpa, ha2kjmol
     type(phase), intent(in) :: p
     real*8, intent(in) :: v
     integer, intent(in) :: it
@@ -1172,17 +1183,15 @@ contains
 
     real*8 :: t
     real*8 :: f0, f1, f2, f3, f4, b0, b1, b2, tmp
-    real*8 :: f0s, f1s, f2s, f3s, b0s, b1s, g
-    real*8 :: nef, ef, theta
-    real*8 :: pbeta, alpha, cp, bs, D, Derr
-    real*8 :: cv_ac, cv_op, cv_lowt
+    real*8 :: f0s, f1s, f2s, f3s, g
+    real*8 :: theta
+    real*8 :: pbeta, alpha, cp, bs
+    real*8 :: cv_lowt
     real*8 :: fvib, svib, uvib, cv_vib
-    real*8 :: fel, sel, uel, cv_el, rdum
+    real*8 :: fel, sel, uel, cv_el
     real*8 :: fsum, ssum, usum, cv_sum
-    real*8 :: gam_ac, gam_op, gamma
+    real*8 :: gamma
     real*8 :: pext, psta, pth, dg, mtsvib
-    integer :: id
-    real*8 :: auxcpol(0:mmpar)
 
     ! temperature
     t = tlist(it)
@@ -1408,18 +1417,22 @@ contains
   subroutine interpolate()
     use evfunc, only: fv1
     use fit, only: fit_pshift
-    use varbas, only: nph, ph, nps, plist, nts, tlist, writelevel, tm_static
+    use varbas, only: nph, ph, nps, plist, nts, tlist, writelevel, tm_static,&
+       tm_debye_extended, tm_qhafull
     use tools, only: error, leng, fopen, fclose, realloc
     use param, only: mline_fmt, uout, format_string, format_string_header, fileroot, iowrite, &
-       warning, null, au2gpa, ifmt_v, ifmt_p, ifmt_t, ifmt_interp
+       warning, faterr, null, au2gpa, ifmt_v, ifmt_p, ifmt_t, ifmt_interp
     integer :: i, j, k
-    integer :: mint, n, lu
+    integer :: mint, n, lu, it
     real*8 :: v, p, t, e, b, g, fac, f1
     real*8, allocatable :: fi(:)
     integer, allocatable :: ifm(:)
     character*(mline_fmt) :: fm1, fms
     integer :: napol, ierr, imode
     real*8 :: apol(0:mmpar)
+    real*8, allocatable :: xfit(:), yfit(:)
+    integer :: ffit_npol
+    real*8, allocatable :: ffit_apol(:)
 
     if (writelevel < 2) return
 
@@ -1498,7 +1511,28 @@ contains
                 call error('dyneos','minimum of static H not found',warning)
                 cycle
              end if
+          else if (ph(i)%tmodel == tm_debye_extended .or. ph(i)%tmodel == tm_qhafull) then
+             p = fint(j)
+             t = fint(j+1)
+             j = j + 1
+
+             ! check that this is a known temperature
+             it = 0
+             do k = 1, nts
+                if (abs(tlist(k) - t) < 1d-3) then
+                   it = k
+                   exit
+                end if
+             end do
+             if (it == 0) &
+                call error('interpolate','Interpolation temperature must be included in the temperature list',faterr)
+
+             ! get the volume
+             call fit_pshift(ph(i)%fit_mode,ph(i)%v,p,ph(i)%ffit_npol(it),&
+                ph(i)%ffit_apol(:,it),v,b,e,g,ierr)
+
           else if (ph(i)%tmodel /= tm_static) then
+             !!!! xxxx FIX ME !!!!!
              p = fint(j)
              t = fint(j+1)
              j = j + 1
@@ -1776,7 +1810,7 @@ contains
     use debye, only: thermalphon, debeins, thermal
     use evfunc, only: fv0
     use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_debye_einstein_v,&
-       tm_externalfvib, em_pol4, em_sommerfeld, ftsel_fitmode
+       tm_externalfvib, em_pol4, em_sommerfeld, ftsel_fitmode, tm_debye_extended
     use fit, only: fit_ev, fitinfo
     use tools, only: error
     use param, only: pi, pckbau, pisquare, twothird, faterr
@@ -1820,8 +1854,9 @@ contains
     if (dovib) then
        do i = 1, p%nv
           if (.not.p%dyn_active(i)) cycle
-          if (p%tmodel == tm_qhafull) then
-             call thermalphon(p,T,p%v(i),uvib,cv,aux(i),dum,cv2)
+          if (p%tmodel == tm_qhafull .or. p%tmodel == tm_debye_extended) then
+             write (*,*) "deprecated: you should not be here!"
+             stop 1
           else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
              call debeins(p,p%td(i),T,p%v(i),D,Derr,uvib,cv,aux(i),dum,cv_ac,cv_op)
           else if (p%tmodel == tm_externalfvib) then
@@ -1874,7 +1909,7 @@ contains
     use debye, only: thermalphon, debeins, thermal
     use fit, only: fitt_polygibbs
     use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_debye_einstein_v,&
-       tm_externalfvib, em_pol4, em_sommerfeld, ftsel_fitmode
+       tm_externalfvib, em_pol4, em_sommerfeld, ftsel_fitmode, tm_debye_extended
     use evfunc, only: fv0
     use tools, only: error
     use param, only: pi, pckbau, pisquare, twothird, faterr
@@ -1906,8 +1941,9 @@ contains
        ! vibrational contribution
        do i = 1, p%nv
           if (.not.p%dyn_active(i)) cycle
-          if (p%tmodel == tm_qhafull) then
-             call thermalphon(p,T,p%v(i),uvib,cv,dum,aux(i),cv2)
+          if (p%tmodel == tm_qhafull .or. p%tmodel == tm_debye_extended) then
+             write (*,*) "deprecated: you should not be here!"
+             stop 1
           else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
              call debeins(p,p%td(i),T,p%v(i),D,Derr,uvib,cv,dum,aux(i),cv_ac,cv_op)
           else if (p%tmodel == tm_externalfvib) then

@@ -21,7 +21,7 @@ module debye
 
   ! public
   public :: fill_thetad, get_thetad
-  public :: thermal, debeins, thermalphon, thermal_debye_extended
+  public :: thermal, debeins, thermalphon, thermal_qha, thermal_debye_extended
 
   ! if temperature is lower, then gamma(t) = gamma(tlim)
   real*8, parameter, public :: tlim_gamma = 1d0 + 1d-6
@@ -46,7 +46,7 @@ contains
     character*(mline) :: msg
     integer :: idx, idxx(1)
     integer :: ierr
-    character*(mline_fmt) :: fm, fm2
+    character*(mline_fmt) :: fm
     real*8 :: gamma, td, td0, f2s, f3s
     real*8 :: fx, gx, hx, poi, pofunc
 
@@ -527,6 +527,72 @@ contains
 
   end subroutine thermalphon
 
+  ! For phase p, calculate the Helmholtz free energy, entropy, and
+  ! CV at temperature T and the volume given by index iv using
+  ! the full quasiharmonic approximation with phonon DOS.
+  subroutine thermal_qha(p,T,iv,Fvib,S,CV)
+    use varbas, only: phase
+    use tools, only: quad1
+    use param, only: pckbau
+    type(phase), intent(in) :: p
+    real*8, intent(in) :: T
+    integer, intent(in) :: iv
+    real*8, intent(out) :: Fvib, S, CV
+
+    integer :: nf
+    real*8 :: step, kt
+    real*8, allocatable :: emfkt(:), aux(:), tmin(:)
+    real*8, allocatable :: l1emfkt(:)
+    integer :: i
+
+    real*8, parameter :: logtiny = log(tiny(1d0))
+
+    ! initialize
+    kt = pckbau * T
+
+    ! interpolate the phonon DOS at volume v.
+    ! f = frequencies (Hartree), d = phDOS, on the same grid.
+    nf = size(p%phdos_f,1)
+    step = p%phstep
+
+    ! calculate the minimum temperature
+    allocate(tmin(nf))
+    tmin = -p%phdos_f / (pckbau * logtiny)
+
+    ! calculate emfkt = exp(-omega / (k*T))
+    allocate(emfkt(nf),l1emfkt(nf))
+    where (T < tmin)
+       emfkt = 0d0
+    elsewhere
+       emfkt = exp(-p%phdos_f / kt)
+    end where
+    l1emfkt = log(1d0 - emfkt)
+
+    ! note: frequency = 0 is gone from f(:)
+    allocate(aux(nf))
+
+    ! calculate fvib
+    aux = p%phdos_d(:,1,iv)*(0.5d0 * p%phdos_f + kt * l1emfkt)
+    Fvib = quad1(p%phdos_f,aux,step)
+
+    ! calculate entropy (T < tmin implies aux = 0)
+    where (T < tmin)
+       aux = 0d0
+    elsewhere
+       aux = p%phdos_d(:,1,iv)*(-pckbau * l1emfkt + p%phdos_f/T * emfkt / (1d0 - emfkt))
+    end where
+    S = quad1(p%phdos_f,aux,step)
+
+    ! calculate constant-volume heat capacity (T < tmin implies aux = 0)
+    where (T < tmin)
+       aux = 0d0
+    elsewhere
+       aux = p%phdos_d(:,1,iv) * (pckbau * (p%phdos_f / kt)**2 * emfkt / (1d0 - emfkt)**2)
+    end where
+    CV = quad1(p%phdos_f,aux,step)
+
+  end subroutine thermal_qha
+
   ! Compute Debye extended model vibrational properties (Fvib, S, CV).
   subroutine thermal_debye_extended(p,T,iv,Fvib,S,CV)
     use varbas, only: phase, vfree
@@ -705,7 +771,7 @@ contains
     integer, parameter :: maxnl=100
 
     real*8 :: y, debye0, summ, xabs
-    integer :: nl, i
+    integer :: nl
     real*8 :: x(maxnl), w(maxnl)
 
     debye_d3 = 0d0

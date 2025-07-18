@@ -46,16 +46,14 @@ program gibbs2
   integer :: argc
   character*(mline) :: argv(marg), optv, sdate, line, line2, word
   character*(mline) :: fileout
-  integer :: ipid, lp, lp2, onps, onts, onvs
+  integer :: lp, lp2, onps, onts, onvs
   integer :: i, j, iph
-  logical :: ok, ok2, ok3, verbose
+  logical :: ok, ok2, ok3
   logical :: callpf, calleout, dothermal
   logical, allocatable :: dodebye(:)
-  integer :: nhouse
   real*8 :: pini, pend, tini, tend, tmaxmin, vini, vend
-  real*8 :: vout_ini, vout_end, vout_step, e0
-  integer :: ierr, isv, onxint, nid
-  real*8 :: adebye, axabs, aen, acv, ahe, aent
+  real*8 :: vout_ini, vout_end, vout_step
+  integer :: isv, onxint, nid
 
   ! initialize
   call param_init()
