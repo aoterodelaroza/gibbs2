@@ -535,11 +535,11 @@ contains
   ! pressure list.
   subroutine dyneos()
     use evfunc, only: fv0
-    use debye, only: thermal_debye_extended, thermal_qha
+    use debye, only: thermal_debye_extended, thermal_qha, thermal
     use gnuplot_templates, only: gen_allgnu_t, gen_allgnu_p
     use fit, only: fit_pshift, fitinfo, mmpar, fit_ev
     use varbas, only: nph, ph, mpropout, propfmt, tm_static, tm_externalfvib,&
-       tm_debye_extended, tm_qhafull, nps, plist, nts, tlist, &
+       nps, plist, nts, tlist, tm_debye_extended, tm_qhafull, tm_debye,&
        writelevel, nvs, vlist, doerrorbar, propname, vbracket, vdefault
     use tools, only: error, leng, fopen, fclose
     use param, only: mline, mline_fmt, uout, format_string, format_string_header, fileroot,&
@@ -587,240 +587,141 @@ contains
        fme = format_string(propfmt(0:mpropout),0)
 
        ! calculate fvib, S, CV on the volume and temperature grid
-       if (ph(i)%tmodel == tm_debye_extended .or.ph(i)%tmodel == tm_qhafull) then
-          if (allocated(ph(i)%dynamic_fvib)) deallocate(ph(i)%dynamic_fvib)
-          if (allocated(ph(i)%dynamic_s)) deallocate(ph(i)%dynamic_s)
-          if (allocated(ph(i)%dynamic_cv)) deallocate(ph(i)%dynamic_cv)
-          allocate(ph(i)%dynamic_fvib(ph(i)%nv,nts))
-          allocate(ph(i)%dynamic_s(ph(i)%nv,nts))
-          allocate(ph(i)%dynamic_cv(ph(i)%nv,nts))
+       if (allocated(ph(i)%dynamic_fvib)) deallocate(ph(i)%dynamic_fvib)
+       if (allocated(ph(i)%dynamic_s)) deallocate(ph(i)%dynamic_s)
+       if (allocated(ph(i)%dynamic_cv)) deallocate(ph(i)%dynamic_cv)
+       allocate(ph(i)%dynamic_fvib(ph(i)%nv,nts))
+       allocate(ph(i)%dynamic_s(ph(i)%nv,nts))
+       allocate(ph(i)%dynamic_cv(ph(i)%nv,nts))
 
-          if (allocated(ph(i)%ffit_npol)) deallocate(ph(i)%ffit_npol)
-          if (allocated(ph(i)%ffit_apol)) deallocate(ph(i)%ffit_apol)
-          if (allocated(ph(i)%tsfit_npol)) deallocate(ph(i)%tsfit_npol)
-          if (allocated(ph(i)%tsfit_apol)) deallocate(ph(i)%tsfit_apol)
-          if (allocated(ph(i)%cvfit_npol)) deallocate(ph(i)%cvfit_npol)
-          if (allocated(ph(i)%cvfit_apol)) deallocate(ph(i)%cvfit_apol)
-          allocate(ph(i)%ffit_npol(nts))
-          allocate(ph(i)%ffit_apol(0:mmpar,nts))
-          allocate(ph(i)%tsfit_npol(nts))
-          allocate(ph(i)%tsfit_apol(0:mmpar,nts))
-          allocate(ph(i)%cvfit_npol(nts))
-          allocate(ph(i)%cvfit_apol(0:mmpar,nts))
+       if (allocated(ph(i)%ffit_npol)) deallocate(ph(i)%ffit_npol)
+       if (allocated(ph(i)%ffit_apol)) deallocate(ph(i)%ffit_apol)
+       if (allocated(ph(i)%tsfit_npol)) deallocate(ph(i)%tsfit_npol)
+       if (allocated(ph(i)%tsfit_apol)) deallocate(ph(i)%tsfit_apol)
+       if (allocated(ph(i)%cvfit_npol)) deallocate(ph(i)%cvfit_npol)
+       if (allocated(ph(i)%cvfit_apol)) deallocate(ph(i)%cvfit_apol)
+       allocate(ph(i)%ffit_npol(nts))
+       allocate(ph(i)%ffit_apol(0:mmpar,nts))
+       allocate(ph(i)%tsfit_npol(nts))
+       allocate(ph(i)%tsfit_apol(0:mmpar,nts))
+       allocate(ph(i)%cvfit_npol(nts))
+       allocate(ph(i)%cvfit_apol(0:mmpar,nts))
 
-          ! calculate zero-point energies
-          allocate(f0(ph(i)%nv))
+       ! calculate zero-point energies
+       allocate(f0(ph(i)%nv))
+       do j = 1, ph(i)%nv
+          if (ph(i)%tmodel == tm_debye_extended) then
+             call thermal_debye_extended(ph(i),0d0,j,f0(j),dum,dum)
+          elseif (ph(i)%tmodel == tm_qhafull) then
+             call thermal_qha(ph(i),0d0,j,f0(j),dum,dum)
+          elseif (ph(i)%tmodel == tm_debye) then
+             call thermal(ph(i)%td(j),0d0,dum,dum,dum,dum,f0(j),dum)
+          else
+             write (*,*) "fixme!"
+             stop 1
+          end if
+       end do
+
+       allocate(xfit(ph(i)%nv),yfit(ph(i)%nv),ynew(ph(i)%nv))
+       do k = 1, nts
+          ! calculate thermodynamic properties on the (V,T) grid
           do j = 1, ph(i)%nv
              if (ph(i)%tmodel == tm_debye_extended) then
-                call thermal_debye_extended(ph(i),0d0,j,f0(j),dum,dum)
+                call thermal_debye_extended(ph(i),tlist(k),j,ph(i)%dynamic_fvib(j,k),&
+                   ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
              elseif (ph(i)%tmodel == tm_qhafull) then
-                call thermal_qha(ph(i),0d0,j,f0(j),dum,dum)
+                call thermal_qha(ph(i),tlist(k),j,ph(i)%dynamic_fvib(j,k),&
+                   ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
+             elseif (ph(i)%tmodel == tm_debye) then
+                call thermal(ph(i)%td(j),tlist(k),dum,dum,dum,&
+                   ph(i)%dynamic_cv(j,k),ph(i)%dynamic_fvib(j,k),ph(i)%dynamic_s(j,k))
              end if
           end do
 
-          allocate(xfit(ph(i)%nv),yfit(ph(i)%nv),ynew(ph(i)%nv))
-          do k = 1, nts
-             ! calculate thermodynamic properties on the (V,T) grid
-             do j = 1, ph(i)%nv
-                if (ph(i)%tmodel == tm_debye_extended) then
-                   call thermal_debye_extended(ph(i),tlist(k),j,ph(i)%dynamic_fvib(j,k),&
-                      ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
-                elseif (ph(i)%tmodel == tm_qhafull) then
-                   call thermal_qha(ph(i),tlist(k),j,ph(i)%dynamic_fvib(j,k),&
-                      ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
-                end if
-             end do
-
-             ! print out the results
-             write (uout,'("# Temperature = ",F12.4)') tlist(k)
-             write (uout,'("# All properties per unit formula.")')
-             write (uout,'("# V(bohr^3)      F(Ha)              Fvib(Ha)         Fvib-F0(Ha)        S(Ha/K)        CV(Ha/K)")')
-             do j = 1, ph(i)%nv
-                write (uout,'(F10.4,1X,1p,3(E18.10,1X),E14.6,1X,E14.6)') ph(i)%v(j), &
-                   ph(i)%e(j) + ph(i)%dynamic_fvib(j,k), &
-                   ph(i)%dynamic_fvib(j,k), ph(i)%dynamic_fvib(j,k)-f0(j),&
-                   ph(i)%dynamic_s(j,k), ph(i)%dynamic_cv(j,k)
-             end do
-
-             ! fit the F(V) as a function of temperature
-             xfit = ph(i)%v(1:ph(i)%nv)
-             yfit = ph(i)%e + ph(i)%dynamic_fvib(:,k)
-             call fit_ev(ph(i)%fit_mode,ph(i)%reg_mode,xfit,yfit,ph(i)%ffit_npol(k),&
-                ph(i)%ffit_apol(:,k),ierr,.false.)
-             if (ierr > 0) then
-                write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
-                call error('dyneos','fit for F(V;T) not found',faterr)
-             end if
-             ynew = fv0(ph(i)%fit_mode,ph(i)%v,ph(i)%ffit_npol(k),ph(i)%ffit_apol(:,k))
-             rms = sqrt(sum((ynew - yfit)**2) / real(ph(i)%nv,8))
-             may = sum(abs(yfit)) / real(ph(i)%nv,8)
-             write (uout,'("# F(V) fit: RMS(Ha) = ",1p,E18.10,"   avg-abs(Ha) = ",E18.10)') rms, may
-
-             ! fit -T*S(V) as a function of temperature
-             xfit = ph(i)%v(1:ph(i)%nv)
-             yfit = -tlist(k) * ph(i)%dynamic_s(:,k)
-             call fit_ev(ph(i)%sfit_mode,ph(i)%reg_mode,xfit,yfit,ph(i)%tsfit_npol(k),&
-                ph(i)%tsfit_apol(:,k),ierr,.false.)
-             if (ierr > 0) then
-                write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
-                call error('dyneos','fit for -T*S(V;T) not found',faterr)
-             end if
-             ynew = fv0(ph(i)%sfit_mode,ph(i)%v,ph(i)%tsfit_npol(k),ph(i)%tsfit_apol(:,k))
-             rms = sqrt(sum((ynew - yfit)**2) / real(ph(i)%nv,8))
-             may = sum(abs(yfit)) / real(ph(i)%nv,8)
-             write (uout,'("# -T*S(V) fit: RMS(Ha) = ",1p,E18.10,"   avg-abs(Ha) = ",E18.10)') rms, may
-
-             ! fit CV(V) as a function of temperature
-             xfit = ph(i)%v(1:ph(i)%nv)
-             yfit = ph(i)%dynamic_cv(:,k)
-             call fit_ev(ph(i)%cvfit_mode,ph(i)%reg_mode,xfit,yfit,ph(i)%cvfit_npol(k),&
-                ph(i)%cvfit_apol(:,k),ierr,.false.)
-             if (ierr > 0) then
-                write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
-                call error('dyneos','fit for CV(V;T) not found',faterr)
-             end if
-             ynew = fv0(ph(i)%cvfit_mode,ph(i)%v,ph(i)%cvfit_npol(k),ph(i)%cvfit_apol(:,k))
-             rms = sqrt(sum((ynew - yfit)**2) / real(ph(i)%nv,8))
-             may = sum(abs(yfit)) / real(ph(i)%nv,8)
-             write (uout,'("# CV(V) fit: RMS(Ha/K) = ",1p,E18.10,"   avg-abs(Ha/K) = ",E18.10)') rms, may
-          end do
-          deallocate(xfit,yfit,ynew,f0)
-
-          ! allocate G(T,p), V(T,p) and B(T,p) arrays
-          if (allocated(ph(i)%gtp)) deallocate(ph(i)%gtp)
-          if (allocated(ph(i)%vtp)) deallocate(ph(i)%vtp)
-          if (allocated(ph(i)%btp)) deallocate(ph(i)%btp)
-          allocate(ph(i)%gtp(nts,nps),ph(i)%vtp(nts,nps),ph(i)%btp(nts,nps),ph(i)%didtp(nts,nps))
-          ph(i)%vtp = -1d0
-          ph(i)%vtp = -1d0
-          ph(i)%gtp = 0d0
-          ph(i)%didtp = .false.
-
-          ! calculate the T,p properties
-          do j = 1, nts
-             do k = 1, nps
-                ! find the equilibrium volume at (p,T)
-                call fit_pshift(ph(i)%fit_mode,ph(i)%v,plist(k),ph(i)%ffit_npol(j),&
-                   ph(i)%ffit_apol(:,j),v,b,e,g,ierr)
-                if (ierr > 0) cycle
-
-                ! calculate the rest of the properties
-                call dyneos_calc_new(ph(i),v,j,proplist)
-                write (lu,fm) proplist
-
-                ph(i)%didtp(j,k) = .true.
-                ph(i)%gtp(j,k) = proplist(5) ! G(T,p)
-                ph(i)%vtp(j,k) = proplist(3) ! V(T,p)
-                ph(i)%btp(j,k) = proplist(9) ! BT(T,p)
-             end do
-             write (lu,'(/)')
+          ! print out the results
+          write (uout,'("# Temperature = ",F12.4)') tlist(k)
+          write (uout,'("# All properties per unit formula.")')
+          write (uout,'("# V(bohr^3)      F(Ha)              Fvib(Ha)         Fvib-F0(Ha)        S(Ha/K)        CV(Ha/K)")')
+          do j = 1, ph(i)%nv
+             write (uout,'(F10.4,1X,1p,3(E18.10,1X),E14.6,1X,E14.6)') ph(i)%v(j), &
+                ph(i)%e(j) + ph(i)%dynamic_fvib(j,k), &
+                ph(i)%dynamic_fvib(j,k), ph(i)%dynamic_fvib(j,k)-f0(j),&
+                ph(i)%dynamic_s(j,k), ph(i)%dynamic_cv(j,k)
           end do
 
-       else
-          !!!!! FIX ME !!!!!
+          ! fit the F(V) as a function of temperature
+          xfit = ph(i)%v(1:ph(i)%nv)
+          yfit = ph(i)%e + ph(i)%dynamic_fvib(:,k)
+          call fit_ev(ph(i)%fit_mode,ph(i)%reg_mode,xfit,yfit,ph(i)%ffit_npol(k),&
+             ph(i)%ffit_apol(:,k),ierr,.false.)
+          if (ierr > 0) then
+             write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
+             call error('dyneos','fit for F(V;T) not found',faterr)
+          end if
+          ynew = fv0(ph(i)%fit_mode,ph(i)%v,ph(i)%ffit_npol(k),ph(i)%ffit_apol(:,k))
+          rms = sqrt(sum((ynew - yfit)**2) / real(ph(i)%nv,8))
+          may = sum(abs(yfit)) / real(ph(i)%nv,8)
+          write (uout,'("# F(V) fit: RMS(Ha) = ",1p,E18.10,"   avg-abs(Ha) = ",E18.10)') rms, may
 
-          ! allocate G(T,p), V(T,p) and B(T,p) arrays
-          allocate(ph(i)%gtp(nts,nps), ph(i)%vtp(nts,nps), ph(i)%btp(nts,nps))
-          allocate(ph(i)%didtp(nts,nps))
+          ! fit -T*S(V) as a function of temperature
+          xfit = ph(i)%v(1:ph(i)%nv)
+          yfit = -tlist(k) * ph(i)%dynamic_s(:,k)
+          call fit_ev(ph(i)%sfit_mode,ph(i)%reg_mode,xfit,yfit,ph(i)%tsfit_npol(k),&
+             ph(i)%tsfit_apol(:,k),ierr,.false.)
+          if (ierr > 0) then
+             write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
+             call error('dyneos','fit for -T*S(V;T) not found',faterr)
+          end if
+          ynew = fv0(ph(i)%sfit_mode,ph(i)%v,ph(i)%tsfit_npol(k),ph(i)%tsfit_apol(:,k))
+          rms = sqrt(sum((ynew - yfit)**2) / real(ph(i)%nv,8))
+          may = sum(abs(yfit)) / real(ph(i)%nv,8)
+          write (uout,'("# -T*S(V) fit: RMS(Ha) = ",1p,E18.10,"   avg-abs(Ha) = ",E18.10)') rms, may
 
-          ! fill in the static energy fit
-          ft = ft_null
-          ft%emode = ph(i)%fit_mode
-          ft%nepol = ph(i)%npol
-          ft%epol = ph(i)%cpol
+          ! fit CV(V) as a function of temperature
+          xfit = ph(i)%v(1:ph(i)%nv)
+          yfit = ph(i)%dynamic_cv(:,k)
+          call fit_ev(ph(i)%cvfit_mode,ph(i)%reg_mode,xfit,yfit,ph(i)%cvfit_npol(k),&
+             ph(i)%cvfit_apol(:,k),ierr,.false.)
+          if (ierr > 0) then
+             write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
+             call error('dyneos','fit for CV(V;T) not found',faterr)
+          end if
+          ynew = fv0(ph(i)%cvfit_mode,ph(i)%v,ph(i)%cvfit_npol(k),ph(i)%cvfit_apol(:,k))
+          rms = sqrt(sum((ynew - yfit)**2) / real(ph(i)%nv,8))
+          may = sum(abs(yfit)) / real(ph(i)%nv,8)
+          write (uout,'("# CV(V) fit: RMS(Ha/K) = ",1p,E18.10,"   avg-abs(Ha/K) = ",E18.10)') rms, may
+       end do
+       deallocate(xfit,yfit,ynew,f0)
 
-          ! Loop over temperatures
-          do j = 1, nts
-             ! fit the total helmholtz free energy on the volume grid
-             call fit_agrid_t(ph(i),tlist(j),j,ft%napol,ft%apol,ft%amode,ierr,.true.,.true.,.true.,pfit)
-             if (ierr > 0) then
-                write (uout,'(" T = ",F12.4," P = ",F12.4,"")') tlist(j), 0d0
-                call error('dyneos','fit for A(x) not found',faterr)
-             end if
+       ! allocate G(T,p), V(T,p) and B(T,p) arrays
+       if (allocated(ph(i)%gtp)) deallocate(ph(i)%gtp)
+       if (allocated(ph(i)%vtp)) deallocate(ph(i)%vtp)
+       if (allocated(ph(i)%btp)) deallocate(ph(i)%btp)
+       allocate(ph(i)%gtp(nts,nps),ph(i)%vtp(nts,nps),ph(i)%btp(nts,nps),ph(i)%didtp(nts,nps))
+       ph(i)%vtp = -1d0
+       ph(i)%vtp = -1d0
+       ph(i)%gtp = 0d0
+       ph(i)%didtp = .false.
 
-             ! fit the vibrational entropy on the volume grid
-             call fit_sgrid_t(ph(i),tlist(j),j,ft%nspol,ft%spol,ft%smode,ierr,.true.,.true.)
-             if (ierr > 0) then
-                write (uout,'(" T = ",F12.4," P = ",F12.4,"")') tlist(j), 0d0
-                call error('dyneos','fit for -TS(x) not found',faterr)
-             end if
+       ! calculate the T,p properties
+       do j = 1, nts
+          do k = 1, nps
+             ! find the equilibrium volume at (p,T)
+             call fit_pshift(ph(i)%fit_mode,ph(i)%v,plist(k),ph(i)%ffit_npol(j),&
+                ph(i)%ffit_apol(:,j),v,b,e,g,ierr)
+             if (ierr > 0) cycle
 
-             ! fit the constant-volume heat capacity on the volume grid
-             if (ph(i)%tmodel == tm_externalfvib) then
-                call fit_cvgrid_t(ph(i),tlist(j),j,ft%ncvpol,ft%cvpol,ft%cvmode,ierr)
-                if (ierr > 0) then
-                   write (uout,'(" T = ",F12.4," P = ",F12.4,"")') tlist(j), 0d0
-                   call error('dyneos','fit for Cv(x) not found',faterr)
-                end if
-             end if
+             ! calculate the rest of the properties
+             call dyneos_calc_new(ph(i),v,j,proplist)
+             write (lu,fm) proplist
 
-             ! sum the pV term corresponding to each pressure and calculate
-             ! the rest of properties, from min(G): etc(p,T).
-             do k = 1, nps
-                ! equilibrium volume (p,T)
-                call fit_pshift(ft%amode,ph(i)%v,plist(k),ft%napol,ft%apol,v,b,e,g,ierr)
-                if (ierr > 0 .or..not.is_dyn_v_in(ph(i),v)) then
-                   write (msg,'(" T = ",F10.2," P = ",F10.2,", G minimum not found, skipping.")') &
-                      tlist(j), plist(k)
-                   call error('dyneos',msg,warning)
-                   ph(i)%didtp(j,k) = .false.
-                   ph(i)%gtp(j,k) = 0d0
-                   ph(i)%vtp(j,k) = 0d0
-                   ph(i)%btp(j,k) = 0d0
-                   cycle
-                end if
-
-                call dyneos_outprop(ph(i),v,tlist(j),j,plist(k),ft,pfit,proplist,errlist)
-                write (lu,fm) proplist
-                if (pfit%nfit > 0 .and. doerrorbar) then
-                   write (lu,fme) "e", errlist
-                end if
-
-                ! coordinated with preamble of varbas.f90
-                ph(i)%didtp(j,k) = .true.
-                ph(i)%gtp(j,k) = proplist(5) ! G(T,p)
-                ph(i)%vtp(j,k) = proplist(3) ! V(T,p)
-                ph(i)%btp(j,k) = proplist(9) ! BT(T,p)
-             end do
-             write (lu,'(/)')
-
-             if (.not.vdefault) then
-                ! if this was a "volume input", use the volumes for this particular phase
-                isalloc = allocated(vlist)
-                if (.not.isalloc) then
-                   nvs = ph(i)%nv
-                   allocate(vlist(nvs))
-                   vlist = ph(i)%v(1:ph(i)%nv)
-                end if
-
-                ! (V,T) properties
-                do k = 1, nvs
-                   ! check volume is inside the known region
-                   call vbracket(ph(i),vlist(k),id,.true.)
-                   if (id == 0) then
-                      write (msg,'(" T = ",F10.2," V = ",F12.4,", volume out of known region.")') &
-                         tlist(j), vlist(k)
-                      call error('dyneos',msg,warning)
-                      cycle
-                   end if
-
-                   call dyneos_outprop(ph(i),vlist(k),tlist(j),j,undef,ft,pfit,proplist,errlist)
-                   write (lu,fm) proplist
-                   if (pfit%nfit > 0 .and. doerrorbar) then
-                      write (lu,fme) "e", errlist
-                   end if
-                end do
-                write (lu,'(/)')
-
-                ! clean up if this was a "volume input" command
-                if (.not.isalloc) then
-                   deallocate(vlist)
-                   nvs = 0
-                endif
-             end if
+             ph(i)%didtp(j,k) = .true.
+             ph(i)%gtp(j,k) = proplist(5) ! G(T,p)
+             ph(i)%vtp(j,k) = proplist(3) ! V(T,p)
+             ph(i)%btp(j,k) = proplist(9) ! BT(T,p)
           end do
           write (lu,'(/)')
-       end if
+       end do
     end do
     call fclose(lu)
 
@@ -1511,7 +1412,7 @@ contains
                 call error('dyneos','minimum of static H not found',warning)
                 cycle
              end if
-          else if (ph(i)%tmodel == tm_debye_extended .or. ph(i)%tmodel == tm_qhafull) then
+          else if (ph(i)%tmodel /= tm_static) then
              p = fint(j)
              t = fint(j+1)
              j = j + 1
@@ -1530,21 +1431,6 @@ contains
              ! get the volume
              call fit_pshift(ph(i)%fit_mode,ph(i)%v,p,ph(i)%ffit_npol(it),&
                 ph(i)%ffit_apol(:,it),v,b,e,g,ierr)
-
-          else if (ph(i)%tmodel /= tm_static) then
-             !!!! xxxx FIX ME !!!!!
-             p = fint(j)
-             t = fint(j+1)
-             j = j + 1
-
-             call fit_agrid_t(ph(i),t,0,napol,apol,imode,ierr,.true.,.true.,.true.)
-             call fit_pshift(imode,ph(i)%v,p,napol,apol,v,b,e,g,ierr)
-             if (ierr > 0) then
-                write (uout,'(" Temperature = ",F12.4)') t
-                write (uout,'(" Pressure = ",F12.4)') p
-                call error('dyneos','minimum of G(x) not found',warning)
-                cycle
-             end if
           else
              cycle
           end if
@@ -1580,7 +1466,7 @@ contains
   ! Apply the empirical energy correction.
   subroutine eshift_vexp()
     use evfunc, only: fv0, fv1, fv2
-    use debye, only: fill_thetad, thermal_debye_extended, thermal_qha
+    use debye, only: fill_thetad, thermal_debye_extended, thermal_qha, thermal
     use fit, only: fit_ev, fit_pshift
     use varbas, only: nph, ph, scal_bpscal, scal_apbaf, scal_pshift, scal_use, scal_noscal, &
        tm_debyegrun, tm_debye, tm_debye_einstein, tm_debye_einstein_v, phase_checkfiterr,&
@@ -1600,9 +1486,8 @@ contains
     real*8 :: fa, fb, qfa, qfb, qfx
     real*8 :: psta_vexpt, pth_vexpt, bsta_vexpt
     real*8 :: bt_vexpt, bpobj
-    real*8 :: vold
-    real*8, allocatable :: xfit(:), yfit(:), yaux(:)
-
+    real*8 :: vold, dum
+    real*8, allocatable :: xfit(:), yfit(:)
 
     real*8, parameter :: vcycle = 1d-7
     integer, parameter :: miter = 20
@@ -1646,36 +1531,32 @@ contains
        ! fill the debye temperature, for debye models
        call fill_thetad(ph(i),.false.)
 
-       if (ph(i)%tmodel == tm_debye_extended .or. ph(i)%tmodel == tm_qhafull) then
-          ! run the fit for the EEC temperature
-          allocate(xfit(ph(i)%nv),yfit(ph(i)%nv),yaux(ph(i)%nv))
-          xfit = ph(i)%v(1:ph(i)%nv)
+       ! reserve space to run the fit for the EEC temperature
+       if (allocated(xfit)) deallocate(xfit)
+       if (allocated(yfit)) deallocate(yfit)
+       allocate(xfit(ph(i)%nv),yfit(ph(i)%nv))
+       xfit = ph(i)%v(1:ph(i)%nv)
 
-          ! calculate thermodynamic properties on the (V,T) grid
-          do j = 1, ph(i)%nv
-             if (ph(i)%tmodel == tm_debye_extended) then
-                call thermal_debye_extended(ph(i),ph(i)%eec_t,j,yfit(j),yaux(j),yaux(j))
-             elseif (ph(i)%tmodel == tm_qhafull) then
-                call thermal_qha(ph(i),ph(i)%eec_t,j,yfit(j),yaux(j),yaux(j))
-             end if
-          end do
-          yfit = ph(i)%e + yfit
-
-          ! fit the F(V) as a function of temperature
-          call fit_ev(ph(i)%fit_mode,ph(i)%reg_mode,xfit,yfit,napol,apol,ierr,.false.)
-          if (ierr > 0) then
-             write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
-             call error('dyneos','fit for F(V;T) not found',faterr)
+       ! calculate thermodynamic properties on the (V,T) grid
+       do j = 1, ph(i)%nv
+          if (ph(i)%tmodel == tm_debye_extended) then
+             call thermal_debye_extended(ph(i),ph(i)%eec_t,j,yfit(j),dum,dum)
+          elseif (ph(i)%tmodel == tm_qhafull) then
+             call thermal_qha(ph(i),ph(i)%eec_t,j,yfit(j),dum,dum)
+          elseif (ph(i)%tmodel == tm_debye) then
+             call thermal(ph(i)%td(j),ph(i)%eec_t,dum,dum,dum,dum,yfit(j),dum)
           end if
-          call fit_pshift(ph(i)%fit_mode,ph(i)%v,ph(i)%eec_p,napol,apol(0:napol),v0t,b0t,e0t,g0t,ierr)
-          imode = ph(i)%fit_mode
-       else
-          !!!! xxxx FIX ME !!!!
+       end do
+       yfit = ph(i)%e + yfit
 
-          ! find v0, b0 and g0 at temperature t0
-          call fit_agrid_t(ph(i),ph(i)%eec_t,0,napol,apol,imode,ierr,.true.,.true.,.true.)
-          call fit_pshift(imode,ph(i)%v,ph(i)%eec_p,napol,apol,v0t,b0t,e0t,g0t,ierr)
+       ! fit the F(V) as a function of temperature
+       call fit_ev(ph(i)%fit_mode,ph(i)%reg_mode,xfit,yfit,napol,apol,ierr,.false.)
+       if (ierr > 0) then
+          write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
+          call error('dyneos','fit for F(V;T) not found',faterr)
        end if
+       call fit_pshift(ph(i)%fit_mode,ph(i)%v,ph(i)%eec_p,napol,apol(0:napol),v0t,b0t,e0t,g0t,ierr)
+       imode = ph(i)%fit_mode
        if (ierr > 0) then
           write (msg,'("Phase ",A,": Can not find minimum of F(V,T). Using NOSCAL.")')&
              trim(adjustl(ph(i)%name(1:leng(ph(i)%name))))
@@ -1828,245 +1709,6 @@ contains
 
     end function qfac
   end subroutine eshift_vexp
-
-  ! For phase p, calculate the fitting coefficients (napol,apol) of
-  ! the Helmholtz free energy at temperature T. iT is the index for
-  ! this temperature from the temperature list (used only in
-  ! externalfvib).  The fitting mode is mode. ierr is the error code.
-  ! If dostatic, add the total energy F. If dovib, add the Fvib to
-  ! F. If doel, add the Fel to F. The fit info, if present, is
-  ! returned in pfit.
-  subroutine fit_agrid_t(p,T,iT,napol,apol,mode,ierr,dostatic,dovib,doel,pfit)
-    use debye, only: thermalphon, debeins, thermal
-    use evfunc, only: fv0
-    use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_debye_einstein_v,&
-       tm_externalfvib, em_pol4, em_sommerfeld, ftsel_fitmode, tm_debye_extended
-    use fit, only: fit_ev, fitinfo
-    use tools, only: error
-    use param, only: pi, pckbau, pisquare, twothird, faterr
-    type(phase), intent(in) :: p
-    real*8, intent(in) :: T
-    integer, intent(in) :: iT
-    integer, intent(out) :: napol
-    real*8, intent(out) :: apol(0:mmpar)
-    integer, intent(out) :: mode
-    integer, intent(out) :: ierr
-    logical, intent(in) :: dostatic, dovib, doel
-    type(fitinfo), intent(out), optional :: pfit
-
-    integer :: i, rnv, iT_
-    real*8 :: uvib, cv, cv2, D, Derr, cv_ac, cv_op
-    real*8 :: realv(p%nv), reala(p%nv), aux(p%nv), dum, ef(p%nv)
-    real*8 :: auxcpol(0:mmpar), dtmin, dt
-
-    real*8 :: externalfvib_deltat = 2 ! 2 K difference to identify an isotherm
-
-    ! consistency check; get the closest temperature if externalfvib
-    iT_ = iT
-    if (iT == 0 .and. p%tmodel == tm_externalfvib) then
-       ! try to find a close temperature
-       dtmin = 1d40
-       do i = 1, p%nfvib_t
-          dt = abs(p%fvib_t(i) - T)
-          if (dt < externalfvib_deltat .and. dt < dtmin) then
-             dtmin = dt
-             iT_ = i
-          end if
-       end do
-       if (iT_ == 0) &
-          call error('fit_agrid_t','The externalfvib model cannot be used at arbitrary T',faterr)
-    end if
-
-    rnv = count(p%dyn_active)
-
-    ! find Fvib(V,T) at the grid volumes and store in aux
-    aux = 0d0
-    if (dovib) then
-       do i = 1, p%nv
-          if (.not.p%dyn_active(i)) cycle
-          if (p%tmodel == tm_qhafull .or. p%tmodel == tm_debye_extended) then
-             write (*,*) "deprecated: you should not be here!"
-             stop 1
-          else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
-             call debeins(p,p%td(i),T,p%v(i),D,Derr,uvib,cv,aux(i),dum,cv_ac,cv_op)
-          else if (p%tmodel == tm_externalfvib) then
-             aux(i) = p%fvib_f(i,iT_)
-          else
-             call thermal(p%td(i),T,D,Derr,uvib,cv,aux(i),dum)
-          end if
-       end do
-    end if
-
-    ! build Helmholtz free energy
-    if (dostatic) then
-       aux = p%e + aux
-    end if
-
-    if (doel .and. T > tsmall_el) then
-       if (p%emodel == em_sommerfeld) then
-          if (p%efree) then
-             ef = (3d0 * pisquare * p%nelec / p%v)**twothird / 2d0
-          else
-             ef = 3d0 / 2d0 * p%nelec / p%nefermi
-          end if
-          aux = aux - pi**2 / 2d0 * pckbau**2 * T * p%nelec / ef
-       else if (p%emodel == em_pol4) then
-          do i = 1, p%nv
-             auxcpol = 0d0
-             auxcpol(1:4) = p%fel_cpol(1:4,i)
-             aux(i) = aux(i) + fv0(ftsel_fitmode,T,6,auxcpol)
-          end do
-       end if
-    end if
-
-    ! apply mask to remove points with negative frequencies
-    realv(1:rnv) = pack(p%v,p%dyn_active)
-    reala(1:rnv) = pack(aux,p%dyn_active)
-
-    ! Numerical fit -> napol and apol
-    call fit_ev(p%fit_mode, p%reg_mode, realv(1:rnv), reala(1:rnv), napol, apol,&
-       ierr, .false., pfit=pfit)
-    mode = p%fit_mode
-
-  end subroutine fit_agrid_t
-
-  ! For phase p, calculate the fitting coefficients (nspol,spol) of
-  ! -T*S at temperature T. iT is the index for this temperature from
-  ! the temperature list (used only in externalfvib). The fitting mode
-  ! is mode. ierr is the error code.  If dovib, add the vibrational
-  ! contribution. If doel, add the electronic contribution.
-  subroutine fit_sgrid_t(p,T,iT,nspol,spol,mode,ierrs,dovib,doel)
-    use debye, only: thermalphon, debeins, thermal
-    use fit, only: fitt_polygibbs
-    use varbas, only: phase, tm_qhafull, tm_debye_einstein, tm_debye_einstein_v,&
-       tm_externalfvib, em_pol4, em_sommerfeld, ftsel_fitmode, tm_debye_extended
-    use evfunc, only: fv0
-    use tools, only: error
-    use param, only: pi, pckbau, pisquare, twothird, faterr
-    type(phase), intent(in) :: p
-    real*8, intent(in) :: T
-    integer, intent(in) :: iT
-    integer, intent(out) :: nspol
-    real*8, intent(out) :: spol(0:mmpar)
-    integer, intent(out) :: mode
-    integer, intent(out) :: ierrs
-    logical, intent(in) :: dovib, doel
-
-    integer :: i, rnv
-    real*8 :: uvib, cv, cv2, D, Derr, cv_ac, cv_op
-    real*8 :: realv(p%nv), reals(p%nv), aux(p%nv), dum
-    real*8 :: ef(p%nv)
-    real*8 :: auxcpol(0:mmpar)
-
-    ! consistency check
-    if (iT == 0 .and. p%tmodel == tm_externalfvib) &
-       call error('fit_sgrid_t','The externalfvib model cannot be used at arbitrary T',faterr)
-
-    ! only active
-    rnv = count(p%dyn_active)
-
-    ! find Svib(V,T) at the grid volumes and store in aux
-    aux = 0d0
-    if (dovib) then
-       ! vibrational contribution
-       do i = 1, p%nv
-          if (.not.p%dyn_active(i)) cycle
-          if (p%tmodel == tm_qhafull .or. p%tmodel == tm_debye_extended) then
-             write (*,*) "deprecated: you should not be here!"
-             stop 1
-          else if (p%tmodel == tm_debye_einstein .or. p%tmodel == tm_debye_einstein_v) then
-             call debeins(p,p%td(i),T,p%v(i),D,Derr,uvib,cv,dum,aux(i),cv_ac,cv_op)
-          else if (p%tmodel == tm_externalfvib) then
-             aux(i) = p%fvib_s(i,iT)
-          else
-             call thermal(p%td(i),T,D,Derr,uvib,cv,dum,aux(i))
-          end if
-       end do
-       aux = aux * (-T)
-    end if
-
-    if (doel) then
-       ! electronic contribution
-       if (p%emodel == em_sommerfeld) then
-          if (p%efree) then
-             ef = (3d0 * pisquare * p%nelec / p%v)**twothird / 2d0
-          else
-             ef = 3d0 / 2d0 * p%nelec / p%nefermi
-          end if
-          aux = aux + pi**2 / 2d0 * pckbau**2 * T * p%nelec / ef
-       else if (p%emodel == em_pol4) then
-          do i = 1, p%nv
-             auxcpol = 0d0
-             auxcpol(1:4) = p%tsel_cpol(1:4,i)
-             aux(i) = aux(i) + fv0(ftsel_fitmode,T,6,auxcpol)
-          end do
-       end if
-    end if
-
-    ! apply mask to remove points with negative frequencies
-    realv(1:rnv) = pack(p%v,p%dyn_active)
-    reals(1:rnv) = pack(aux,p%dyn_active)
-
-    ! -T*S fit for the calculation
-    call fitt_polygibbs(p%sfit_mode,realv(1:rnv),reals(1:rnv),nspol,spol,ierrs,.false.)
-    mode = p%sfit_mode
-
-    ! no centering slope in entropy fits
-    nspol = nspol + 1
-    spol(nspol) = 0d0
-
-  end subroutine fit_sgrid_t
-
-  ! For phase p, calculate the fitting coefficients (ncvpol,cvpol) of
-  ! Cv at temperature T. iT is the index for this temperature from the
-  ! temperature list (used only in externalfvib). The fitting mode is
-  ! mode. ierr is the error code.
-  subroutine fit_cvgrid_t(p,T,iT,ncvpol,cvpol,mode,ierrs)
-    use fit, only: fitt_polygibbs
-    use varbas, only: phase, tm_externalfvib
-    use tools, only: error
-    use param, only: faterr
-    type(phase), intent(in) :: p
-    real*8, intent(in) :: T
-    integer, intent(in) :: iT
-    integer, intent(out) :: ncvpol
-    real*8, intent(out) :: cvpol(0:mmpar)
-    integer, intent(out) :: mode
-    integer, intent(out) :: ierrs
-
-    integer :: i, rnv
-    real*8 :: realv(p%nv), realcv(p%nv), aux(p%nv)
-
-    ! consistency check
-    if (iT == 0 .and. p%tmodel == tm_externalfvib) &
-       call error('fit_cvgrid_t','The externalfvib model cannot be used at arbitrary T',faterr)
-    if (p%tmodel /= tm_externalfvib) &
-       call error('fit_cvgrid_t','fit_cvgrid_t can only be used with externalfvib tmodel',faterr)
-
-    ! only active
-    rnv = count(p%dyn_active)
-
-    ! find Cv(V,T) at the grid volumes and store in aux
-    aux = 0d0
-    ! vibrational contribution
-    do i = 1, p%nv
-       if (.not.p%dyn_active(i)) cycle
-       aux(i) = p%fvib_cv(i,iT)
-    end do
-
-    ! apply mask to remove points with negative frequencies
-    realv(1:rnv) = pack(p%v,p%dyn_active)
-    realcv(1:rnv) = pack(aux,p%dyn_active)
-
-    ! Cv fit
-    call fitt_polygibbs(p%cvfit_mode,realv(1:rnv),realcv(1:rnv),ncvpol,cvpol,ierrs,.false.)
-    mode = p%cvfit_mode
-
-    ! no centering slope in Cv fits
-    ncvpol = ncvpol + 1
-    cvpol(ncvpol) = 0d0
-
-  end subroutine fit_cvgrid_t
 
   !< Returns fitting parameters of Cv_el(V,T).
   subroutine fit_cvelgrid_t(p,T,ncvpol,cvpol,mode,ierr)
