@@ -107,6 +107,7 @@ module varbas
      real*8 :: b_grun = half
      real*8 :: td0
      real*8, allocatable :: td(:)
+     real*8, allocatable :: poissonv(:)
      integer :: ntpol
      real*8 :: tpol(0:mmpar)
 
@@ -754,7 +755,7 @@ contains
     integer :: lp, lp2
     integer :: i, j
     integer :: icol_v, icol_e, icol_td, icol_nef, icol_ph, icol_pol4(8)
-    integer :: icol_int(minterp), icol_f0, icol_tde
+    integer :: icol_int(minterp), icol_f0, icol_tde, icol_poi
     integer, allocatable :: icol_anh(:), icol_cein(:), icol_tein(:)
     integer :: idum, ifound, iphdos_1, iphdos_2, isep, isep2, nn, nq, numax, uuin
     character*(mline) :: line, word, prefix, file, linedum, msg, extfvibfile
@@ -798,6 +799,7 @@ contains
     icol_v = 1
     icol_e = 2
     icol_td = -1
+    icol_poi = -1
     icol_nef = -1
     icol_ph = -1
     icol_pol4 = -1
@@ -922,7 +924,7 @@ contains
              end if
           elseif (equal(word,'debye_poisson_input'//null)) then
              p%tmodel = tm_debye_poisson_input
-             icol_td = 0
+             icol_poi = 0
           elseif (equal(word,'debye_gruneisen'//null)) then
              p%tmodel = tm_debyegrun
              lp2 = lp
@@ -1215,7 +1217,7 @@ contains
     do while(.true.)
        i = i + 1
        if (icol_v == i .or. icol_e == i .or. icol_td == i .or. icol_nef == i .or. &
-           icol_ph == i .or. any(icol_int(1:p%ninterp) == i) .or. &
+           icol_ph == i .or. any(icol_int(1:p%ninterp) == i .or. icol_poi == i) .or. &
            any(icol_pol4 == i)) cycle
        if (icol_v == 0) then
           icol_v = i
@@ -1225,6 +1227,9 @@ contains
           cycle
        else if (icol_td == 0) then
           icol_td = i
+          cycle
+       else if (icol_poi == 0) then
+          icol_poi = i
           cycle
        else if (icol_nef == 0) then
           icol_nef = i
@@ -1289,6 +1294,7 @@ contains
 
     if (p%ninterp > 0) allocate(p%interp(phase_vmax,p%ninterp))
     if (icol_td > 0) allocate(p%td(phase_vmax))
+    if (icol_poi > 0) allocate(p%poissonv(phase_vmax))
     if (icol_ph > 0) then
        if (p%tmodel == tm_qhafull) then
           allocate(p%phdos_f(phdos_fmax))
@@ -1333,6 +1339,8 @@ contains
     write (uout,'("    Energy: ",I3)') icol_e
     if (icol_td > 0) &
        write (uout,'("    Debye temperature: ",I3)') icol_td
+    if (icol_poi > 0) &
+       write (uout,'("    Poisson ratio: ",I3)') icol_poi
     if (icol_nef > 0) &
        write (uout,'("    N(Ef): ",I3)') icol_nef
     if (icol_ph > 0) &
@@ -1394,6 +1402,9 @@ contains
           else if (idum == icol_td) then
              ! thetad field
              ok = isreal(p%td(nn),line,lp)
+          else if (idum == icol_poi) then
+             ! poisson field
+             ok = isreal(p%poissonv(nn),line,lp)
           else if (idum == icol_ph) then
              ! phonon DOS or frequencies file name
              ! get name
@@ -2142,7 +2153,7 @@ contains
        write (uout,'("  First/last Debye temp. (K): ",1p,2(E20.12,2X))') &
           p%td(1), p%td(p%nv)
     end if
-    write (uout,'("  Poisson ratio from input (sigma): ",F14.6)') p%poisson
+    write (uout,'("  Poisson ratio (sigma): ",F14.6)') p%poisson
     write (uout,'("  Poisson function, f(sigma): ",F14.6)') p%pofunc
     if (allocated(p%freqg)) then
        write (uout,'("  Number of freq. at G (p=0) : ",I4)') p%nfreq

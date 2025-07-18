@@ -74,7 +74,7 @@ contains
     ! If the model is debye with poisson, calculate thetad(V).
     if (p%tmodel == tm_debye_poisson_input) then
        do j = 1, p%nv
-          poi = p%td(j)
+          poi = p%poissonv(j)
           fx=2*(1+poi)/3d0/(1-2*poi)
           gx=(1+poi)/3d0/(1-poi)
           hx=2d0*sqrt(fx**3)+sqrt(gx**3)
@@ -84,6 +84,7 @@ contains
        end do
     end if
 
+    ! xxxx !
     ! fit thetad(V) if debye_input or debye_poisson_input
     if (p%tmodel == tm_debye_input .or. p%tmodel == tm_debye_poisson_input) then
        call fitt_polygibbs(p%tdfit_mode,log(p%v),log(p%td),p%ntpol,p%tpol,ierr,.false.)
@@ -217,19 +218,18 @@ contains
 
     real*8, parameter :: eps=1D-12
     integer, parameter :: maxnl=100
-    real*8 :: x(maxnl), w(maxnl), y, z, sum, debye0, fdebye
+    real*8 :: x(maxnl), w(maxnl), y, z, sum, debye0, debyeout
     integer :: i, nl
-    fdebye(z)=z*z*z/(exp(z)-1)
 
     !.error condition controls
-    !
-    debye=zero
-    xabs=zero
+    debyeout = 0d0
+    xabs = 0d0
     if (t<1d-5) then
        en = vfree*9d0*pckbau*ThetaD/8d0
-       cv = zero
+       cv = 0d0
        he = vfree*9d0*pckbau*ThetaD/8d0
-       ent = zero
+       ent = 0d0
+       debye = 0d0
        return
     endif
     if (ThetaD.eq.0d0) then
@@ -237,13 +237,14 @@ contains
        cv = vfree*3d0*pckbau
        ent = 1d100
        he = en - T*ent
+       debye = 0d0
        return
     endif
     if (thetad.lt.0d0 .or. t.lt.0d0) then
        call error('thermal','Negative ThetaD or T',faterr)
     endif
     y=ThetaD/T
-    debye=3d0*pi*pi*pi*pi/y/y/y/15d0
+    debyeout=3d0*pi*pi*pi*pi/y/y/y/15d0
     if (y.gt.250d0) goto 22
 
     !.Loop with increasing number of Legendre points.
@@ -254,24 +255,34 @@ contains
        do i=1,nl
           sum=sum+w(i)*fdebye(x(i))
        end do
-       debye=sum*3d0/y/y/y
-       xabs=abs(debye-debye0)
+       debyeout=sum*3d0/y/y/y
+       xabs = abs(debye-debye0)
        if (xabs.lt.eps) then
-          go to 22
+          exit
        else
-          debye0=debye
+          debye0 = debyeout
        endif
     end do
 
     !.thermodynamic vibrational properties
-22  en  = vfree * 3d0 * pckbau * (ThetaD*3d0/8d0 + T*debye)
+22  en  = vfree * 3d0 * pckbau * (ThetaD*3d0/8d0 + T*debyeout)
     if (y > 100d0) then
-       cv  = vfree * 12d0 * pckbau * debye
+       cv  = vfree * 12d0 * pckbau * debyeout
     else
-       cv  = vfree * 3d0 * pckbau * (4d0*debye - 3d0*y/(exp(y)-1d0))
+       cv  = vfree * 3d0 * pckbau * (4d0*debyeout - 3d0*y/(exp(y)-1d0))
     endif
-    ent = vfree * 3d0 * pckbau * (debye*4d0/3d0 - log(1d0-exp(-y)))
+    ent = vfree * 3d0 * pckbau * (debyeout*4d0/3d0 - log(1d0-exp(-y)))
     he  = en - T * ent
+    debye = debyeout
+
+  contains
+    function fdebye(z)
+      real*8, intent(in) :: z
+      real*8 :: fdebye
+
+      fdebye = z*z*z/(exp(z)-1)
+
+    end function fdebye
 
   end subroutine thermal
 

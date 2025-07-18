@@ -718,7 +718,7 @@ contains
              if (ierr > 0) cycle
 
              ! calculate the rest of the properties
-             call dyneos_calc_new(ph(i),v,j,proplist)
+             call dyneos_calc(ph(i),v,j,proplist)
              write (lu,fm) proplist
 
              ph(i)%didtp(j,k) = .true.
@@ -740,7 +740,7 @@ contains
   end subroutine dyneos
 
   ! Calculate properties at a given volume and temperature.
-  subroutine dyneos_calc_new(p,v,it,proplist)
+  subroutine dyneos_calc(p,v,it,proplist)
     use evfunc, only: fv0, fv1, fv2, fv3, fv4
     use debye, only: tlim_gamma, debeins, thermalphon, thermal, get_thetad
     use varbas, only: mpropout, phase, vbracket, tlist
@@ -895,7 +895,7 @@ contains
     proplist(28) = cv_vib
     proplist(29) = cv_el
 
-  end subroutine dyneos_calc_new
+  end subroutine dyneos_calc
 
   ! Write the dgtp file.
   subroutine deltag()
