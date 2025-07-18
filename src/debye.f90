@@ -20,7 +20,7 @@ module debye
   private
 
   ! public
-  public :: fill_thetad, get_thetad
+  public :: fill_thetad
   public :: thermal, debeins, thermalphon, thermal_qha, thermal_debye_extended
 
   ! if temperature is lower, then gamma(t) = gamma(tlim)
@@ -36,9 +36,9 @@ contains
     use fit, only: fitt_polygibbs
     use tools, only: leng, realloc, error
     use varbas, only: phase, tm_debye_input, tm_debye_poisson_input, mm, vfree, &
-       phase_realloc_volume
+       phase_realloc_volume, tm_debyegrun
     use param, only: mline, mline_fmt, faterr, ifmt_v, ifmt_t, pckbau, pi, third, uout, warning,&
-       format_string, format_string_header
+       format_string, format_string_header, au2gpa
     type(phase), intent(inout) :: p
     logical, intent(in) :: verbose
 
@@ -47,7 +47,7 @@ contains
     integer :: idx, idxx(1)
     integer :: ierr
     character*(mline_fmt) :: fm
-    real*8 :: gamma, td, td0, f2s, f3s
+    real*8 :: gamma, td, td0, f2s, f3s, b, v
     real*8 :: fx, gx, hx, poi, pofunc
 
     if (mm < 0d0 .or. vfree < 0d0) return
@@ -109,16 +109,20 @@ contains
 
     ! get thetad and output
     do j = 1, p%nv
-       f2s = fv2(p%fit_mode,p%v(j),p%npol,p%cpol)
+       v = p%v(j)
+       f2s = fv2(p%fit_mode,v,p%npol,p%cpol)
        if (f2s < 0d0) then
           p%dyn_active(j) = .false.
           write (uout,'(" ",F10.4," deactivated because E'''' < 0")') p%v(j)
           cycle
        end if
-       f3s = fv3(p%fit_mode,p%v(j),p%npol,p%cpol)
-       call get_thetad(p,p%v(j),f2s,f3s,td,gamma)
-       if (p%tmodel /= tm_debye_input .and. p%tmodel /= tm_debye_poisson_input) then
-          p%td(j) = td
+       f3s = fv3(p%fit_mode,v,p%npol,p%cpol)
+
+       if (p%tmodel == tm_debyegrun) then
+          b = v * f2s * au2gpa
+          p%td(j) = p%td0 * (b / p%beq_static)**p%b_grun / (v / p%veq_static)**p%a_grun
+       elseif (p%tmodel /= tm_debye_input .and. p%tmodel /= tm_debye_poisson_input) then
+          p%td(j) = (6*pi*pi*vfree*v*v)**third / pckbau * p%pofunc * sqrt(f2s/mm)
        end if
 
        if (verbose) then
@@ -128,57 +132,6 @@ contains
     end do
 
   end subroutine fill_thetad
-
-  ! Calculate the debye temperature (td) and gamma for phase p at
-  ! point v. Uses as input the second and third derivatives wrt
-  ! volume.
-  subroutine get_thetad(p,v,f2o,f3,td,gamma)
-    use evfunc, only: fv0, fv1
-    use varbas, only: phase, tm_debyegrun, tm_debye, &
-       tm_debye_einstein, tm_debye_einstein_v, tm_debye_input, &
-       tm_debye_poisson_input, mm, vfree
-    use tools, only: error
-    use param, only: au2gpa, pckbau, pi, third, warning
-    type(phase), intent(in) :: p
-    real*8, intent(in) :: v, f2o, f3
-    real*8, intent(out) :: td, gamma
-    logical :: f2zero
-
-    real*8 :: b, f2
-
-    td = 0d0
-    gamma = 0d0
-
-    if (f2o < 0d0) then
-       call error('fill_thetad','Epp < 0 in get_thetad',warning)
-       f2 = 0d0
-       f2zero = .true.
-    else
-       f2 = f2o
-       f2zero = .false.
-    end if
-
-    select case(p%tmodel)
-    case(tm_debye_input, tm_debye_poisson_input)
-       td = exp(fv0(p%tdfit_mode,log(v),p%ntpol,p%tpol))
-       gamma = -fv1(p%tdfit_mode,log(v),p%ntpol,p%tpol)
-
-    case(tm_debye,tm_debye_einstein,tm_debye_einstein_v)
-       td = (6*pi*pi*vfree*v*v)**third / pckbau * p%pofunc * sqrt(f2/mm)
-       if (.not.f2zero) &
-          gamma = -1d0/6d0 - 0.5d0 * (1+v*f3/f2)
-
-    case(tm_debyegrun)
-       b = v * f2 * au2gpa
-       td = p%td0 * (b / p%beq_static)**p%b_grun / (v / p%veq_static)**p%a_grun
-       if (.not.f2zero) &
-          gamma = p%a_grun - p%b_grun * (1+v*f3/f2)
-
-    case default
-       return
-    end select
-
-  end subroutine get_thetad
 
   ! Compute Debye model vibrational properties.
   subroutine thermal(ThetaD,T,debye,xabs,en,cv,he,ent)

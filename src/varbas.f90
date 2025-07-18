@@ -1839,10 +1839,9 @@ contains
   subroutine props_staticeq()
     use fit, only: fit_pshift
     use tools, only: leng, error, realloc
-    use param, only: uout, warning, mline_fmt, format_string, ifmt_p, ifmt_v, ifmt_x,&
+    use param, only: uout, mline_fmt, format_string, ifmt_p, ifmt_v, ifmt_x,&
        ifmt_integer5
     integer :: i, j, ipcut
-    character*(mline) :: msg
     real*8 :: vk, bk, ek, gk
     integer :: ierr
     character*(mline_fmt) :: fm
@@ -1932,6 +1931,7 @@ contains
     p%v = p%v(idx)
     p%e = p%e(idx)
     if (allocated(p%td)) p%td = p%td(idx)
+    if (allocated(p%poissonv)) p%poissonv = p%poissonv(idx)
     if (allocated(p%dyn_active)) p%dyn_active = p%dyn_active(idx)
     if (allocated(p%interp)) p%interp = p%interp(idx,:)
     if (allocated(p%phdos_d)) p%phdos_d = p%phdos_d(:,:,idx)
@@ -1991,6 +1991,11 @@ contains
     if (allocated(p%td)) then
        if (doshift) p%td(1:n) = p%td(nv-n+1:nv)
        call realloc(p%td,n)
+    end if
+
+    if (allocated(p%poissonv)) then
+       if (doshift) p%poissonv(1:n) = p%poissonv(nv-n+1:nv)
+       call realloc(p%poissonv,n)
     end if
 
     if (allocated(p%dyn_active)) then

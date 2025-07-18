@@ -742,10 +742,10 @@ contains
   ! Calculate properties at a given volume and temperature.
   subroutine dyneos_calc(p,v,it,proplist)
     use evfunc, only: fv0, fv1, fv2, fv3, fv4
-    use debye, only: tlim_gamma, debeins, thermalphon, thermal, get_thetad
-    use varbas, only: mpropout, phase, vbracket, tlist
+    use debye, only: tlim_gamma, debeins, thermalphon, thermal
+    use varbas, only: mpropout, phase, vbracket, tlist, mm, vfree
     use tools, only: error
-    use param, only: au2gpa, ha2kjmol
+    use param, only: au2gpa, ha2kjmol, pckbau, pi, third
     type(phase), intent(in) :: p
     real*8, intent(in) :: v
     integer, intent(in) :: it
@@ -787,9 +787,8 @@ contains
     psta = -f1s
     pth = pext - psta
 
-    ! vibrational contribution
-    !  sets Uvib, Cv_vib, Svib, Fvib, theta and gamma
-    call get_thetad(p,v,f2s,f3s,theta,gamma)
+    ! Debye temperature
+    theta = (6*pi*pi*vfree*v*v)**third / pckbau * p%pofunc * sqrt(f2s/mm)
 
     ! rest of properties
     fvib = f0 - f0s
