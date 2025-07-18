@@ -29,8 +29,7 @@ module debye
 
 contains
 
-  ! Fill Debye-related information for phase p: %td(:), %td0 and
-  ! ntpol/tpol fit.  Optionally, verbose output.
+  ! Fill Debye-related information for phase p: %td(:).  Optionally, verbose output.
   subroutine fill_thetad(p,verbose)
     use evfunc, only: fv0, fv2, fv3
     use fit, only: fitt_polygibbs
@@ -71,7 +70,7 @@ contains
 
     if (.not.allocated(p%td)) allocate(p%td(p%nv))
 
-    ! If the model is debye with poisson, calculate thetad(V).
+    ! If the model is debye with poisson, calculate thetad(V) here
     if (p%tmodel == tm_debye_poisson_input) then
        do j = 1, p%nv
           poi = p%poissonv(j)
@@ -84,19 +83,8 @@ contains
        end do
     end if
 
-    ! xxxx !
-    ! fit thetad(V) if debye_input or debye_poisson_input
-    if (p%tmodel == tm_debye_input .or. p%tmodel == tm_debye_poisson_input) then
-       call fitt_polygibbs(p%tdfit_mode,log(p%v),log(p%td),p%ntpol,p%tpol,ierr,.false.)
-       p%ntpol = p%ntpol + 1
-       p%tpol(p%ntpol) = 0d0
-       if (ierr > 0) call error('fill_thetad','Can not fit logTd vs. logV',faterr)
-       p%td0 = exp(fv0(p%tdfit_mode,log(p%veq_static),p%ntpol,p%tpol))
-    else
-       ! fill td0
-       f2s = max(fv2(p%fit_mode,p%veq_static,p%npol,p%cpol),0d0)
-       p%td0 = (6*pi*pi*vfree*p%veq_static*p%veq_static)**third / pckbau * p%pofunc * sqrt(f2s/mm)
-    end if
+    ! td at the equilibrium volume
+    p%td0 = (6*pi*pi*vfree*p%veq_static*p%veq_static)**third / pckbau * p%pofunc * sqrt(f2s/mm)
 
     ! header
     if (verbose) then

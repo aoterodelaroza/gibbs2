@@ -108,8 +108,6 @@ module varbas
      real*8 :: td0
      real*8, allocatable :: td(:)
      real*8, allocatable :: poissonv(:)
-     integer :: ntpol
-     real*8 :: tpol(0:mmpar)
 
      ! debye-einstein
      integer :: nfreq = 0
