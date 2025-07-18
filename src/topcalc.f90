@@ -541,7 +541,7 @@ contains
     use varbas, only: nph, ph, mpropout, propfmt, tm_static, tm_externalfvib,&
        nps, plist, nts, tlist, tm_debye_extended, tm_qhafull, tm_debye,&
        writelevel, nvs, vlist, doerrorbar, propname, vbracket, vdefault,&
-       tm_debye_input, tm_debyegrun
+       tm_debye_input, tm_debyegrun, tm_debye_poisson_input
     use tools, only: error, leng, fopen, fclose
     use param, only: mline, mline_fmt, uout, format_string, format_string_header, fileroot,&
        iowrite, warning, faterr, null, undef
@@ -616,7 +616,7 @@ contains
           elseif (ph(i)%tmodel == tm_qhafull) then
              call thermal_qha(ph(i),0d0,j,f0(j),dum,dum)
           elseif (ph(i)%tmodel == tm_debye.or.ph(i)%tmodel == tm_debye_input.or.&
-             ph(i)%tmodel == tm_debyegrun) then
+             ph(i)%tmodel == tm_debyegrun.or.ph(i)%tmodel == tm_debye_poisson_input) then
              call thermal(ph(i)%td(j),0d0,dum,dum,dum,dum,f0(j),dum)
           else
              write (*,*) "fixme!"
@@ -635,7 +635,7 @@ contains
                 call thermal_qha(ph(i),tlist(k),j,ph(i)%dynamic_fvib(j,k),&
                    ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
              elseif (ph(i)%tmodel == tm_debye.or.ph(i)%tmodel == tm_debye_input.or.&
-                ph(i)%tmodel == tm_debyegrun) then
+                ph(i)%tmodel == tm_debyegrun.or.ph(i)%tmodel == tm_debye_poisson_input) then
                 call thermal(ph(i)%td(j),tlist(k),dum,dum,dum,&
                    ph(i)%dynamic_cv(j,k),ph(i)%dynamic_fvib(j,k),ph(i)%dynamic_s(j,k))
              else
@@ -738,343 +738,6 @@ contains
     call gen_allgnu_p(trim(fileroot)//"_all_p")
 
   end subroutine dyneos
-
-  ! Helper routine for dyneos. Calculates the output properties at a given
-  ! volume (v), temperature (t), and pressure (p). iT is the index for this
-  ! temperature from the temperature list (used only in externalfvib). pres=
-  ! if not undef, this is a fixed-pressure calculation. ft = fitting parameters.
-  ! pfit = fit information for error calculation. proplist = output properties.
-  ! errlist = error in output properties.
-  subroutine dyneos_outprop(p,v,t,iT,pres,ft,pfit,proplist,errlist)
-    use varbas, only: mpropout, phase, doerrorbar, vbracket
-    use fit, only: fit_pshift, fitinfo
-    use tools, only: error
-    use param, only: uout, warning, undef
-    type(phase), intent(in) :: p
-    type(fitpack), intent(in) :: ft
-    real*8, intent(in) :: v, t
-    integer, intent(in) :: iT
-    real*8, intent(in) :: pres
-    type(fitinfo), intent(in) :: pfit
-    real*8, dimension(mpropout), intent(out) :: proplist, errlist
-
-    real*8, dimension(mpropout) :: prop, prop2, aux
-    real*8 :: vol, b0, e, g
-    integer :: i, id, ierr
-    type(fitpack) :: ft_aux
-
-    ! obtain properties
-    call dyneos_calc(p,v,t,iT,ft,proplist)
-
-    errlist = 0d0
-    ! error bars
-    if (pfit%nfit > 0 .and. doerrorbar) then
-       prop = 0d0
-       prop2 = 0d0
-       do i = 1, pfit%nfit
-          ! is this coming from a fixed pressure or fixed volume calc.?
-          if (pres /= undef) then
-             ! obtain equilibrium volume for this fit
-             call fit_pshift(pfit%mode(i),p%v,pres,pfit%npar(i),pfit%apar(:,i),vol,b0,e,g,ierr)
-             if (ierr > 0) cycle
-
-             ! check the volume is not out of the region active for T-calc.
-             call vbracket(p,vol,id,.true.)
-             if (id == 0) then
-                write (uout,'(" Temperature = ",F12.4)') t
-                write (uout,'(" Pressure = ",F12.4)') pres
-                write (uout,'(" Volume = ",F17.7)') vol
-                call error('dyneos_outprop','No error because of out-of-bounds v.',warning)
-                return
-             end if
-          else
-             vol = v
-          end if
-
-          ! insert the i-th polynomial into the auxiliary fitpack
-          ft_aux = ft
-          ft_aux%emode = p%pfit%mode(i)
-          ft_aux%nepol = p%pfit%npar(i)
-          ft_aux%epol  = p%pfit%apar(:,i)
-          ft_aux%amode = pfit%mode(i)
-          ft_aux%napol = pfit%npar(i)
-          ft_aux%apol  = pfit%apar(:,i)
-
-          ! calculate properties for this fit
-          call dyneos_calc(p,vol,t,iT,ft_aux,aux)
-
-          ! add to averages
-          prop = prop + aux * pfit%wei(i)
-          prop2 = prop2 + aux * aux * pfit%wei(i)
-       end do
-       errlist = sqrt(max(prop2 - prop * prop,0d0))
-    end if
-
-  end subroutine dyneos_outprop
-
-  ! Calculate properties at a given volume and temperature.
-  subroutine dyneos_calc(p,v,t,iT,ft,proplist)
-    use evfunc, only: fv0, fv1, fv2, fv3, fv4
-    use debye, only: tlim_gamma, cvlim, debeins, thermalphon, thermal, get_thetad
-    use varbas, only: mpropout, phase, tm_qhafull, tm_debye_input, tm_debye, tm_debyegrun,&
-       tm_debye_poisson_input, tm_debye_einstein, tm_debye_einstein_v, tm_externalfvib,&
-       em_pol4, em_sommerfeld, em_no, ftsel_fitmode, vbracket
-    use tools, only: error
-    use param, only: faterr, au2gpa, ha2kjmol, pi, pckbau, pisquare, twothird
-    type(phase), intent(in) :: p
-    type(fitpack), intent(in) :: ft
-    real*8, intent(in) :: v, t
-    integer, intent(in) :: iT
-    real*8, intent(out) :: proplist(mpropout)
-
-    real*8 :: f0, f1, f2, f3, f4, b0, b1, b2, tmp
-    real*8 :: f0s, f1s, f2s, f3s, b0s, b1s, g
-    real*8 :: nef, ef, theta
-    real*8 :: pbeta, alpha, cp, bs, D, Derr
-    real*8 :: cv_ac, cv_op, cv_lowt
-    real*8 :: fvib, svib, uvib, cv_vib
-    real*8 :: fel, sel, uel, cv_el, rdum
-    real*8 :: fsum, ssum, usum, cv_sum
-    real*8 :: gam_ac, gam_op, gamma
-    real*8 :: pext, psta, pth, dg, mtsvib
-    integer :: id
-    real*8 :: auxcpol(0:mmpar)
-    logical :: gamma_from_s
-
-    ! calculate gamma from entropy fit?
-    gamma_from_s = (p%tmodel == tm_qhafull) .or. (p%tmodel == tm_externalfvib) .or.&
-       (p%emodel /= em_no)
-
-    ! static energy and helmholtz free energy volume derivatives
-    if (ft%nepol == 0) call error('dyneos_calc','nepol = 0',faterr)
-    if (ft%napol == 0) call error('dyneos_calc','napol = 0',faterr)
-    f0s = fv0(ft%emode,v,ft%nepol,ft%epol)
-    f1s = fv1(ft%emode,v,ft%nepol,ft%epol)
-    f2s = fv2(ft%emode,v,ft%nepol,ft%epol)
-    f3s = fv3(ft%emode,v,ft%nepol,ft%epol)
-    f0  = fv0(ft%amode,v,ft%napol,ft%apol)
-    f1  = fv1(ft%amode,v,ft%napol,ft%apol)
-    f2  = fv2(ft%amode,v,ft%napol,ft%apol)
-    f3  = fv3(ft%amode,v,ft%napol,ft%apol)
-    f4  = fv4(ft%amode,v,ft%napol,ft%apol)
-
-    ! pressure derivatives of the isothermal bulk modulus
-    b0 = v * f2
-    b1 = -(1+v*f3/f2)
-    b2 = ((f3+v*f4)/f2**2 - v*f3**2/f2**3)
-
-    ! thermal pressure
-    pext = -f1
-    psta = -f1s
-    pth = pext - psta
-
-    ! vibrational contribution
-    !  sets Uvib, Cv_vib, Svib, Fvib, theta and gamma
-    call get_thetad(p,v,f2s,f3s,theta,gamma)
-    select case(p%tmodel)
-    case(tm_debye_input, tm_debye, tm_debyegrun, tm_debye_poisson_input)
-       if (gamma_from_s .and. t < tlim_gamma) then
-          call thermal(theta,t,D,Derr,uvib,cv_lowt,fvib,svib)
-       end if
-       call thermal (theta,t,D,Derr,uvib,cv_vib,fvib,svib)
-
-    case(tm_debye_einstein,tm_debye_einstein_v)
-       ! Debye-Einstein
-       if (gamma_from_s .and. t < tlim_gamma) then
-          call debeins(p,theta,tlim_gamma,v,D,Derr,uvib,cv_lowt,fvib,svib,cv_ac,cv_op)
-       end if
-       call debeins(p,theta,t,v,D,Derr,uvib,cv_vib,fvib,svib,cv_ac,cv_op)
-
-       ! calculate gamma, handle low-temperature case
-       if (cv_vib > cvlim) then
-          gam_ac = gamma
-          b0s = v*f2s
-          b1s = -(1+v*f3s/f2s)
-          gam_op = (9d0*b0s*(b1s-1)+2*psta)/(6*(3*b0s-2*psta))
-          gamma = (cv_ac * gam_ac + cv_op * gam_op) / cv_vib
-       end if
-    case(tm_qhafull)
-       write (*,*) "deprecated: you should not be here!"
-       stop 1
-
-    case(tm_externalfvib)
-       fvib = f0 - f0s
-       mtsvib = fv0(ft%smode,v,ft%nspol,ft%spol)
-       if (t < tlim_gamma) then
-          svib = 0d0
-       else
-          svib = mtsvib / (-t)
-       end if
-       uvib = fvib - mtsvib
-       cv_vib = fv0(ft%cvmode,v,ft%ncvpol,ft%cvpol)
-       cv_lowt = cv_vib
-    end select
-
-    ! electronic contribution
-    !  sets Uel, Cv_el, Sel, Fel
-    if (t < tsmall_el) then
-       uel = 0d0
-       fel = 0d0
-       sel = 0d0
-       cv_el = 0d0
-    else
-       select case(p%emodel)
-       case(em_sommerfeld)
-          if (p%efree) then
-             ef = (3d0 * pisquare * p%nelec / v)**twothird / 2d0
-          else
-             call vbracket(p,v,id,.false.)
-             if (id < 0) then
-                nef = p%nefermi(-id)
-             else
-                nef = p%nefermi(id) + (v-p%v(id)) / (p%v(id+1)-p%v(id)) * (p%nefermi(id+1)-p%nefermi(id))
-             end if
-             ef = 3d0 / 2d0 * p%nelec / nef
-          end if
-          sel = pi**2 / 2d0 * pckbau**2 * T * p%nelec / ef
-          uel = T * sel / 2d0
-          fel = -uel
-          cv_el = sel
-       case(em_pol4)
-          call vbracket(p,v,id,.false.)
-          auxcpol = 0d0
-          if (id < 0) then
-             auxcpol(1:4) = p%fel_cpol(1:4,-id)
-             fel = fv0(ftsel_fitmode,T,6,auxcpol)
-             auxcpol(1:4) = p%tsel_cpol(1:4,-id)
-             sel = fv0(ftsel_fitmode,T,6,auxcpol)
-             auxcpol(1:4) = p%fel_cpol(1:4,-id) - p%tsel_cpol(1:4,-id)
-             cv_el = fv1(ftsel_fitmode,T,6,auxcpol)
-          else if (id > 0) then
-             auxcpol(1:4) = p%fel_cpol(1:4,id)
-             fel  = fv0(ftsel_fitmode,T,6,auxcpol)
-             auxcpol(1:4) = p%fel_cpol(1:4,id+1)
-             rdum = fv0(ftsel_fitmode,T,6,auxcpol)
-             fel = fel + (v-p%v(id)) / (p%v(id+1)-p%v(id)) * (rdum-fel)
-             !
-             auxcpol(1:4) = p%tsel_cpol(1:4,id)
-             sel  = fv0(ftsel_fitmode,T,6,auxcpol)
-             auxcpol(1:4) = p%tsel_cpol(1:4,id+1)
-             rdum = fv0(ftsel_fitmode,T,6,auxcpol)
-             sel = sel + (v-p%v(id)) / (p%v(id+1)-p%v(id)) * (rdum-sel)
-             !
-             auxcpol(1:4) = p%fel_cpol(1:4,id) - p%tsel_cpol(1:4,id)
-             cv_el  = fv1(ftsel_fitmode,T,6,auxcpol)
-             auxcpol(1:4) = p%fel_cpol(1:4,id+1) - p%tsel_cpol(1:4,id+1)
-             rdum = fv1(ftsel_fitmode,T,6,auxcpol)
-             cv_el = cv_el + (v-p%v(id)) / (p%v(id+1)-p%v(id)) * (rdum-cv_el)
-          else
-             call error('dyneos_topcalc','volume out of bounds in em_pol4',faterr)
-          end if
-          uel = fel - sel
-          sel = sel / (-T)
-       case default
-          fel = 0d0
-          uel = 0d0
-          sel = 0d0
-          cv_el = 0d0
-       end select
-    end if
-
-    ! sum up
-    fsum = fvib + fel
-    usum = uvib + uel
-    ssum = svib + sel
-    cv_sum = cv_vib + cv_el
-
-    ! bulk modulus
-    b0 = b0 * au2gpa
-    b2 = b2 / au2gpa
-
-    ! gamma and related quantities
-    if (gamma_from_s) then
-       ! get the volume-derivative of the entropy
-       if (ft%nspol == 0) call error('dyneos_calc','nspol = 0',faterr)
-
-       if (t >= tlim_gamma .and. cv_sum > 1d-20) then
-          ! non-zero temperature, usual calculation, no 0/0 here
-          gamma = - v / cv_sum * fv1(ft%smode,v,ft%nspol,ft%spol) / t
-       else
-          ! zero temperature or close; careful about 0/0
-          if (p%tmodel == tm_externalfvib) then
-             ! a meaningless gamma value - all properties other than
-             ! gamma will be correct.
-             gamma = 1d0
-          else
-             ! use the limit temperature as a proxy to calculate
-             ! gamma, which has to be finite at T -> 0.
-             gamma = - v / cv_lowt * fv1(ft%smode,v,ft%nspol,ft%spol) / tlim_gamma
-          end if
-       end if
-    end if
-
-    ! gamma is finite at T->0, so no problem here, either
-    Pbeta = cv_sum * gamma / v * au2gpa
-    alpha = Pbeta / b0
-    tmp = 1d0 + gamma * alpha * t
-    Cp = cv_sum * tmp
-    Bs = b0 * tmp
-
-    ! Rest of thermodynamic properties -- note g can be calculated in
-    ! 2 ways: with Fsum from two fits or from quasiharmonic
-    ! formula.... dg is a measure this inaccuracy.
-    ! pbeta = (dp/dT)_V
-    g = f0 + pext * v
-    dg = f0 - f0s - fsum
-
-    ! conversion to output units
-    g = g * ha2kjmol
-    dg = dg * ha2kjmol
-    pext = pext * au2gpa
-    pth = pth * au2gpa
-    psta = psta * au2gpa
-    cp = cp * ha2kjmol * 1000
-    alpha = alpha * 1d5
-    fvib = fvib * ha2kjmol
-    uvib = uvib * ha2kjmol
-    svib = svib * ha2kjmol * 1000
-    cv_vib = cv_vib * ha2kjmol * 1000
-    fel = fel * ha2kjmol
-    uel = uel * ha2kjmol
-    sel = sel * ha2kjmol * 1000
-    cv_el = cv_el * ha2kjmol * 1000
-    fsum = fsum * ha2kjmol
-    usum = usum * ha2kjmol
-    ssum = ssum * ha2kjmol * 1000
-    cv_sum = cv_sum * ha2kjmol * 1000
-
-    ! output properties list -> coordinated with preamble of varbas.f90
-    proplist( 1) = pext
-    proplist( 2) = t
-    proplist( 3) = v
-    proplist( 4) = f0s
-    proplist( 5) = g
-    proplist( 6) = dg
-    proplist( 7) = psta
-    proplist( 8) = pth
-    proplist( 9) = b0
-    proplist(10) = usum
-    proplist(11) = cv_sum
-    proplist(12) = fsum
-    proplist(13) = ssum
-    proplist(14) = theta
-    proplist(15) = gamma
-    proplist(16) = alpha
-    proplist(17) = pbeta
-    proplist(18) = bs
-    proplist(19) = cp
-    proplist(20) = b1
-    proplist(21) = b2
-    proplist(22) = fvib
-    proplist(23) = fel
-    proplist(24) = uvib
-    proplist(25) = uel
-    proplist(26) = svib
-    proplist(27) = sel
-    proplist(28) = cv_vib
-    proplist(29) = cv_el
-
-  end subroutine dyneos_calc
 
   ! Calculate properties at a given volume and temperature.
   subroutine dyneos_calc_new(p,v,it,proplist)
@@ -1476,7 +1139,7 @@ contains
     use fit, only: fit_ev, fit_pshift
     use varbas, only: nph, ph, scal_bpscal, scal_apbaf, scal_pshift, scal_use, scal_noscal, &
        tm_debyegrun, tm_debye, tm_debye_einstein, tm_debye_einstein_v, phase_checkfiterr,&
-       nts, tlist, tm_debye_extended, tm_qhafull, tm_debye_input, tm_debyegrun
+       nts, tlist, tm_debye_extended, tm_qhafull, tm_debye_input, tm_debye_poisson_input
     use tools, only: error, leng
     use param, only: mline, uout, warning, faterr, au2gpa
     real*8, parameter :: facprec = 1d-10
@@ -1550,7 +1213,7 @@ contains
           elseif (ph(i)%tmodel == tm_qhafull) then
              call thermal_qha(ph(i),ph(i)%eec_t,j,yfit(j),dum,dum)
           elseif (ph(i)%tmodel == tm_debye.or.ph(i)%tmodel == tm_debye_input.or.&
-             ph(i)%tmodel == tm_debyegrun) then
+             ph(i)%tmodel == tm_debyegrun.or.ph(i)%tmodel == tm_debye_poisson_input) then
              call thermal(ph(i)%td(j),ph(i)%eec_t,dum,dum,dum,dum,yfit(j),dum)
           else
              write (*,*) "fixme!"

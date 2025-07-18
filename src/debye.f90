@@ -71,8 +71,7 @@ contains
 
     if (.not.allocated(p%td)) allocate(p%td(p%nv))
 
-    ! If the model is debye with poisson, p%td contains the poisson
-    ! coefficient; convert them to thetad(V).
+    ! If the model is debye with poisson, calculate thetad(V).
     if (p%tmodel == tm_debye_poisson_input) then
        do j = 1, p%nv
           poi = p%td(j)
@@ -90,7 +89,7 @@ contains
        call fitt_polygibbs(p%tdfit_mode,log(p%v),log(p%td),p%ntpol,p%tpol,ierr,.false.)
        p%ntpol = p%ntpol + 1
        p%tpol(p%ntpol) = 0d0
-       if (ierr > 0) call error('get_thetad','Can not fit logTd vs. logV',faterr)
+       if (ierr > 0) call error('fill_thetad','Can not fit logTd vs. logV',faterr)
        p%td0 = exp(fv0(p%tdfit_mode,log(p%veq_static),p%ntpol,p%tpol))
     else
        ! fill td0
