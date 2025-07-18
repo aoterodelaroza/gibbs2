@@ -540,7 +540,8 @@ contains
     use fit, only: fit_pshift, fitinfo, mmpar, fit_ev
     use varbas, only: nph, ph, mpropout, propfmt, tm_static, tm_externalfvib,&
        nps, plist, nts, tlist, tm_debye_extended, tm_qhafull, tm_debye,&
-       writelevel, nvs, vlist, doerrorbar, propname, vbracket, vdefault
+       writelevel, nvs, vlist, doerrorbar, propname, vbracket, vdefault,&
+       tm_debye_input
     use tools, only: error, leng, fopen, fclose
     use param, only: mline, mline_fmt, uout, format_string, format_string_header, fileroot,&
        iowrite, warning, faterr, null, undef
@@ -614,7 +615,7 @@ contains
              call thermal_debye_extended(ph(i),0d0,j,f0(j),dum,dum)
           elseif (ph(i)%tmodel == tm_qhafull) then
              call thermal_qha(ph(i),0d0,j,f0(j),dum,dum)
-          elseif (ph(i)%tmodel == tm_debye) then
+          elseif (ph(i)%tmodel == tm_debye .or. ph(i)%tmodel == tm_debye_input) then
              call thermal(ph(i)%td(j),0d0,dum,dum,dum,dum,f0(j),dum)
           else
              write (*,*) "fixme!"
@@ -632,9 +633,12 @@ contains
              elseif (ph(i)%tmodel == tm_qhafull) then
                 call thermal_qha(ph(i),tlist(k),j,ph(i)%dynamic_fvib(j,k),&
                    ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
-             elseif (ph(i)%tmodel == tm_debye) then
+             elseif (ph(i)%tmodel == tm_debye .or. ph(i)%tmodel == tm_debye_input) then
                 call thermal(ph(i)%td(j),tlist(k),dum,dum,dum,&
                    ph(i)%dynamic_cv(j,k),ph(i)%dynamic_fvib(j,k),ph(i)%dynamic_s(j,k))
+             else
+                write (*,*) "fixme!"
+                stop 1
              end if
           end do
 
@@ -1470,7 +1474,7 @@ contains
     use fit, only: fit_ev, fit_pshift
     use varbas, only: nph, ph, scal_bpscal, scal_apbaf, scal_pshift, scal_use, scal_noscal, &
        tm_debyegrun, tm_debye, tm_debye_einstein, tm_debye_einstein_v, phase_checkfiterr,&
-       nts, tlist, tm_debye_extended, tm_qhafull
+       nts, tlist, tm_debye_extended, tm_qhafull, tm_debye_input
     use tools, only: error, leng
     use param, only: mline, uout, warning, faterr, au2gpa
     real*8, parameter :: facprec = 1d-10
@@ -1543,8 +1547,11 @@ contains
              call thermal_debye_extended(ph(i),ph(i)%eec_t,j,yfit(j),dum,dum)
           elseif (ph(i)%tmodel == tm_qhafull) then
              call thermal_qha(ph(i),ph(i)%eec_t,j,yfit(j),dum,dum)
-          elseif (ph(i)%tmodel == tm_debye) then
+          elseif (ph(i)%tmodel == tm_debye .or. ph(i)%tmodel == tm_debye_input) then
              call thermal(ph(i)%td(j),ph(i)%eec_t,dum,dum,dum,dum,yfit(j),dum)
+          else
+             write (*,*) "fixme!"
+             stop 1
           end if
        end do
        yfit = ph(i)%e + yfit
