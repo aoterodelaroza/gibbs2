@@ -1580,20 +1580,20 @@ contains
   ! Apply the empirical energy correction.
   subroutine eshift_vexp()
     use evfunc, only: fv0, fv1, fv2
-    use debye, only: fill_thetad
+    use debye, only: fill_thetad, thermal_debye_extended, thermal_qha
     use fit, only: fit_ev, fit_pshift
     use varbas, only: nph, ph, scal_bpscal, scal_apbaf, scal_pshift, scal_use, scal_noscal, &
-       tm_debyegrun, tm_debye, tm_debye_einstein, tm_debye_einstein_v, phase_checkfiterr
+       tm_debyegrun, tm_debye, tm_debye_einstein, tm_debye_einstein_v, phase_checkfiterr,&
+       nts, tlist, tm_debye_extended, tm_qhafull
     use tools, only: error, leng
     use param, only: mline, uout, warning, faterr, au2gpa
     real*8, parameter :: facprec = 1d-10
 
-    integer :: i, ierr
+    integer :: i, j, ierr
     integer :: napol
     real*8 :: apol(0:mmpar), psum
     character*(mline) :: msg
-
-    integer :: imode, niter
+    integer :: imode, niter, it, k
     real*8 :: vexpt, bexpt, fac
     real*8 :: v0, b0, e0, g0, e0new, g0new, v0t, b0t, e0t, g0t
     real*8 :: vexp, bexp
@@ -1601,6 +1601,8 @@ contains
     real*8 :: psta_vexpt, pth_vexpt, bsta_vexpt
     real*8 :: bt_vexpt, bpobj
     real*8 :: vold
+    real*8, allocatable :: xfit(:), yfit(:), yaux(:)
+
 
     real*8, parameter :: vcycle = 1d-7
     integer, parameter :: miter = 20
@@ -1644,9 +1646,36 @@ contains
        ! fill the debye temperature, for debye models
        call fill_thetad(ph(i),.false.)
 
-       ! find v0, b0 and g0 at temperature t0
-       call fit_agrid_t(ph(i),ph(i)%eec_t,0,napol,apol,imode,ierr,.true.,.true.,.true.)
-       call fit_pshift(imode,ph(i)%v,ph(i)%eec_p,napol,apol,v0t,b0t,e0t,g0t,ierr)
+       if (ph(i)%tmodel == tm_debye_extended .or. ph(i)%tmodel == tm_qhafull) then
+          ! run the fit for the EEC temperature
+          allocate(xfit(ph(i)%nv),yfit(ph(i)%nv),yaux(ph(i)%nv))
+          xfit = ph(i)%v(1:ph(i)%nv)
+
+          ! calculate thermodynamic properties on the (V,T) grid
+          do j = 1, ph(i)%nv
+             if (ph(i)%tmodel == tm_debye_extended) then
+                call thermal_debye_extended(ph(i),ph(i)%eec_t,j,yfit(j),yaux(j),yaux(j))
+             elseif (ph(i)%tmodel == tm_qhafull) then
+                call thermal_qha(ph(i),ph(i)%eec_t,j,yfit(j),yaux(j),yaux(j))
+             end if
+          end do
+          yfit = ph(i)%e + yfit
+
+          ! fit the F(V) as a function of temperature
+          call fit_ev(ph(i)%fit_mode,ph(i)%reg_mode,xfit,yfit,napol,apol,ierr,.false.)
+          if (ierr > 0) then
+             write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
+             call error('dyneos','fit for F(V;T) not found',faterr)
+          end if
+          call fit_pshift(ph(i)%fit_mode,ph(i)%v,ph(i)%eec_p,napol,apol(0:napol),v0t,b0t,e0t,g0t,ierr)
+          imode = ph(i)%fit_mode
+       else
+          !!!! xxxx FIX ME !!!!
+
+          ! find v0, b0 and g0 at temperature t0
+          call fit_agrid_t(ph(i),ph(i)%eec_t,0,napol,apol,imode,ierr,.true.,.true.,.true.)
+          call fit_pshift(imode,ph(i)%v,ph(i)%eec_p,napol,apol,v0t,b0t,e0t,g0t,ierr)
+       end if
        if (ierr > 0) then
           write (msg,'("Phase ",A,": Can not find minimum of F(V,T). Using NOSCAL.")')&
              trim(adjustl(ph(i)%name(1:leng(ph(i)%name))))
@@ -1675,6 +1704,7 @@ contains
              psum = -fv1(imode,vexpt,napol,apol) - ph(i)%eec_p / au2gpa
              pth_vexpt = psum - psta_vexpt
              ph(i)%scale_a1 = psum
+
           case(scal_apbaf)
              ! shift the energy, e' = e + p*v
              psum = -fv1(imode,vexpt,napol,apol) - ph(i)%eec_p / au2gpa
