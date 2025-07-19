@@ -542,7 +542,7 @@ contains
        nps, plist, nts, tlist, tm_debye_extended, tm_qhafull, tm_debye,&
        writelevel, propname, vbracket,&
        tm_debye_input, tm_debyegrun, tm_debye_poisson_input, tm_debye_einstein,&
-       tm_debye_einstein_v
+       tm_debye_einstein_v, tm_externalfvib
     use tools, only: error, leng, fopen, fclose
     use param, only: mline, mline_fmt, uout, format_string, format_string_header, fileroot,&
        iowrite, faterr, null
@@ -616,9 +616,14 @@ contains
           elseif (ph(i)%tmodel == tm_debye.or.ph(i)%tmodel == tm_debye_input.or.&
              ph(i)%tmodel == tm_debyegrun.or.ph(i)%tmodel == tm_debye_poisson_input) then
              call thermal(ph(i)%td(j),0d0,dum(1),dum(2),dum(3),dum(4),f0(j),dum(5))
-          else if (ph(i)%tmodel == tm_debye_einstein .or. ph(i)%tmodel == tm_debye_einstein_v) then
+          elseif (ph(i)%tmodel == tm_debye_einstein .or. ph(i)%tmodel == tm_debye_einstein_v) then
              call debeins(ph(i),ph(i)%td(j),0d0,ph(i)%v(j),dum(1),dum(2),dum(3),&
                 dum(4),f0(j),dum(5),dum(6),dum(7))
+          elseif (ph(i)%tmodel == tm_externalfvib) then
+             if (abs(ph(i)%fvib_t(1)) > 1d-3) then
+                call error('dyneos','In the externalfvib thermal model, the first temperature must be zero',faterr)
+             end if
+             f0(j) = ph(i)%fvib_f(j,1)
           else
              write (*,*) "fixme! 1"
              stop 1
@@ -642,6 +647,10 @@ contains
              else if (ph(i)%tmodel == tm_debye_einstein .or. ph(i)%tmodel == tm_debye_einstein_v) then
                 call debeins(ph(i),ph(i)%td(j),tlist(k),ph(i)%v(j),dum(1),dum(2),dum(3),&
                    ph(i)%dynamic_cv(j,k),ph(i)%dynamic_fvib(j,k),ph(i)%dynamic_s(j,k),dum(4),dum(5))
+             elseif (ph(i)%tmodel == tm_externalfvib) then
+                ph(i)%dynamic_fvib(j,k) = ph(i)%fvib_f(j,k)
+                ph(i)%dynamic_s(j,k) = ph(i)%fvib_s(j,k)
+                ph(i)%dynamic_cv(j,k) = ph(i)%fvib_cv(j,k)
              else
                 write (*,*) "fixme! 2"
                 stop 1
@@ -1137,17 +1146,17 @@ contains
     use fit, only: fit_ev, fit_pshift
     use varbas, only: nph, ph, scal_bpscal, scal_apbaf, scal_pshift, scal_use, scal_noscal, &
        tm_debyegrun, tm_debye, tm_debye_einstein, tm_debye_einstein_v, phase_checkfiterr,&
-       tlist, tm_debye_extended, tm_qhafull, tm_debye_input, tm_debye_poisson_input,&
-       tm_debye_einstein, tm_debye_einstein_v
+       nts, tlist, tm_debye_extended, tm_qhafull, tm_debye_input, tm_debye_poisson_input,&
+       tm_debye_einstein, tm_debye_einstein_v, tm_externalfvib
     use tools, only: error, leng
     use param, only: mline, uout, warning, faterr, au2gpa
     real*8, parameter :: facprec = 1d-10
 
-    integer :: i, j, ierr
+    integer :: i, j, k, ierr
     integer :: napol
     real*8 :: apol(0:mmpar), psum
     character*(mline) :: msg
-    integer :: imode, niter, k
+    integer :: imode, niter, it
     real*8 :: vexpt, bexpt, fac
     real*8 :: v0, b0, e0, g0, e0new, g0new, v0t, b0t, e0t, g0t
     real*8 :: vexp, bexp
@@ -1166,6 +1175,7 @@ contains
 
        ! fill static properties to uncorrected static energy
        call fit_pshift(ph(i)%fit_mode,ph(i)%v,0d0,ph(i)%npol,ph(i)%cpol,v0,b0,e0,g0,ierr)
+
        ph(i)%veq_static = v0
        ph(i)%eeq_static = g0 ! because the fit_pshift had p = 0.
        ph(i)%beq_static = b0
@@ -1214,9 +1224,21 @@ contains
           elseif (ph(i)%tmodel == tm_debye.or.ph(i)%tmodel == tm_debye_input.or.&
              ph(i)%tmodel == tm_debyegrun.or.ph(i)%tmodel == tm_debye_poisson_input) then
              call thermal(ph(i)%td(j),ph(i)%eec_t,dum(1),dum(2),dum(3),dum(4),yfit(j),dum(5))
-          else if (ph(i)%tmodel == tm_debye_einstein .or. ph(i)%tmodel == tm_debye_einstein_v) then
+          elseif (ph(i)%tmodel == tm_debye_einstein .or. ph(i)%tmodel == tm_debye_einstein_v) then
              call debeins(ph(i),ph(i)%td(j),ph(i)%eec_t,ph(i)%v(j),dum(1),dum(2),dum(3),&
                 dum(4),yfit(j),dum(5),dum(6),dum(7))
+          elseif (ph(i)%tmodel == tm_externalfvib) then
+             ! check that the EEC temperature is known first
+             it = 0
+             do k = 1, nts
+                if (abs(ph(i)%eec_t - tlist(k)) < 1d-3) then
+                   it = k
+                   exit
+                end if
+             end do
+             if (it == 0) &
+                call error('interpolate','EEC temperature must be included in the temperature list',faterr)
+             yfit(j) = ph(i)%fvib_f(j,it)
           else
              write (*,*) "fixme! 3"
              stop 1
