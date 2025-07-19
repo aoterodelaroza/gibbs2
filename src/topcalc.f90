@@ -535,25 +535,23 @@ contains
   ! pressure list.
   subroutine dyneos()
     use evfunc, only: fv0
-    use debye, only: thermal_debye_extended, thermal_qha, thermal
+    use debye, only: thermal_debye_extended, thermal_qha, thermal, debeins
     use gnuplot_templates, only: gen_allgnu_t, gen_allgnu_p
     use fit, only: fit_pshift, fitinfo, mmpar, fit_ev
-    use varbas, only: nph, ph, mpropout, propfmt, tm_static, tm_externalfvib,&
+    use varbas, only: nph, ph, mpropout, propfmt, tm_static,&
        nps, plist, nts, tlist, tm_debye_extended, tm_qhafull, tm_debye,&
-       writelevel, nvs, vlist, doerrorbar, propname, vbracket, vdefault,&
-       tm_debye_input, tm_debyegrun, tm_debye_poisson_input
+       writelevel, propname, vbracket,&
+       tm_debye_input, tm_debyegrun, tm_debye_poisson_input, tm_debye_einstein,&
+       tm_debye_einstein_v
     use tools, only: error, leng, fopen, fclose
     use param, only: mline, mline_fmt, uout, format_string, format_string_header, fileroot,&
-       iowrite, warning, faterr, null, undef
+       iowrite, faterr, null
     integer :: lu
-    integer :: i, j, k, ierr, id
-    real*8 :: v, b, e, g, dum
+    integer :: i, j, k, ierr
+    real*8 :: v, b, e, g, dum(7)
     character*(mline) :: msg
     character*(mline_fmt) :: fm, fme
-    type(fitinfo) :: pfit
-    real*8 :: proplist(mpropout), errlist(mpropout), rms, may
-    type(fitpack) :: ft
-    logical :: isalloc
+    real*8 :: proplist(mpropout), rms, may
     real*8, allocatable :: xfit(:), yfit(:), ynew(:), f0(:)
 
     if (writelevel < 1) return
@@ -612,14 +610,17 @@ contains
        allocate(f0(ph(i)%nv))
        do j = 1, ph(i)%nv
           if (ph(i)%tmodel == tm_debye_extended) then
-             call thermal_debye_extended(ph(i),0d0,j,f0(j),dum,dum)
+             call thermal_debye_extended(ph(i),0d0,j,f0(j),dum(1),dum(2))
           elseif (ph(i)%tmodel == tm_qhafull) then
-             call thermal_qha(ph(i),0d0,j,f0(j),dum,dum)
+             call thermal_qha(ph(i),0d0,j,f0(j),dum(1),dum(2))
           elseif (ph(i)%tmodel == tm_debye.or.ph(i)%tmodel == tm_debye_input.or.&
              ph(i)%tmodel == tm_debyegrun.or.ph(i)%tmodel == tm_debye_poisson_input) then
-             call thermal(ph(i)%td(j),0d0,dum,dum,dum,dum,f0(j),dum)
+             call thermal(ph(i)%td(j),0d0,dum(1),dum(2),dum(3),dum(4),f0(j),dum(5))
+          else if (ph(i)%tmodel == tm_debye_einstein .or. ph(i)%tmodel == tm_debye_einstein_v) then
+             call debeins(ph(i),ph(i)%td(j),0d0,ph(i)%v(j),dum(1),dum(2),dum(3),&
+                dum(4),f0(j),dum(5),dum(6),dum(7))
           else
-             write (*,*) "fixme!"
+             write (*,*) "fixme! 1"
              stop 1
           end if
        end do
@@ -636,10 +637,13 @@ contains
                    ph(i)%dynamic_s(j,k),ph(i)%dynamic_cv(j,k))
              elseif (ph(i)%tmodel == tm_debye.or.ph(i)%tmodel == tm_debye_input.or.&
                 ph(i)%tmodel == tm_debyegrun.or.ph(i)%tmodel == tm_debye_poisson_input) then
-                call thermal(ph(i)%td(j),tlist(k),dum,dum,dum,&
+                call thermal(ph(i)%td(j),tlist(k),dum(1),dum(2),dum(3),&
                    ph(i)%dynamic_cv(j,k),ph(i)%dynamic_fvib(j,k),ph(i)%dynamic_s(j,k))
+             else if (ph(i)%tmodel == tm_debye_einstein .or. ph(i)%tmodel == tm_debye_einstein_v) then
+                call debeins(ph(i),ph(i)%td(j),tlist(k),ph(i)%v(j),dum(1),dum(2),dum(3),&
+                   ph(i)%dynamic_cv(j,k),ph(i)%dynamic_fvib(j,k),ph(i)%dynamic_s(j,k),dum(4),dum(5))
              else
-                write (*,*) "fixme!"
+                write (*,*) "fixme! 2"
                 stop 1
              end if
           end do
@@ -986,8 +990,7 @@ contains
   subroutine interpolate()
     use evfunc, only: fv1
     use fit, only: fit_pshift
-    use varbas, only: nph, ph, nps, plist, nts, tlist, writelevel, tm_static,&
-       tm_debye_extended, tm_qhafull
+    use varbas, only: nph, ph, nps, plist, nts, tlist, writelevel, tm_static
     use tools, only: error, leng, fopen, fclose, realloc
     use param, only: mline_fmt, uout, format_string, format_string_header, fileroot, iowrite, &
        warning, faterr, null, au2gpa, ifmt_v, ifmt_p, ifmt_t, ifmt_interp
@@ -997,11 +1000,7 @@ contains
     real*8, allocatable :: fi(:)
     integer, allocatable :: ifm(:)
     character*(mline_fmt) :: fm1, fms
-    integer :: napol, ierr, imode
-    real*8 :: apol(0:mmpar)
-    real*8, allocatable :: xfit(:), yfit(:)
-    integer :: ffit_npol
-    real*8, allocatable :: ffit_apol(:)
+    integer :: ierr
 
     if (writelevel < 2) return
 
@@ -1134,11 +1133,12 @@ contains
   ! Apply the empirical energy correction.
   subroutine eshift_vexp()
     use evfunc, only: fv0, fv1, fv2
-    use debye, only: fill_thetad, thermal_debye_extended, thermal_qha, thermal
+    use debye, only: fill_thetad, thermal_debye_extended, thermal_qha, thermal, debeins
     use fit, only: fit_ev, fit_pshift
     use varbas, only: nph, ph, scal_bpscal, scal_apbaf, scal_pshift, scal_use, scal_noscal, &
        tm_debyegrun, tm_debye, tm_debye_einstein, tm_debye_einstein_v, phase_checkfiterr,&
-       nts, tlist, tm_debye_extended, tm_qhafull, tm_debye_input, tm_debye_poisson_input
+       tlist, tm_debye_extended, tm_qhafull, tm_debye_input, tm_debye_poisson_input,&
+       tm_debye_einstein, tm_debye_einstein_v
     use tools, only: error, leng
     use param, only: mline, uout, warning, faterr, au2gpa
     real*8, parameter :: facprec = 1d-10
@@ -1147,14 +1147,14 @@ contains
     integer :: napol
     real*8 :: apol(0:mmpar), psum
     character*(mline) :: msg
-    integer :: imode, niter, it, k
+    integer :: imode, niter, k
     real*8 :: vexpt, bexpt, fac
     real*8 :: v0, b0, e0, g0, e0new, g0new, v0t, b0t, e0t, g0t
     real*8 :: vexp, bexp
     real*8 :: fa, fb, qfa, qfb, qfx
     real*8 :: psta_vexpt, pth_vexpt, bsta_vexpt
     real*8 :: bt_vexpt, bpobj
-    real*8 :: vold, dum
+    real*8 :: vold, dum(7)
     real*8, allocatable :: xfit(:), yfit(:)
 
     real*8, parameter :: vcycle = 1d-7
@@ -1208,14 +1208,17 @@ contains
        ! calculate thermodynamic properties on the (V,T) grid
        do j = 1, ph(i)%nv
           if (ph(i)%tmodel == tm_debye_extended) then
-             call thermal_debye_extended(ph(i),ph(i)%eec_t,j,yfit(j),dum,dum)
+             call thermal_debye_extended(ph(i),ph(i)%eec_t,j,yfit(j),dum(1),dum(2))
           elseif (ph(i)%tmodel == tm_qhafull) then
-             call thermal_qha(ph(i),ph(i)%eec_t,j,yfit(j),dum,dum)
+             call thermal_qha(ph(i),ph(i)%eec_t,j,yfit(j),dum(1),dum(2))
           elseif (ph(i)%tmodel == tm_debye.or.ph(i)%tmodel == tm_debye_input.or.&
              ph(i)%tmodel == tm_debyegrun.or.ph(i)%tmodel == tm_debye_poisson_input) then
-             call thermal(ph(i)%td(j),ph(i)%eec_t,dum,dum,dum,dum,yfit(j),dum)
+             call thermal(ph(i)%td(j),ph(i)%eec_t,dum(1),dum(2),dum(3),dum(4),yfit(j),dum(5))
+          else if (ph(i)%tmodel == tm_debye_einstein .or. ph(i)%tmodel == tm_debye_einstein_v) then
+             call debeins(ph(i),ph(i)%td(j),ph(i)%eec_t,ph(i)%v(j),dum(1),dum(2),dum(3),&
+                dum(4),yfit(j),dum(5),dum(6),dum(7))
           else
-             write (*,*) "fixme!"
+             write (*,*) "fixme! 3"
              stop 1
           end if
        end do
