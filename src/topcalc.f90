@@ -625,8 +625,7 @@ contains
              end if
              f0(j) = ph(i)%fvib_f(j,1)
           else
-             write (*,*) "fixme! 1"
-             stop 1
+             call error('dyneos','Unknown thermal model',faterr)
           end if
        end do
 
@@ -652,8 +651,7 @@ contains
                 ph(i)%dynamic_s(j,k) = ph(i)%fvib_s(j,k)
                 ph(i)%dynamic_cv(j,k) = ph(i)%fvib_cv(j,k)
              else
-                write (*,*) "fixme! 2"
-                stop 1
+                call error('dyneos','Unknown thermal model',faterr)
              end if
           end do
 
@@ -1240,8 +1238,7 @@ contains
                 call error('interpolate','EEC temperature must be included in the temperature list',faterr)
              yfit(j) = ph(i)%fvib_f(j,it)
           else
-             write (*,*) "fixme! 3"
-             stop 1
+             call error('eshift_vexp','Unknown thermal model',faterr)
           end if
        end do
        yfit = ph(i)%e + yfit
