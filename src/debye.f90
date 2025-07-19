@@ -540,50 +540,6 @@ contains
 
   end subroutine thermal_debye_extended
 
-  ! Interpolate the phonon density of states to volume v. Returns
-  ! the interpolated phDOS in d.
-  function phdos_interpolate(p,v) result(d)
-    use varbas, only: phase, phonsplin, vbracket
-    use tools, only: leng, error
-    use param, only: faterr, uout
-    type(phase), intent(in) :: p
-    real*8, intent(in) :: v
-    real*8 :: d(size(p%phdos_f))
-
-    real*8, parameter :: deps = 1d-6
-
-    integer :: i, id
-    real*8 :: fac, ppvalu
-
-    call vbracket(p,v,id,.true.)
-    if (id == 0) then
-       write (uout,'("Phase = ",A)') trim(adjustl(p%name(1:leng(p%name))))
-       write (uout,'("Volume = ",F17.7)') v
-       call error('phdos_interpolate','Requested volume out of grid bounds',faterr)
-    else if (id < 0) then
-       d = p%phdos_d(:,1,-id)
-       return
-    end if
-
-    ! interpolate phonon DOS to this volume
-    if (phonsplin) then
-       ! not-a-knot cubic spline
-       d = 0d0
-       do i = 1, size(p%phdos_f)
-          d(i) = ppvalu(p%v,p%phdos_d(i,:,:),p%nv-1,4,v,0)
-          if ((p%phdos_d(i,1,id) < deps .or. p%phdos_d(i,1,id+1) < deps) .and. d(i) < deps) then
-             d(i) = 0d0
-             exit
-          end if
-       end do
-    else
-       ! linear
-       fac = (v-p%v(id)) / (p%v(id+1) - p%v(id))
-       d = (1d0-fac) * p%phdos_d(:,1,id) + fac * p%phdos_d(:,1,id+1)
-    end if
-
-  end function phdos_interpolate
-
   ! Interpolate the frequencies at Gamma to volume v. Returns the
   ! interpolated frequencies in d.
   function freqg_interpolate(p,v) result(ff)

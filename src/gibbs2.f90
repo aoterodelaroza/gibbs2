@@ -18,9 +18,9 @@
 !.gibbs2 - (P,T) thermodynamics of crystals.
 program gibbs2
   use evfunc, only: nelectrons, evfunc_init, punch_params
-  use topcalc, only: fint, iint, interp_input, mxint, nxint, printfreqs, write_energy,&
+  use topcalc, only: fint, iint, interp_input, mxint, nxint, write_energy,&
      dyn_transp, stablevbg, deltag, dyneos, topcalc_init, popinput, eshift_vexp,&
-     popenergyfit, plotdh, interpolate, static_transp
+     popenergyfit, plotdh, interpolate, static_transp, printfreqs
   use debye, only: fill_thetad, thermal
   use fit, only: fit_init, fit_pshift
   use eos, only: eosfit_ev_fitt

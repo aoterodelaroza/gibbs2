@@ -1425,6 +1425,64 @@ contains
 
   end subroutine mask_trans
 
+  ! Print Debye-Einstein model frequencies to the gammafreq file.
+  subroutine printfreqs()
+    use evfunc, only: fv1, fv2
+    use varbas, only: nph, ph, tm_debye_einstein
+    use tools, only: leng, fopen, fclose
+    use param, only: uout, fileroot, iowrite, null, au2gpa, ha2cm_1, half, twothird
+    integer :: i, j
+    real*8 :: vol, pstat, bstat, veq, beq
+    real*8 :: tmpvol, tmpb, tmppb, tmptot
+    real*8, allocatable :: freq(:)
+    integer :: mfreq, n
+    integer :: lu
+
+    mfreq = 0
+    do i = 1, nph
+       if (ph(i)%tmodel == tm_debye_einstein) then
+          mfreq = max(mfreq,ph(i)%nfreq)
+       end if
+    end do
+    if (mfreq == 0) return
+    allocate(freq(mfreq))
+
+    write (uout,'("* Gamma frequencies in the Debye-Einstein model/")')
+    write (uout,'("  Writing file: ",A/)') trim(fileroot)//".gammafreq"
+
+    lu = fopen(lu,trim(fileroot)//".gammafreq"//null,iowrite)
+    do i = 1, nph
+       if (ph(i)%tmodel == tm_debye_einstein) then
+          write (lu,'("# Phase ",I2," (",A,")")') i, &
+             trim(adjustl(ph(i)%name(1:leng(ph(i)%name))))
+          write (lu,'("# V (bohr^3) freq1 freq2 ... freq(3n-3) (cm^-1)")')
+          n = ph(i)%nfreq
+
+          do j = 1, ph(i)%nv
+             vol = ph(i)%v(j)
+             pstat = -fv1(ph(i)%fit_mode, vol, ph(i)%npol, ph(i)%cpol) * au2gpa
+             bstat = vol * fv2(ph(i)%fit_mode, vol, ph(i)%npol, ph(i)%cpol) * au2gpa
+             veq = ph(i)%veq_static
+             beq = ph(i)%beq_static
+
+             tmpVol=(vol/veq)**(1d0/6d0)
+             tmpB = (bstat/beq)**(half)
+             tmpPB = (1d0 - twothird*pstat/bstat)**(half)
+             tmpTot = tmpVol*tmpB*tmpPB
+
+             freq(1:n) = ph(i)%freqg(:,1) * tmpTot * ha2cm_1
+
+             write (lu,'(F10.4,9999(F16.8))') ph(i)%v(j), freq(1:n)
+          end do
+          write (lu,'(/)')
+       end if
+    end do
+
+    call fclose(lu)
+    deallocate(freq)
+
+  end subroutine printfreqs
+
   ! Write the edat plot files.
   subroutine write_energy(ini,step,end)
     use evfunc, only: fv0
