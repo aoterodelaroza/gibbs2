@@ -753,7 +753,7 @@ contains
   ! Calculate properties at a given volume and temperature.
   subroutine dyneos_calc(p,v,it,proplist)
     use evfunc, only: fv0, fv1, fv2, fv3, fv4
-    use debye, only: tlim_gamma, debeins, thermalphon, thermal
+    use debye, only: tlim_gamma, debeins, thermal
     use varbas, only: mpropout, phase, vbracket, tlist, mm, vfree
     use tools, only: error
     use param, only: au2gpa, ha2kjmol, pckbau, pi, third
@@ -1404,67 +1404,6 @@ contains
     end function qfac
   end subroutine eshift_vexp
 
-  !< Returns fitting parameters of Cv_el(V,T).
-  subroutine fit_cvelgrid_t(p,T,ncvpol,cvpol,mode,ierr)
-    use evfunc, only: fv1
-    use varbas, only: phase, em_pol4, ftsel_fitmode
-    use fit, only: fit_ev
-    type(phase), intent(in) :: p
-    real*8, intent(in) :: T
-    integer, intent(out) :: ncvpol
-    real*8, intent(out) :: cvpol(0:mmpar)
-    integer, intent(out) :: mode
-    integer, intent(out) :: ierr
-
-    integer :: i
-    integer :: rnv
-    real*8 :: aux(p%nv), auxcpol(0:mmpar)
-    real*8 :: realv(p%nv), realcv(p%nv)
-
-    rnv = count(p%dyn_active)
-
-    aux = 0d0
-
-    if (p%emodel == em_pol4) then
-       do i = 1, p%nv
-          auxcpol = 0d0
-          auxcpol(1:4) = p%fel_cpol(1:4,i) - p%tsel_cpol(1:4,i)
-          aux(i) = fv1(ftsel_fitmode,T,6,auxcpol)
-       end do
-    end if
-
-    ! apply mask to remove points with negative frequencies
-    realv(1:rnv) = pack(p%v,p%dyn_active)
-    realcv(1:rnv) = pack(aux,p%dyn_active)
-
-    ! Numerical fit -> napol and apol
-    call fit_ev(p%cvfit_mode, p%reg_mode, realv(1:rnv), realcv(1:rnv), ncvpol, cvpol,&
-       ierr, .false.)
-    mode = p%cvfit_mode
-
-  end subroutine fit_cvelgrid_t
-
-  ! Check wether phase p is calculable at point v.
-  function is_dyn_v_in(p,v)
-    use varbas, only: phase
-    type(phase), intent(in) :: p
-    real*8, intent(in) :: v
-    logical :: is_dyn_v_in
-
-    real*8, parameter :: veps2 = 1d-6
-
-    integer :: i
-
-    is_dyn_v_in = .false.
-    if (v < p%v(1)-veps2 .or. v > p%v(p%nv)+veps2) return
-    do i = 1, p%nv-1
-       is_dyn_v_in = v >= p%v(i)-veps2    .and. v <=p%v(i+1)+veps2 &
-                    .and. p%dyn_active(i) .and. p%dyn_active(i+1)
-       if (is_dyn_v_in) return
-    end do
-
-  end function is_dyn_v_in
-
   ! mask to elimiate phases for which dynamical properties cannot be calculated.
   subroutine mask_trans(n,imask)
     use varbas, only: nph, ph, tm_static, dotrans, writelevel
@@ -1485,64 +1424,6 @@ contains
     end do
 
   end subroutine mask_trans
-
-  ! Print Debye-Einstein model frequencies to the gammafreq file.
-  subroutine printfreqs()
-    use evfunc, only: fv1, fv2
-    use varbas, only: nph, ph, tm_debye_einstein
-    use tools, only: leng, fopen, fclose
-    use param, only: uout, fileroot, iowrite, null, au2gpa, ha2cm_1, half, twothird
-    integer :: i, j
-    real*8 :: vol, pstat, bstat, veq, beq
-    real*8 :: tmpvol, tmpb, tmppb, tmptot
-    real*8, allocatable :: freq(:)
-    integer :: mfreq, n
-    integer :: lu
-
-    mfreq = 0
-    do i = 1, nph
-       if (ph(i)%tmodel == tm_debye_einstein) then
-          mfreq = max(mfreq,ph(i)%nfreq)
-       end if
-    end do
-    if (mfreq == 0) return
-    allocate(freq(mfreq))
-
-    write (uout,'("* Gamma frequencies in the Debye-Einstein model/")')
-    write (uout,'("  Writing file: ",A/)') trim(fileroot)//".gammafreq"
-
-    lu = fopen(lu,trim(fileroot)//".gammafreq"//null,iowrite)
-    do i = 1, nph
-       if (ph(i)%tmodel == tm_debye_einstein) then
-          write (lu,'("# Phase ",I2," (",A,")")') i, &
-             trim(adjustl(ph(i)%name(1:leng(ph(i)%name))))
-          write (lu,'("# V (bohr^3) freq1 freq2 ... freq(3n-3) (cm^-1)")')
-          n = ph(i)%nfreq
-
-          do j = 1, ph(i)%nv
-             vol = ph(i)%v(j)
-             pstat = -fv1(ph(i)%fit_mode, vol, ph(i)%npol, ph(i)%cpol) * au2gpa
-             bstat = vol * fv2(ph(i)%fit_mode, vol, ph(i)%npol, ph(i)%cpol) * au2gpa
-             veq = ph(i)%veq_static
-             beq = ph(i)%beq_static
-
-             tmpVol=(vol/veq)**(1d0/6d0)
-             tmpB = (bstat/beq)**(half)
-             tmpPB = (1d0 - twothird*pstat/bstat)**(half)
-             tmpTot = tmpVol*tmpB*tmpPB
-
-             freq(1:n) = ph(i)%freqg(:,1) * tmpTot * ha2cm_1
-
-             write (lu,'(F10.4,9999(F16.8))') ph(i)%v(j), freq(1:n)
-          end do
-          write (lu,'(/)')
-       end if
-    end do
-
-    call fclose(lu)
-    deallocate(freq)
-
-  end subroutine printfreqs
 
   ! Write the edat plot files.
   subroutine write_energy(ini,step,end)

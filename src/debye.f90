@@ -21,7 +21,7 @@ module debye
 
   ! public
   public :: fill_thetad
-  public :: thermal, debeins, thermalphon, thermal_qha, thermal_debye_extended
+  public :: thermal, debeins, thermal_qha, thermal_debye_extended
 
   ! if temperature is lower, then gamma(t) = gamma(tlim)
   real*8, parameter, public :: tlim_gamma = 1d0 + 1d-6
@@ -387,96 +387,6 @@ contains
     he  = he_ac  + he_op
 
   end subroutine debeins
-
-  ! For phase p, calculate thermodynamic non-gamma-dependent
-  ! thermodynamic properties at V and T using phonon DOS QHA.
-  ! Returns: uvib = vibrational contribution to the internal energy,
-  ! cv = constant-volume heat capacity, fvib = vibrational
-  ! contribution to the free energy, ent = entropy, cv_lowt =
-  ! low-temeprature cv (for the calculation of gamma).
-  subroutine thermalphon (p,T,v,uvib,cv,fvib,ent,cv_lowt)
-    use varbas, only: phase
-    use tools, only: quad1
-    use param, only: pckbau
-    type(phase), intent(in) :: p
-    real*8, intent(in) :: T, v
-    real*8, intent(out) :: uvib, cv, fvib, ent, cv_lowt
-
-    integer :: nf
-    real*8 :: step, kt
-    real*8, allocatable :: emfkt(:), aux(:), tmin(:), d(:)
-    real*8, allocatable :: l1emfkt(:)
-
-    real*8, parameter :: hvol = 1d-7
-    real*8, parameter :: logtiny = log(tiny(1d0))
-
-    ! initialize
-    kt = pckbau * T
-
-    ! interpolate the phonon DOS at volume v.
-    ! f = frequencies (Hartree), d = phDOS, on the same grid.
-    nf = size(p%phdos_f,1)
-    allocate(d(nf))
-    step = p%phstep
-    d = phdos_interpolate(p,v)
-
-    ! calculate the minimum temperature
-    allocate(tmin(nf))
-    tmin = -p%phdos_f / (pckbau * logtiny)
-
-    ! calculate emfkt = exp(-omega / (k*T))
-    allocate(emfkt(nf),l1emfkt(nf))
-    where (T < tmin)
-       emfkt = 0d0
-    elsewhere
-       emfkt = exp(-p%phdos_f / kt)
-    end where
-    l1emfkt = log(1d0 - emfkt)
-
-    ! note: frequency = 0 is gone from f(:)
-    allocate(aux(nf))
-
-    ! calculate fvib
-    aux = d*(0.5d0 * p%phdos_f + kt * l1emfkt)
-    fvib = quad1(p%phdos_f,aux,step)
-
-    ! calculate entropy (T < tmin implies aux = 0)
-    where (T < tmin)
-       aux = 0d0
-    elsewhere
-       aux = d*(-pckbau * l1emfkt + p%phdos_f/T * emfkt / (1d0 - emfkt))
-    end where
-    ent = quad1(p%phdos_f,aux,step)
-
-    ! calculate constant-volume heat capacity (T < tmin implies aux = 0)
-    where (T < tmin)
-       aux = 0d0
-    elsewhere
-       aux = d * (pckbau * (p%phdos_f / kt)**2 * emfkt / (1d0 - emfkt)**2)
-    end where
-    cv = quad1(p%phdos_f,aux,step)
-
-    ! internal energy
-    uvib = fvib + T * ent
-
-    ! Cv is needed in the calculation of gamma -> 0/0 at low temp.
-    cv_lowt = cv
-    if (T < tlim_gamma) then
-       where (tlim_gamma < tmin)
-          emfkt = 0d0
-       elsewhere
-          emfkt = exp(-p%phdos_f / (pckbau * tlim_gamma))
-       end where
-       where (p%phdos_f > log(huge(hvol))/2*pckbau*tlim_gamma)
-          aux = emfkt
-       elsewhere
-          aux = 1d0 / (1d0 - 1d0/emfkt)
-       end where
-       cv_lowt = quad1(p%phdos_f,d*(pckbau*(p%phdos_f/pckbau/tlim_gamma)**2 / (emfkt-1) * aux),step)
-    end if
-    deallocate(d,tmin,emfkt,l1emfkt,aux)
-
-  end subroutine thermalphon
 
   ! For phase p, calculate the Helmholtz free energy, entropy, and
   ! CV at temperature T and the volume given by index iv using
