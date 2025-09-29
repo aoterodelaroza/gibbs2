@@ -20,13 +20,24 @@ def plot_phase_diagram(fig,ax,phlist,alldefined=True,steprefine=10):
     """
 
     ## determine plot limits and step
-    Tmin = pmin = -np.inf
-    Tmax = pmax = Tstep = pstep = np.inf
+    if alldefined:
+        Tmin = pmin = -np.inf
+        Tmax = pmax = np.inf
+    else:
+        Tmin = pmin = np.inf
+        Tmax = pmax = -np.inf
+    Tstep = pstep = np.inf
     for ph in phlist:
-        Tmin = max(Tmin,ph.Tmin)
-        pmin = max(pmin,ph.pmin)
-        Tmax = min(Tmax,ph.Tmax)
-        pmax = min(pmax,ph.pmax)
+        if alldefined:
+            Tmin = max(Tmin,ph.Tmin)
+            pmin = max(pmin,ph.pmin)
+            Tmax = min(Tmax,ph.Tmax)
+            pmax = min(pmax,ph.pmax)
+        else:
+            Tmin = min(Tmin,ph.Tmin)
+            pmin = min(pmin,ph.pmin)
+            Tmax = max(Tmax,ph.Tmax)
+            pmax = max(pmax,ph.pmax)
         Tstep = min(Tstep,ph.Tstep)
         pstep = min(pstep,ph.pstep)
 
@@ -51,8 +62,9 @@ def plot_phase_diagram(fig,ax,phlist,alldefined=True,steprefine=10):
         mask = (~mask) & (Gmlist[-1] < Gmmin2) & (~np.isnan(Gmlist[-1]))
         Gmmin2[mask] = Gmlist[-1][mask]
 
-    ## start the plot
-    fig, ax = plt.subplots()
+    ## put back the nans
+    for G in Gmlist:
+        Gmid[np.isnan(G)] = -1
 
     ## list of colors
     clist = plt.rcParams['axes.prop_cycle'].by_key()['color']
