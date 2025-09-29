@@ -35,3 +35,7 @@ tests/*/*.aux
 tests/*/*.efit
 tests/*/*.outg
 tests/*/*.pdf
+
+# python
+__pycache__/
+*.py[cod]
