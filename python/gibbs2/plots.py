@@ -3,15 +3,12 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.cm as cm
 
-def plot_phase_diagram(fig,ax,phlist,alldefined=True,steprefine=10):
+def plot_phase_diagram(fig,ax,phlist,steprefine=10):
     """Bulid a colormap plot of the phase diagram constructed with the
     phases given in the list phlist.
 
     By default, the maximum possible temperature and pressure range
     possible is used.
-
-    If alldefined is True, all phases must return non-nan (be defined)
-    to create a point in the diagram.
 
     steprefine = use a step in temperature and pressure that is
     steprefine times lower than the smallest step in any of the
@@ -20,24 +17,14 @@ def plot_phase_diagram(fig,ax,phlist,alldefined=True,steprefine=10):
     """
 
     ## determine plot limits and step
-    if alldefined:
-        Tmin = pmin = -np.inf
-        Tmax = pmax = np.inf
-    else:
-        Tmin = pmin = np.inf
-        Tmax = pmax = -np.inf
+    Tmin = pmin = np.inf
+    Tmax = pmax = -np.inf
     Tstep = pstep = np.inf
     for ph in phlist:
-        if alldefined:
-            Tmin = max(Tmin,ph.Tmin)
-            pmin = max(pmin,ph.pmin)
-            Tmax = min(Tmax,ph.Tmax)
-            pmax = min(pmax,ph.pmax)
-        else:
-            Tmin = min(Tmin,ph.Tmin)
-            pmin = min(pmin,ph.pmin)
-            Tmax = max(Tmax,ph.Tmax)
-            pmax = max(pmax,ph.pmax)
+        Tmin = min(Tmin,ph.Tmin)
+        pmin = min(pmin,ph.pmin)
+        Tmax = max(Tmax,ph.Tmax)
+        pmax = max(pmax,ph.pmax)
         Tstep = min(Tstep,ph.Tstep)
         pstep = min(pstep,ph.pstep)
 
