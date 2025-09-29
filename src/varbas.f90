@@ -1778,14 +1778,14 @@ contains
     end if
     call inplace_sort(plist(1:nps))
 
-    ! Make sure that the first pressure is p=0
-    if (abs(plist(1)) > 1d-5) then
-       call realloc(plist,nps+1)
-       plist(2:nps+1) = plist(1:nps)
-       plist(1) = 0d0
-       nps = nps + 1
-       call error('setup_phases','The first element of the pressure list must be zero.',warning)
-    end if
+    ! ! Make sure that the first pressure is p=0
+    ! if (abs(plist(1)) > 1d-5) then
+    !    call realloc(plist,nps+1)
+    !    plist(2:nps+1) = plist(1:nps)
+    !    plist(1) = 0d0
+    !    nps = nps + 1
+    !    call error('setup_phases','The first element of the pressure list must be zero.',warning)
+    ! end if
 
     write (uout,'("* Pressure range examined")')
     write (uout,'("  Minimum p_max across all phases (GPa): ",F12.3)') pmaxmin

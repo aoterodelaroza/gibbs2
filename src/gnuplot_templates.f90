@@ -185,7 +185,7 @@ contains
 
     write (lu,'("!cp ",A," temp.dat")') trim(fileroot)//".eos"
     write (lu,*)
-    write (lu,'("set xrange [0:",F20.1,"]")') plist(nps)
+    write (lu,'("set xrange [",F20.1,":",F20.1,"]")') plist(1), plist(nps)
     write (lu,'("set xlabel ""p (GPa)""")')
     write (lu,*)
 
