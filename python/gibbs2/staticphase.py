@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.interpolate import interp1d
+import copy
 
 class StaticPhase:
     """Thermodynamic properties of a static phase calculated by
@@ -7,7 +8,7 @@ class StaticPhase:
     .eos_static file and is used to create plots and performing tasks
     not done in gibbs2 by default."""
 
-    ## constructor
+    ## constructors
     def __init__(self,name,strl):
         """Constructor for the staticphase. name is the name of the
         phase and strl is a list of strings with the thermodynamic
@@ -27,6 +28,7 @@ class StaticPhase:
         self._pkeys = np.unique(np.sort(np.round(self._plist,decimals=2)))
 
         ## set up the interpolant
+        self._Einterp = interp1d(self._plist,self._Elist,'cubic',bounds_error=False,fill_value=np.nan)
         self._Hinterp = interp1d(self._plist,self._Hlist,'cubic',bounds_error=False,fill_value=np.nan)
 
     ## interpolated thermodynamic properties
@@ -47,6 +49,20 @@ class StaticPhase:
     @property
     def name(self):
         return self._name
+
+    ## operations
+    def __mul__(self,other):
+        """Multiply by scalar: all extensive properties are
+        multiplied, all intensive properties are left alone. Update
+        the name."""
+        ph = copy.deepcopy(self)
+        ph._Elist *= other
+        ph._Hlist *= other
+        ph._Einterp = interp1d(ph._plist,ph._Elist,'cubic',bounds_error=False,fill_value=np.nan)
+        ph._Hinterp = interp1d(ph._plist,ph._Hlist,'cubic',bounds_error=False,fill_value=np.nan)
+        ph._name = f"{other} * {ph.name}"
+        return ph
+    __rmul__ = __mul__
 
     ## representation functions
     def __str__(self):
