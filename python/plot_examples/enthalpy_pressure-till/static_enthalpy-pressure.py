@@ -10,7 +10,7 @@ phlist = g2.read_staticphases_from_eos_file("till.eos_static")
 
 fig,ax = plt.subplots()
 fig,ax = g2.plot_enthalpy_pressure(fig,ax,phlist,steprefine=10)
-fig,ax = g2.plot_barh_stablephase(fig,ax,phlist,-0.011,steprefine=10)
+fig,ax = g2.plot_barh_stablephase(fig,ax,phlist,-29,steprefine=10)
 
 ax.set_xlim([0,30])
 

@@ -129,7 +129,7 @@ def plot_enthalpy_pressure(fig,ax,phlist,steprefine=10,idref=None):
         y = ph.H(p)
         mask = ~np.isnan(y)
         x = p[mask]
-        y = y[mask] - phlist[idref].H(x)
+        y = (y[mask] - phlist[idref].H(x)) * 627.50947 * 4.184
         ax.plot(x,y,'-',label=ph._name)
 
     ## axes
