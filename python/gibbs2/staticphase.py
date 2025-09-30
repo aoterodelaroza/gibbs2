@@ -9,20 +9,16 @@ class StaticPhase:
     not done in gibbs2 by default."""
 
     ## constructors
-    def __init__(self,name,strl):
-        """Constructor for the staticphase. name is the name of the
-        phase and strl is a list of strings with the thermodynamic
-        properties obtained from reading the eos_static file (see
-        examples)."""
+    def __init__(self,name,p,E,H,V):
+        """Initialize staticphase given name, pressure, energy,
+        enthalpy, and volume."""
 
+        ## assign fields
         self._name = name
-
-        ## read the data
-        x = np.genfromtxt(strl)
-        self._plist = x[:,0]
-        self._Elist = x[:,1]
-        self._Hlist = x[:,2]
-        self._Vlist = x[:,3]
+        self._plist = np.copy(p)
+        self._Elist = np.copy(E)
+        self._Hlist = np.copy(H)
+        self._Vlist = np.copy(V)
 
         ## unique temperatures and pressures to within 2 decimal places
         self._pkeys = np.unique(np.sort(np.round(self._plist,decimals=2)))
@@ -30,11 +26,31 @@ class StaticPhase:
         ## set up the interpolant
         self._Einterp = interp1d(self._plist,self._Elist,'cubic',bounds_error=False,fill_value=np.nan)
         self._Hinterp = interp1d(self._plist,self._Hlist,'cubic',bounds_error=False,fill_value=np.nan)
+        self._Vinterp = interp1d(self._plist,self._Vlist,'cubic',bounds_error=False,fill_value=np.nan)
+
+    @classmethod
+    def fromlines(cls,name,strl):
+        """Initialize staticphase from a list of strings with the
+        thermodynamic properties obtained from reading the eos_static
+        file (see examples)."""
+
+        x = np.genfromtxt(strl)
+        p = x[:,0]
+        E = x[:,1]
+        H = x[:,2]
+        V = x[:,3]
+        return cls(name,p,E,H,V)
 
     ## interpolated thermodynamic properties
     def H(self,p):
-        """Returns the interpolated static enthalpy."""
+        """Returns the pressure-interpolated static enthalpy."""
         return self._Hinterp(p)
+    def E(self,p):
+        """Returns the pressure-interpolated static energy."""
+        return self._Einterp(p)
+    def V(self,p):
+        """Returns the pressure-interpolated volume."""
+        return self._Vinterp(p)
 
     ## min, max, step temperature and pressure
     @property
@@ -60,9 +76,26 @@ class StaticPhase:
         ph._Hlist *= other
         ph._Einterp = interp1d(ph._plist,ph._Elist,'cubic',bounds_error=False,fill_value=np.nan)
         ph._Hinterp = interp1d(ph._plist,ph._Hlist,'cubic',bounds_error=False,fill_value=np.nan)
+        ph._Vinterp = interp1d(ph._plist,ph._Vlist,'cubic',bounds_error=False,fill_value=np.nan)
         ph._name = f"{other} * {ph.name}"
         return ph
     __rmul__ = __mul__
+
+    def __add__(self,other):
+        """Add two phases. The pressure range is the intersection of
+        the pressure ranges and the extensive properties are added."""
+        if other == 0:
+            return self
+        else:
+            pmin = max(self.pmin,other.pmin)
+            pmax = min(self.pmax,other.pmax)
+            pstep = min(self.pstep,other.pstep)
+            p = np.arange(other.pmin,other.pmax,other.pstep)
+            E = self.E(p) + other.E(p)
+            H = self.H(p) + other.H(p)
+            V = self.V(p) + other.V(p)
+            return StaticPhase(f"{self.name} + {other.name}",p,E,H,V)
+    __radd__ = __add__
 
     ## representation functions
     def __str__(self):
@@ -74,16 +107,21 @@ def read_staticphases_from_eos_file(eosfile):
 
     phlist = []
     name = None
+    reading = False
+    strl = []
     with open(eosfile,"r") as f:
         for line in f:
-            if line.startswith("# Phase"):
-                if name is not None:
-                    phlist.append(StaticPhase(name,strl))
-                name = line.split()[-1]
+            if line.startswith("#") and name is not None and reading:
+                phlist.append(StaticPhase.fromlines(name,strl))
+                reading = False
+                name = None
                 strl = []
+            if line.startswith("# Phase"):
+                name = line.split()[-1]
             if name is not None and not line.startswith("#") and len(line) > 0:
+                reading = True
                 strl.append(line)
     if name is not None:
-        phlist.append(StaticPhase(name,strl))
+        phlist.append(StaticPhase.fromlines(name,strl))
 
     return phlist
