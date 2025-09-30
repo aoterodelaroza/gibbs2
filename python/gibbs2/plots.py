@@ -110,9 +110,7 @@ def plot_enthalpy_pressure(fig,ax,phlist,steprefine=10,idref=None):
     ## pick as reference the phase with the largest pressure range
     iddefault = (idref is None)
     prange = 0
-    pstep = np.inf
     for i,ph in enumerate(phlist):
-        pstep = min(pstep,ph.pstep)
         dp = ph.pmax - ph.pmin
         if dp > prange:
             if iddefault:
@@ -120,6 +118,7 @@ def plot_enthalpy_pressure(fig,ax,phlist,steprefine=10,idref=None):
             prange = dp
             pmin = ph.pmin
             pmax = ph.pmax
+    pstep = (pmax-pmin) / 1000
 
     ## build the grid
     p = np.arange(pmin,pmax,pstep / steprefine)
@@ -159,11 +158,10 @@ def plot_barh_stablephase(fig,ax,phlist,y,thinlines=True,steprefine=10):
     prange = 0
     pmin = np.inf
     pmax = -np.inf
-    pstep = np.inf
     for i,ph in enumerate(phlist):
         pmin = min(ph.pmin,pmin)
         pmax = max(ph.pmax,pmax)
-        pstep = min(pstep,ph.pstep)
+    pstep = (pmax-pmin) / 1000
 
     ## list of colors
     clist = plt.rcParams['axes.prop_cycle'].by_key()['color']
