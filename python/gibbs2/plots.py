@@ -5,7 +5,7 @@ import matplotlib.cm as cm
 
 def plot_phase_diagram(fig,ax,phlist,steprefine=10):
     """Bulid a colormap plot of the phase diagram constructed with the
-    phases given in the list phlist.
+    phases given in the Phase list phlist.
 
     By default, the maximum possible temperature and pressure range
     possible is used.
@@ -90,7 +90,7 @@ def plot_phase_diagram(fig,ax,phlist,steprefine=10):
 
 def plot_enthalpy_pressure(fig,ax,phlist,steprefine=10):
     """Bulid an enthalpy-pressure plot constructed with the phases
-    given in the list phlist.
+    given in the StaticPhase list phlist.
 
     By default, the maximum pressure range possible is used.
 
@@ -129,5 +129,71 @@ def plot_enthalpy_pressure(fig,ax,phlist,steprefine=10):
     ax.set_ylabel("Enthalpy (kJ/mol)")
     ax.grid()
     ax.legend()
+
+    return fig, ax
+
+def plot_barh_stablephase(fig,ax,phlist,y,thinlines=True,steprefine=10):
+    """Bulid a horizontal bar (barh) plot indicating the most table
+    phase as a function of pressure in the StaticPhase list phlist.
+    Place the plot at height y.
+
+    By default, the maximum pressure range possible is used.
+
+    thinlines = indicate the domain of each phase with thin lines
+    under the bar plot.
+
+    steprefine = use a step in pressure that is steprefine times lower
+    than the smallest step in any of the phases.
+    """
+
+    ## determine plot limits and step
+    prange = 0
+    pmin = np.inf
+    pmax = -np.inf
+    pstep = np.inf
+    for i,ph in enumerate(phlist):
+        pmin = min(ph.pmin,pmin)
+        pmax = max(ph.pmax,pmax)
+        pstep = min(pstep,ph.pstep)
+
+    ## list of colors
+    clist = plt.rcParams['axes.prop_cycle'].by_key()['color']
+
+    ## build the grid
+    plist = np.arange(pmin,pmax,pstep / steprefine)
+    Hlist = np.zeros((len(plist),len(phlist)))
+    for i,ph in enumerate(phlist):
+        Hlist[:,i] = np.array(ph.H(plist))
+
+    ## height of the boxes
+    ylo, yhi = ax.get_ylim()
+    yh = (yhi - ylo) / 30
+
+    width = []
+    left = []
+    color = []
+    iminlast = np.nan
+    for i,p in enumerate(plist):
+        imin = np.nanargmin(Hlist[i,:])
+        if np.isnan(iminlast):
+            iminlast = imin
+            plast = p
+        elif imin != iminlast:
+            left.append(plast)
+            width.append(p - plast)
+            color.append(clist[iminlast])
+            iminlast = imin
+            plast = p
+
+    ## the actual bar
+    ax.set_axisbelow(True)
+    ax.barh(y, width=width, height=yh, left=left, color=color, edgecolor='k')
+
+    ## the thin lines under the bar
+    if thinlines:
+        ypos = y - 0.5 * yh
+        for i,ph in enumerate(phlist):
+            ypos = ypos - 0.25 * yh
+            ax.hlines(ypos,ph.pmin,ph.pmax,colors=clist[i])
 
     return fig, ax

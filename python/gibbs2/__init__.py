@@ -10,4 +10,5 @@ __all__ = [
     'read_staticphases_from_eos_file',
     'plot_phase_diagram',
     'plot_enthalpy_pressure',
+    'plot_barh_stablephase',
 ]
