@@ -93,7 +93,7 @@ def plot_phase_diagram(fig,ax,phlist,colorbar=True,steprefine=10):
 
     return fig, ax
 
-def plot_enthalpy_pressure(fig,ax,phlist,steprefine=10):
+def plot_enthalpy_pressure(fig,ax,phlist,steprefine=10,idref=None):
     """Bulid an enthalpy-pressure plot constructed with the phases
     given in the StaticPhase list phlist.
 
@@ -101,18 +101,22 @@ def plot_enthalpy_pressure(fig,ax,phlist,steprefine=10):
 
     steprefine = use a step in pressure that is steprefine times lower
     than the smallest step in any of the phases.
+
+    idref = use the phase number ID as the reference (by default, the
+    phase with the largest pressure range is used).
     """
 
     ## determine plot limits and step
     ## pick as reference the phase with the largest pressure range
-    idref = -1
+    iddefault = (idref is None)
     prange = 0
     pstep = np.inf
     for i,ph in enumerate(phlist):
         pstep = min(pstep,ph.pstep)
         dp = ph.pmax - ph.pmin
         if dp > prange:
-            idref = i
+            if iddefault:
+                idref = i
             prange = dp
             pmin = ph.pmin
             pmax = ph.pmax
@@ -183,7 +187,7 @@ def plot_barh_stablephase(fig,ax,phlist,y,thinlines=True,steprefine=10):
         if np.isnan(iminlast):
             iminlast = imin
             plast = p
-        elif imin != iminlast:
+        elif imin != iminlast or i == len(plist)-1:
             left.append(plast)
             width.append(p - plast)
             color.append(clist[iminlast % len(clist)])
