@@ -87,3 +87,47 @@ def plot_phase_diagram(fig,ax,phlist,steprefine=10):
     ax.set_ylabel("Temperature (K)")
 
     return fig, ax
+
+def plot_enthalpy_pressure(fig,ax,phlist,steprefine=10):
+    """Bulid an enthalpy-pressure plot constructed with the phases
+    given in the list phlist.
+
+    By default, the maximum pressure range possible is used.
+
+    steprefine = use a step in pressure that is steprefine times lower
+    than the smallest step in any of the phases.
+    """
+
+    ## determine plot limits and step
+    ## pick as reference the phase with the largest pressure range
+    idref = -1
+    prange = 0
+    pstep = np.inf
+    for i,ph in enumerate(phlist):
+        pstep = min(pstep,ph.pstep)
+        dp = ph.pmax - ph.pmin
+        if dp > prange:
+            idref = i
+            prange = dp
+            pmin = ph.pmin
+            pmax = ph.pmax
+
+    ## build the grid
+    p = np.arange(pmin,pmax,pstep / steprefine)
+
+    ## plot the enthalpies
+    for i,ph in enumerate(phlist):
+        y = ph.H(p)
+        mask = ~np.isnan(y)
+        x = p[mask]
+        y = y[mask] - phlist[idref].H(x)
+        ax.plot(x,y,'-',label=ph._name)
+
+    ## axes
+    ax.set_xlim(pmin,pmax)
+    ax.set_xlabel("Pressure (GPa)")
+    ax.set_ylabel("Enthalpy (kJ/mol)")
+    ax.grid()
+    ax.legend()
+
+    return fig, ax
