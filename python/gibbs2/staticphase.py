@@ -41,6 +41,13 @@ class StaticPhase:
         V = x[:,3]
         return cls(name,p,E,H,V)
 
+    @classmethod
+    def fromfile(cls,filename):
+        """Initialize staticphase from an eos_static file. If several
+        phases are present, use the first one."""
+
+        return read_staticphases_from_eos_file(filename)[0]
+
     ## interpolated thermodynamic properties
     def H(self,p):
         """Returns the pressure-interpolated static enthalpy."""
