@@ -3,15 +3,18 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.cm as cm
 
-def plot_phase_diagram(fig,ax,phlist,steprefine=10):
+def plot_phase_diagram(fig,ax,phlist,colorbar=True,steprefine=10):
     """Bulid a colormap plot of the phase diagram constructed with the
-    phases given in the Phase list phlist.
+    phases given in the Phase list phlist and add it to the provided
+    figure and axes.
 
-    By default, the maximum possible temperature and pressure range
-    possible is used.
+    By default, the widest temperature and pressure range possible is
+    used.
+
+    colorbar = add a vertical colorbar to the plot.
 
     steprefine = use a step in temperature and pressure that is
-    steprefine times lower than the smallest step in any of the
+    steprefine times smaller than the smallest step in any of the
     phases. A higher steprefine means a slower plot but smoother
     contours.
     """
@@ -49,33 +52,35 @@ def plot_phase_diagram(fig,ax,phlist,steprefine=10):
         mask = (~mask) & (Gmlist[-1] < Gmmin2) & (~np.isnan(Gmlist[-1]))
         Gmmin2[mask] = Gmlist[-1][mask]
 
-    ## put back the nans
+    ## flag the nans
     for G in Gmlist:
         Gmid[np.isnan(G)] = -1
 
     ## list of colors
     clist = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
+    ## the colorbar goes up to 10 kJ/mol
     norm = mcolors.Normalize(vmin=0, vmax=10, clip=True)
+
     ## build the contour plot, one per phase
     for i,ph in enumerate(phlist):
         Gtemp = np.ones_like(Gmid)
         Gtemp[Gmid != i] = 0
 
-        # contour line
+        # contour lines
         levels = np.array([0.5])
         ax.contour(pm,Tm,Gtemp,levels,colors='k',linestyles='solid')
 
         # colormap
         Gtemp = Gmmin2 - Gmmin
         Gtemp[Gmid != i] = np.nan
-        cmap = mcolors.LinearSegmentedColormap.from_list('custom',[(0,'#ffffff'),(1,clist[i])],N=256)
+        cmap = mcolors.LinearSegmentedColormap.from_list('custom',[(0,'#ffffff'),(1,clist[i % len(clist)])],N=256)
         cnt = ax.contourf(pm, Tm, Gtemp, levels=256, cmap=cmap, norm=norm)
 
     ## colorbar
-    cmap = mcolors.LinearSegmentedColormap.from_list('custom',[(0,'#ffffff'),(1,'#000000')],N=256)
-    cnt = cm.ScalarMappable(norm=norm,cmap=cmap)
-    fig.colorbar(cnt,orientation='vertical',ax=ax,pad=0.01)
+    if colorbar:
+        cmap = mcolors.LinearSegmentedColormap.from_list('custom',[(0,'#ffffff'),(1,'#000000')],N=256)
+        fig.colorbar(cm.ScalarMappable(norm=norm,cmap=cmap),orientation='vertical',ax=ax,pad=0.01)
 
     ## hatching for nans
     Gtemp = np.ones_like(Gmid)
@@ -83,7 +88,7 @@ def plot_phase_diagram(fig,ax,phlist,steprefine=10):
     ax.contourf(pm, Tm, Gtemp, hatches=[None,'X'], levels=[-0.5,0.5,1.5], colors='none', cmap=None)
 
     ## axes
-    ax.set_xlabel(r"Pressure (GPa)")
+    ax.set_xlabel("Pressure (GPa)")
     ax.set_ylabel("Temperature (K)")
 
     return fig, ax
@@ -181,7 +186,7 @@ def plot_barh_stablephase(fig,ax,phlist,y,thinlines=True,steprefine=10):
         elif imin != iminlast:
             left.append(plast)
             width.append(p - plast)
-            color.append(clist[iminlast])
+            color.append(clist[iminlast % len(clist)])
             iminlast = imin
             plast = p
 
@@ -194,6 +199,6 @@ def plot_barh_stablephase(fig,ax,phlist,y,thinlines=True,steprefine=10):
         ypos = y - 0.5 * yh
         for i,ph in enumerate(phlist):
             ypos = ypos - 0.25 * yh
-            ax.hlines(ypos,ph.pmin,ph.pmax,colors=clist[i])
+            ax.hlines(ypos,ph.pmin,ph.pmax,colors=clist[i % len(clist)])
 
     return fig, ax

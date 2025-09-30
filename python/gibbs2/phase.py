@@ -2,32 +2,39 @@ import numpy as np
 from scipy.interpolate import CloughTocher2DInterpolator
 
 class Phase:
-    """Thermodynamic properties for a phase calculated by gibbs2."""
+    """Thermodynamic properties of a phase calculated by gibbs2. This class
+    is derived from the information written to a .eos file and is used
+    to create plots and performing tasks not done in gibbs2 by default."""
 
     ## constructor
     def __init__(self,name,strl):
+        """Constructor for the phase. name is the name of the phase
+        and strl is a list of strings with the thermodynamic
+        properties obtained from reading the eos file (see
+        examples)."""
+
         self._name = name
 
+        ## read the data
         x = np.genfromtxt(strl)
-        self._plist, self._Tlist, self._Vlist, self._Glist = [], [], [], []
-        self._pdict, self._Tdict, self._pTdict = {}, {}, {}
-        for i in range(x.shape[0]):
-            self._plist.append(x[i,0])
-            self._Tlist.append(x[i,1])
-            self._Vlist.append(x[i,2])
-            self._Glist.append(x[i,4])
+        self._plist = x[:,0]
+        self._Tlist = x[:,1]
+        self._Vlist = x[:,2]
+        self._Glist = x[:,4]
 
+        ## unique temperatures and pressures to within 2 decimal places
         self._Tkeys = np.unique(np.sort(np.round(self._Tlist,decimals=2)))
         self._pkeys = np.unique(np.sort(np.round(self._plist,decimals=2)))
 
+        ## set up thte interpolant
         self._Ginterp = CloughTocher2DInterpolator(list(zip(self._plist, self._Tlist)), self._Glist)
 
     ## interpolated thermodynamic properties
     def G(self,p,T):
-        """Returns the itnerpolated Gibbs energy."""
+        """Returns the interpolated Gibbs energy."""
         return self._Ginterp((p,T))
 
-    ## min, max, step temperature and pressure
+    ## some properties: min, max, step temperature and pressure, name
     @property
     def Tmin(self):
         return np.min(self._Tlist)
@@ -46,6 +53,9 @@ class Phase:
     @property
     def pstep(self):
         return np.min(np.diff(np.unique(np.sort(self._plist))))
+    @property
+    def name(self):
+        return self._name
 
     ## representation functions
     def __str__(self):
