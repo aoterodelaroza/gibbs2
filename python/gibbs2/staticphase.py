@@ -84,7 +84,12 @@ class StaticPhase:
         ph._Einterp = interp1d(ph._plist,ph._Elist,'cubic',bounds_error=False,fill_value=np.nan)
         ph._Hinterp = interp1d(ph._plist,ph._Hlist,'cubic',bounds_error=False,fill_value=np.nan)
         ph._Vinterp = interp1d(ph._plist,ph._Vlist,'cubic',bounds_error=False,fill_value=np.nan)
-        ph._name = f"{other} * {ph.name}"
+
+        if len(self.name.split()) > 1:
+            sname = f"({self.name})"
+        else:
+            sname = self.name
+        ph._name = f"{other} * {sname}"
         return ph
     __rmul__ = __mul__
 
@@ -101,7 +106,17 @@ class StaticPhase:
             E = self.E(p) + other.E(p)
             H = self.H(p) + other.H(p)
             V = self.V(p) + other.V(p)
-            return StaticPhase(f"{self.name} + {other.name}",p,E,H,V)
+
+            if len(self.name.split()) > 1:
+                sname = f"({self.name})"
+            else:
+                sname = self.name
+            if len(other.name.split()) > 1:
+                oname = f"({other.name})"
+            else:
+                oname = other.name
+
+            return StaticPhase(f"{sname} + {oname}",p,E,H,V)
     __radd__ = __add__
 
     ## representation functions
