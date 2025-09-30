@@ -26,7 +26,7 @@ class Phase:
         self._Tkeys = np.unique(np.sort(np.round(self._Tlist,decimals=2)))
         self._pkeys = np.unique(np.sort(np.round(self._plist,decimals=2)))
 
-        ## set up thte interpolant
+        ## set up the interpolant
         self._Ginterp = CloughTocher2DInterpolator(list(zip(self._plist, self._Tlist)), self._Glist)
 
     ## interpolated thermodynamic properties

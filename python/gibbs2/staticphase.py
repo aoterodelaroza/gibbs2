@@ -2,25 +2,36 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 class StaticPhase:
-    """Thermodynamic properties for a static phase calculated by gibbs2."""
+    """Thermodynamic properties of a static phase calculated by
+    gibbs2. This class is derived from the information written to a
+    .eos_static file and is used to create plots and performing tasks
+    not done in gibbs2 by default."""
 
     ## constructor
     def __init__(self,name,strl):
+        """Constructor for the staticphase. name is the name of the
+        phase and strl is a list of strings with the thermodynamic
+        properties obtained from reading the eos_static file (see
+        examples)."""
+
         self._name = name
 
+        ## read the data
         x = np.genfromtxt(strl)
-        self._plist, self._Vlist, self._Elist, self._Hlist = [], [], [], []
-        for i in range(x.shape[0]):
-            self._plist.append(x[i,0])
-            self._Elist.append(x[i,1])
-            self._Hlist.append(x[i,2])
-            self._Vlist.append(x[i,3])
+        self._plist = x[:,0]
+        self._Elist = x[:,1]
+        self._Hlist = x[:,2]
+        self._Vlist = x[:,3]
+
+        ## unique temperatures and pressures to within 2 decimal places
         self._pkeys = np.unique(np.sort(np.round(self._plist,decimals=2)))
+
+        ## set up the interpolant
         self._Hinterp = interp1d(self._plist,self._Hlist,'cubic',bounds_error=False,fill_value=np.nan)
 
     ## interpolated thermodynamic properties
     def H(self,p):
-        """Returns the itnerpolated enthalpy."""
+        """Returns the interpolated static enthalpy."""
         return self._Hinterp(p)
 
     ## min, max, step temperature and pressure
@@ -33,6 +44,9 @@ class StaticPhase:
     @property
     def pstep(self):
         return np.min(np.diff(np.unique(np.sort(self._plist))))
+    @property
+    def name(self):
+        return self._name
 
     ## representation functions
     def __str__(self):
