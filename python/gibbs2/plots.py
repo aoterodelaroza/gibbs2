@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.cm as cm
+import matplotlib.patches as mpatches
 
 def plot_phase_diagram(fig,ax,phlist,colorbar=True,steprefine=10):
     """Bulid a colormap plot of the phase diagram constructed with the
@@ -90,6 +91,12 @@ def plot_phase_diagram(fig,ax,phlist,colorbar=True,steprefine=10):
     ## axes
     ax.set_xlabel("Pressure (GPa)")
     ax.set_ylabel("Temperature (K)")
+
+    ## legend
+    handles = []
+    for i,ph in enumerate(phlist):
+        handles.append(mpatches.Patch(color=clist[i % len(clist)], label=ph.name))
+    ax.legend(handles=handles)
 
     return fig, ax
 
