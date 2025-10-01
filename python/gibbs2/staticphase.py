@@ -105,7 +105,7 @@ class StaticPhase:
             pmin = max(self.pmin,other.pmin)
             pmax = min(self.pmax,other.pmax)
             pstep = min(self.pstep,other.pstep)
-            p = np.arange(other.pmin,other.pmax,other.pstep)
+            p = np.arange(pmin,pmax,pstep)
             E = self.E(p) + other.E(p)
             H = self.H(p) + other.H(p)
             V = self.V(p) + other.V(p)
