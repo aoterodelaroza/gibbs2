@@ -128,7 +128,7 @@ class StaticPhase:
         pmin = max(self.pmin,other.pmin)
         pmax = min(self.pmax,other.pmax)
         pstep = min(self.pstep,other.pstep)
-        p = np.arange(other.pmin,other.pmax,other.pstep)
+        p = np.arange(pmin,pmax,pstep)
 
         ## fill the enthalpy
         Hs = self.H(p)
@@ -155,9 +155,42 @@ class StaticPhase:
             oname = other.name
 
         return StaticPhase(f"{sname} & {oname}",p,E,H,V)
-
     __rand__ = __and__
 
+    def __or__(self,other):
+        """The operation A | B builds the thermodynamically stable
+        phase in the union pressure range of A and B."""
+        pmin = min(self.pmin,other.pmin)
+        pmax = max(self.pmax,other.pmax)
+        pstep = min(self.pstep,other.pstep)
+        p = np.arange(pmin,pmax,pstep)
+
+        ## fill the enthalpy
+        Hs = self.H(p)
+        Ho = other.H(p)
+        H = np.fmin(Hs,Ho)
+
+        ## fill the others with a mask
+        V = np.empty_like(H)
+        E = np.empty_like(H)
+        mask = (H == Hs)
+        V[mask] = self.V(p[mask])
+        E[mask] = self.E(p[mask])
+        mask = ~mask
+        V[mask] = other.V(p[mask])
+        E[mask] = other.E(p[mask])
+
+        if len(self.name.split()) > 1:
+            sname = f"({self.name})"
+        else:
+            sname = self.name
+        if len(other.name.split()) > 1:
+            oname = f"({other.name})"
+        else:
+            oname = other.name
+
+        return StaticPhase(f"{sname} | {oname}",p,E,H,V)
+    __ror__ = __or__
 
     ## representation functions
     def __str__(self):
