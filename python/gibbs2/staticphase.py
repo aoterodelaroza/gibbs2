@@ -10,8 +10,8 @@ class StaticPhase:
 
     ## constructors
     def __init__(self,name,p,E,H,V):
-        """Initialize staticphase given name, pressure, energy,
-        enthalpy, and volume."""
+        """Initialize phase given name and 1D grid of thermodynamic
+        properties."""
 
         ## assign fields
         self._name = name
@@ -20,10 +20,10 @@ class StaticPhase:
         self._Hlist = np.copy(H)
         self._Vlist = np.copy(V)
 
-        ## unique temperatures and pressures to within 2 decimal places
+        ## unique pressures to within 2 decimal places
         self._pkeys = np.unique(np.sort(np.round(self._plist,decimals=2)))
 
-        ## set up the interpolant
+        ## set up the interpolants
         self._Einterp = interp1d(self._plist,self._Elist,'cubic',bounds_error=False,fill_value=np.nan)
         self._Hinterp = interp1d(self._plist,self._Hlist,'cubic',bounds_error=False,fill_value=np.nan)
         self._Vinterp = interp1d(self._plist,self._Vlist,'cubic',bounds_error=False,fill_value=np.nan)
@@ -59,7 +59,7 @@ class StaticPhase:
         """Returns the pressure-interpolated volume."""
         return self._Vinterp(p)
 
-    ## min, max, step temperature and pressure
+    ## some properties: min, max, step pressure and name
     @property
     def pmin(self):
         return np.min(self._plist)

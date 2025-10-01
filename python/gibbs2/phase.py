@@ -6,32 +6,47 @@ class Phase:
     is derived from the information written to a .eos file and is used
     to create plots and performing tasks not done in gibbs2 by default."""
 
-    ## constructor
-    def __init__(self,name,strl):
-        """Constructor for the phase. name is the name of the phase
-        and strl is a list of strings with the thermodynamic
-        properties obtained from reading the eos file (see
-        examples)."""
+    def __init__(self,name,p,T,V,G):
+        """Initialize phase given name and 2D grid of thermodynamic
+        properties."""
 
+        ## assign fields
         self._name = name
-
-        ## read the data
-        x = np.genfromtxt(strl)
-        self._plist = x[:,0]
-        self._Tlist = x[:,1]
-        self._Vlist = x[:,2]
-        self._Glist = x[:,4]
+        self._plist = np.copy(p)
+        self._Tlist = np.copy(T)
+        self._Vlist = np.copy(V)
+        self._Glist = np.copy(G)
 
         ## unique temperatures and pressures to within 2 decimal places
         self._Tkeys = np.unique(np.sort(np.round(self._Tlist,decimals=2)))
         self._pkeys = np.unique(np.sort(np.round(self._plist,decimals=2)))
 
-        ## set up the interpolant
+        ## set up the interpolants
         self._Ginterp = CloughTocher2DInterpolator(list(zip(self._plist, self._Tlist)), self._Glist)
+
+    @classmethod
+    def fromlines(cls,name,strl):
+        """Initialize phase from a list of strings with the
+        thermodynamic properties obtained from reading the eos file
+        (see examples)."""
+
+        x = np.genfromtxt(strl)
+        p = x[:,0]
+        T = x[:,1]
+        V = x[:,2]
+        G = x[:,4]
+        return cls(name,p,T,V,G)
+
+    @classmethod
+    def fromfile(cls,filename):
+        """Initialize phase from an eos file. If several phases are
+        present, use the first one."""
+
+        return read_phases_from_eos_file(filename)[0]
 
     ## interpolated thermodynamic properties
     def G(self,p,T):
-        """Returns the interpolated Gibbs energy."""
+        """Returns the pT-interpolated Gibbs energy."""
         return self._Ginterp((p,T))
 
     ## some properties: min, max, step temperature and pressure, name
@@ -56,6 +71,9 @@ class Phase:
     @property
     def name(self):
         return self._name
+    @name.setter
+    def name(self,value):
+        self._name = value
 
     ## representation functions
     def __str__(self):
@@ -71,12 +89,12 @@ def read_phases_from_eos_file(eosfile):
         for line in f:
             if line.startswith("# Phase"):
                 if name is not None:
-                    phlist.append(Phase(name,strl))
+                    phlist.append(Phase.fromlines(name,strl))
                 name = line.split()[-1]
                 strl = []
             if name is not None and not line.startswith("#"):
                 strl.append(line)
     if name is not None:
-        phlist.append(Phase(name,strl))
+        phlist.append(Phase.fromlines(name,strl))
 
     return phlist
