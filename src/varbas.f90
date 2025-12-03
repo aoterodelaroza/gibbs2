@@ -760,6 +760,7 @@ contains
     real*8 :: fx, gx, hx, zz, eshift
     real*8, allocatable :: ffreq(:)
     logical :: ok, d0, didinterp, havev, havee, haveph
+    logical, allocatable :: lcol_anh(:), lcol_cein(:), lcol_tein(:)
 
     ! Set defaults for this phase. also, check type definition
     ! basic info
@@ -811,6 +812,7 @@ contains
     prefix = "./" // null
     extfvibfile = ""
     allocate(icol_anh(1),icol_cein(1),icol_tein(1))
+    allocate(lcol_anh(1),lcol_cein(1),lcol_tein(1))
     icol_anh = -1
     icol_cein = -1
     icol_tein = -1
@@ -982,9 +984,16 @@ contains
              if (allocated(icol_cein)) deallocate(icol_cein)
              if (allocated(icol_tein)) deallocate(icol_tein)
              allocate(icol_anh(p%tde_nanh),icol_cein(p%tde_nein),icol_tein(p%tde_nein))
+             if (allocated(lcol_anh)) deallocate(lcol_anh)
+             if (allocated(lcol_cein)) deallocate(lcol_cein)
+             if (allocated(lcol_tein)) deallocate(lcol_tein)
+             allocate(lcol_anh(p%tde_nanh),lcol_cein(p%tde_nein),lcol_tein(p%tde_nein))
              icol_anh = 0
              icol_cein = 0
              icol_tein = 0
+             lcol_anh = .false.
+             lcol_cein = .false.
+             lcol_tein = .false.
           else
              call error('phase_init','unknown TMODEL in PHASE keyword',faterr)
           end if
@@ -1470,6 +1479,10 @@ contains
           else if (idum == icol_tde) then
              ! debye_extended: debye temperature
              ok = isreal(p%tde(nn),line,lp)
+             if (abs(p%tde(nn)) < 1d-3) then
+                ok = .false.
+                exit
+             end if
           else
              ! debye-extended: anharmonic coefficients
              ifound = 0
@@ -1479,6 +1492,7 @@ contains
              if (ifound > 0) then
                 ok = isreal(p%tde_anh(ifound,nn),line,lp)
                 if (.not.ok) exit
+                lcol_anh(ifound) = .true.
                 cycle
              end if
 
@@ -1490,6 +1504,7 @@ contains
              if (ifound > 0) then
                 ok = isreal(p%tde_cein(ifound,nn),line,lp)
                 if (.not.ok) exit
+                lcol_cein(ifound) = .true.
                 cycle
              end if
 
@@ -1505,6 +1520,7 @@ contains
                    exit
                 end if
                 if (.not.ok) exit
+                lcol_tein(ifound) = .true.
                 cycle
              end if
 
@@ -1532,6 +1548,14 @@ contains
              write (uout,'("Line number:",I5)') nn
           end if
           call error('phase_init','Error input, PHASE..ENDPHASE environment',faterr)
+       end if
+       if (p%tmodel == tm_debye_extended) then
+          if (.not.all(lcol_anh(1:p%tde_nanh))) &
+             call error('phase_init','Missing Debye temperature in Debye extended model',faterr)
+          if (.not.all(lcol_cein(1:p%tde_nein))) &
+             call error('phase_init','Missing Einstin coefficients in Debye extended model',faterr)
+          if (.not.all(lcol_tein(1:p%tde_nein))) &
+             call error('phase_init','Missing Einstein temperatures in Debye extended model',faterr)
        end if
 
        if (.not.havev.or..not.havee) then
