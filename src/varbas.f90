@@ -1500,6 +1500,10 @@ contains
              end do
              if (ifound > 0) then
                 ok = isreal(p%tde_tein(ifound,nn),line,lp)
+                if (abs(p%tde_tein(ifound,nn)) < 1d-3) then
+                   ok = .false.
+                   exit
+                end if
                 if (.not.ok) exit
                 cycle
              end if
