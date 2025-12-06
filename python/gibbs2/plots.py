@@ -147,6 +147,34 @@ def plot_enthalpy_pressure(fig,ax,phlist,steprefine=10,idref=None):
 
     return fig, ax
 
+def plot_energy_volume(fig,ax,phlist):
+    """Bulid an energy-volume plot constructed with the phases given
+    in the StaticPhase list phlist.
+    """
+
+    ## determine plot limits and step
+    ## pick as reference the phase with the largest pressure range
+    vmax = -np.inf
+    vmin = np.inf
+    for i,ph in enumerate(phlist):
+        vmax = max(vmax,ph._Vlist[0])
+        vmin = min(vmin,ph._Vlist[-1])
+
+    ## plot the energies
+    for i,ph in enumerate(phlist):
+        x = ph._Vlist
+        y = ph._Elist
+        ax.plot(x,y,'-',label=ph._name)
+
+    ## axes
+    ax.set_xlim(vmin*0.99,vmax*1.01)
+    ax.set_xlabel(r"Volume ($\AA^3$)")
+    ax.set_ylabel("Energy (Hartree)")
+    ax.grid()
+    ax.legend()
+
+    return fig, ax
+
 def plot_barh_stablephase(fig,ax,phlist,y,thinlines=True,steprefine=10):
     """Bulid a horizontal bar (barh) plot indicating the most table
     phase as a function of pressure in the StaticPhase list phlist.
