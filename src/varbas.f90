@@ -168,7 +168,7 @@ module varbas
 
   ! frequencies
   real*8, parameter :: fnegcrit = -1d-2 !< negative freq. criterion (cm_1)
-  real*8 :: ignore_neg_cutoff = 20d0 !< negative freqs below this trigger deactivation
+  real*8 :: ignore_neg_cutoff = 1000d0 !< negative freqs below this trigger deactivation
   real*8 :: fgrid_step = -1d0
   logical :: renormalize = .true. !< renormalize the phDOS in QHA?
 
