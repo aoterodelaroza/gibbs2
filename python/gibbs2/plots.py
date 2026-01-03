@@ -4,7 +4,7 @@ import matplotlib.colors as mcolors
 import matplotlib.cm as cm
 import matplotlib.patches as mpatches
 
-def plot_phase_diagram(fig,ax,phlist,colorbar=True,steprefine=10):
+def plot_phase_diagram(fig,ax,phlist,colorbar=True,steprefine=1,allexist=True):
     """Bulid a colormap plot of the phase diagram constructed with the
     phases given in the Phase list phlist and add it to the provided
     figure and axes.
@@ -12,12 +12,16 @@ def plot_phase_diagram(fig,ax,phlist,colorbar=True,steprefine=10):
     By default, the widest temperature and pressure range possible is
     used.
 
-    colorbar = add a vertical colorbar to the plot.
+    colorbar = add a vertical colorbar to the plot. (Default: True)
 
     steprefine = use a step in temperature and pressure that is
     steprefine times smaller than the smallest step in any of the
     phases. A higher steprefine means a slower plot but smoother
-    contours.
+    contours. (Default: 1)
+
+    allexist = if True, represent a point in the diagram only if all
+    phases can be calculated at that point. Otherwise, represent if
+    any phase exists at that point.
     """
 
     ## determine plot limits and step
@@ -54,8 +58,9 @@ def plot_phase_diagram(fig,ax,phlist,colorbar=True,steprefine=10):
         Gmmin2[mask] = Gmlist[-1][mask]
 
     ## flag the nans
-    for G in Gmlist:
-        Gmid[np.isnan(G)] = -1
+    if allexist:
+        for G in Gmlist:
+            Gmid[np.isnan(G)] = -1
 
     ## list of colors
     clist = plt.rcParams['axes.prop_cycle'].by_key()['color']
