@@ -175,9 +175,9 @@ contains
     ! write the gnu file
     write (uout,'("  Writing file : ",A/)') trim(fileroot)//"_efit.gnu"
     lu = opengnu(trim(fileroot)//"_efit")
-    write (lu,'("set xrange ["F20.4":"F20.4"]")') vmin - 0.01d0 * (vmax-vmin), &
+    write (lu,'("set xrange [",F20.4,":",F20.4,"]")') vmin - 0.01d0 * (vmax-vmin), &
        vmax + 0.01d0 * (vmax-vmin)
-    write (lu,'("set yrange ["F20.4":"F20.4"]")') emin - 0.01d0 * (emax-emin), &
+    write (lu,'("set yrange [",F20.4,":",F20.4,"]")') emin - 0.01d0 * (emax-emin), &
        emax + 0.01d0 * (emax-emin)
     write (lu,'("set ylabel ""Energy (Ha)""")')
     write (lu,'("set xlabel ""Volume (bohr^3)""")')
