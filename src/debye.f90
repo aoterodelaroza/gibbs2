@@ -84,7 +84,7 @@ contains
     end if
 
     ! td at the equilibrium volume
-    p%td0 = (6*pi*pi*vfree*p%veq_static*p%veq_static)**third / pckbau * p%pofunc * sqrt(f2s/mm)
+    p%td0 = (6*pi*pi*vfree*p%veq_static*p%veq_static)**third / pckbau * p%pofunc * sqrt(abs(f2s)/mm)
 
     ! header
     if (verbose) then
