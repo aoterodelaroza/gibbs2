@@ -672,7 +672,7 @@ contains
           call fit_ev(ph(i)%fit_mode,ph(i)%reg_mode,xfit,yfit,ph(i)%ffit_npol(k),&
              ph(i)%ffit_apol(:,k),ierr,.false.)
           if (ierr > 0) then
-             write (uout,'(" T = ",F12.4," V = ",F12.4,"")') tlist(k), ph(i)%v(j)
+             write (uout,'(" T = ",F12.4,"")') tlist(k)
              call error('dyneos','fit for F(V;T) not found',faterr)
           end if
           ynew = fv0(ph(i)%fit_mode,ph(i)%v,ph(i)%ffit_npol(k),ph(i)%ffit_apol(:,k))
